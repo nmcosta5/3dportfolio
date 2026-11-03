@@ -1,3 +1,4 @@
+import { ArrowUpRight } from "lucide-react";
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { RoundedBox, useTexture } from "@react-three/drei";
