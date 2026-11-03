@@ -5,14 +5,19 @@ type Section = "Me" | "Projects" | "Skills" | "Fun" | "Contact";
 type Message = { question: string; answer: string };
 
 function AnswerBody({ text }: { text: string }) {
-  const paragraphs = text.split(/\n{2,}/).filter(Boolean);
-  const renderInline = (value: string, prefix: string) => value.split(/(!\[[^\]]*\]\(https?:\/\/[^)\s]+\)|https?:\/\/[^\s)]+)/g).map((part, i) => {
-    const image = part.match(/^!\[([^\]]*)\]\((https?:\/\/[^)\s]+)\)$/);
-    if (image) return <img key={prefix + i} className="ai-inline-image" src={image[2]} alt={image[1] || "AI shared image"} loading="lazy" referrerPolicy="no-referrer" />;
-    if (/^https?:\/\//.test(part)) return <a key={prefix + i} href={part} target="_blank" rel="noreferrer">{part.replace(/^https?:\/\//, "").replace(/\/$/, "")} <ArrowUpRight size={11}/></a>;
+  const renderInline = (value: string, prefix: string) => value.split(/(!\\[[^\\]]*\\]\\(https?:\\/\\/[^)\\s]+\\)|https?:\\/\\/[^\\s)]+)/g).map((part, i) => {
+    const image = part.match(/^!\\[([^\\]]*)\\]\\((https?:\\/\\/[^)\\s]+)\\)$/);
+    if (image) return <figure className="answer-image" key={prefix + i}><a href={image[2]} target="_blank" rel="noreferrer"><img src={image[2]} alt={image[1] || "Shared image"} loading="lazy" referrerPolicy="no-referrer" /></a>{image[1] && <figcaption>{image[1]}</figcaption>}</figure>;
+    if (/^https?:\\/\\//.test(part)) return <a key={prefix + i} href={part} target="_blank" rel="noreferrer">{part.replace(/^https?:\\/\\//, "").replace(/\\/$/, "")} <ArrowUpRight size={11}/></a>;
     return part;
   });
-  return <div className="answer-copy">{paragraphs.map((paragraph, index) => <p key={index}>{renderInline(paragraph, String(index))}</p>)}</div>;
+  const blocks = text.trim().split(/\\n{2,}/).filter(Boolean);
+  return <div className="answer-copy">{blocks.map((block, index) => {
+    const lines = block.split("\\n").filter(Boolean);
+    if (lines.every(line => /^\\s*[-*•]\\s+/.test(line))) return <ul className="answer-list" key={index}>{lines.map((line, i) => <li key={i}>{renderInline(line.replace(/^\\s*[-*•]\\s+/, ""), index + "-" + i)}</li>)}</ul>;
+    if (lines.length === 1 && /^#{1,3}\\s/.test(lines[0])) return <h3 className="answer-heading" key={index}>{lines[0].replace(/^#{1,3}\\s/, "")}</h3>;
+    return <p key={index}>{lines.map((line, i) => <span key={i}>{renderInline(line, index + "-" + i)}{i < lines.length - 1 && <br/>}</span>)}</p>;
+  })}</div>;
 }
 const sections: Section[] = ["Me", "Projects", "Skills", "Fun", "Contact"];
 const profile = { name: "Nzabana Merci", github: "https://github.com/nmcosta5", website: "https://nzabana.vercel.app/" };
@@ -133,7 +138,7 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [streamingAnswer, setStreamingAnswer] = useState("");
   const [modelStatus, setModelStatus] = useState("ONLINE AI · CONNECTING TO GROQ");
-  const [githubAvatar, setGithubAvatar] = useState("https://github.com/nmcosta5.png");
+  const githubAvatar = "https://raw.githubusercontent.com/nmcosta5/3dportfolio/main/public/Stylized%20Beanie-Wearing%20Memoji%20Portrait%20(1).png";
   const [githubStats, setGithubStats] = useState<{ repos: number; followers: number } | null>(null);
   const [theme, setTheme] = useState<"light" | "dark">(() => (localStorage.getItem("merci-theme") === "dark" ? "dark" : "light"));
   const [challenge, setChallenge] = useState("Build a tiny app that helps someone in your community solve a daily problem.");
@@ -143,8 +148,8 @@ function App() {
     let active = true;
     fetch("https://api.github.com/users/nmcosta5", { headers: { Accept: "application/vnd.github+json" } })
       .then(response => { if (!response.ok) throw new Error("GitHub profile unavailable"); return response.json(); })
-      .then(user => { if (active) { if (typeof user.avatar_url === "string") setGithubAvatar(user.avatar_url); setGithubStats({ repos: Number(user.public_repos || 0), followers: Number(user.followers || 0) }); } })
-      .catch(() => { if (active) setGithubAvatar("https://github.com/nmcosta5.png"); });
+      .then(user => { if (active) { setGithubStats({ repos: Number(user.public_repos || 0), followers: Number(user.followers || 0) }); } })
+      .catch(() => { if (active)  });
     return () => { active = false; };
   }, []);
   const current = content[active];
@@ -225,7 +230,7 @@ Portfolio: https://nzabana.vercel.app/
         <div className="availability"><span className="availability-dot"/> AVAILABLE FOR COLLABORATION</div>
         <h1>Hey, I'm Merci <span className="wave">👋</span></h1>
         <p className="role-title">Full Stack Developer</p>
-        <div className="portrait-wrap"><div className="portrait-halo"/><img className="portrait" src={githubAvatar} alt="Nzabana Merci GitHub profile photo" loading="eager" referrerPolicy="no-referrer"/></div>
+        <div className="portrait-wrap"><div className="portrait-halo"/><img className="portrait" src={githubAvatar} alt="Nzabana Merci wearing his beanie Memoji avatar" loading="eager" referrerPolicy="no-referrer"/></div>
         <p className="hero-caption">A curious developer from Rwanda, building thoughtful things for the web.</p>
         <button className="cv-download" onClick={downloadCV}><Download size={14}/> Download CV <span>TXT</span></button>
         {githubStats && <div className="profile-stats"><span><b>{githubStats.repos}</b> PUBLIC REPOSITORIES</span><i/> <span><b>{githubStats.followers}</b> FOLLOWERS</span></div>}
@@ -236,7 +241,7 @@ Portfolio: https://nzabana.vercel.app/
         {active === "Fun" && <div className="challenge-card"><span className="challenge-label">A SMALL DEVELOPER CHALLENGE</span><p>{challenge}</p><button onClick={nextChallenge}><RotateCcw size={13}/> Give me another</button></div>}
         {active === "Contact" && <div className="contact-quick"><button onClick={copyGithub}>{copied ? <Check size={14}/> : <Copy size={14}/>} {copied ? "GitHub link copied" : "Copy GitHub link"}</button><a href={profile.github} target="_blank" rel="noreferrer"><Github size={14}/> Open GitHub <ArrowUpRight size={12}/></a><a href={profile.website} target="_blank" rel="noreferrer"><Globe2 size={14}/> Visit website <ArrowUpRight size={12}/></a></div>}
 
-        {displayed ? <div className="answer-card"><div className="user-question">{displayed.question}</div>{active === "Me" && <div className="profile-response"><img src={githubAvatar} alt="Nzabana Merci"/><div><h2>Nzabana Merci</h2><p>Software Development student · Rwanda</p><div className="profile-tags"><span>Full-stack development</span><span>Curious learner</span><span>Problem solving</span></div></div></div>}<div className="answer-meta"><img src={githubAvatar} alt="" /><span>MERCI’S AI ASSISTANT</span><i>·</i><span>JUST NOW</span></div><AnswerBody text={displayed.answer}/>
+        {displayed ? <div className="answer-card"><div className="user-question">{displayed.question}</div>{active === "Me" && <div className="profile-response"><img src={githubAvatar} alt="Nzabana Merci beanie Memoji avatar"/><div><h2>Nzabana Merci</h2><p>Software Development student · Rwanda</p><div className="profile-tags"><span>Full-stack development</span><span>Curious learner</span><span>Problem solving</span></div></div></div>}<div className="answer-meta"><img src={githubAvatar} alt="" /><span>MERCI’S AI ASSISTANT</span><i>·</i><span>JUST NOW</span></div><AnswerBody text={displayed.answer}/>
           
           {active === "Skills" && <div className="skill-cloud">{["JavaScript","TypeScript","React","Node.js","HTML","CSS","Supabase","MySQL","MongoDB","Git"].map(s => <span key={s}>{s}</span>)}</div>}
           {active === "Contact" && <div className="contact-links"><a href={profile.github} target="_blank" rel="noreferrer"><Github size={15}/> GitHub <ArrowUpRight size={13}/></a><a href={profile.website} target="_blank" rel="noreferrer"><Globe2 size={15}/> Portfolio <ArrowUpRight size={13}/></a></div>}
