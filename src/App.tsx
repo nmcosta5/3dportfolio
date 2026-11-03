@@ -32,7 +32,7 @@ function FluidCanvas() {
     const pointer = { x: -1000, y: -1000, lastX: -1000, lastY: -1000, active: false };
     const particles: Array<{ x: number; y: number; vx: number; vy: number; radius: number; life: number; maxLife: number; hue: number }> = [];
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const palette = [112, 132, 148, 158];
+    const palette = [138, 154, 168, 188];
 
     const resize = () => {
       const dpr = Math.min(window.devicePixelRatio || 1, 1.35);
@@ -63,9 +63,9 @@ function FluidCanvas() {
           y: y + (Math.random() - .5) * 10,
           vx: (Math.random() - .5) * 0.65,
           vy: (Math.random() - .5) * 0.65,
-          radius: 28 + Math.random() * 38,
+          radius: 48 + Math.random() * 62,
           life: 1,
-          maxLife: .72 + Math.random() * .5,
+          maxLife: 1.35 + Math.random() * .8,
           hue: palette[Math.floor(Math.random() * palette.length)]
         });
       }
@@ -79,18 +79,18 @@ function FluidCanvas() {
       ctx.globalCompositeOperation = "screen";
       for (let i = particles.length - 1; i >= 0; i--) {
         const p = particles[i];
-        p.life -= .012 * delta / p.maxLife;
+        p.life -= .0065 * delta / p.maxLife;
         p.x += p.vx * delta;
         p.y += p.vy * delta;
         p.vx *= .986;
         p.vy *= .986;
         if (p.life <= 0) { particles.splice(i, 1); continue; }
-        const alpha = Math.max(0, p.life) * .27;
+        const alpha = Math.max(0, p.life) * .48;
         const radius = p.radius * (1 + (1 - p.life) * .65);
         const gradient = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, radius);
-        gradient.addColorStop(0, `hsla(${p.hue}, 18%, 48%, ${alpha})`);
-        gradient.addColorStop(.42, `hsla(${p.hue}, 16%, 56%, ${alpha * .72})`);
-        gradient.addColorStop(1, `hsla(${p.hue}, 10%, 85%, 0)`);
+        gradient.addColorStop(0, `hsla(${p.hue}, 30%, 34%, ${alpha})`);
+        gradient.addColorStop(.42, `hsla(${p.hue}, 26%, 43%, ${alpha * .82})`);
+        gradient.addColorStop(1, `hsla(${p.hue}, 24%, 62%, 0)`);
         ctx.fillStyle = gradient;
         ctx.beginPath();
         ctx.arc(p.x, p.y, radius, 0, Math.PI * 2);
