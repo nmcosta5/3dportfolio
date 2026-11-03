@@ -154,9 +154,10 @@ function App() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [promoOpen, setPromoOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [avatarReady, setAvatarReady] = useState(false);
   const [streamingAnswer, setStreamingAnswer] = useState("");
   const [modelStatus, setModelStatus] = useState("ONLINE AI · CONNECTING TO GROQ");
-  const githubAvatar = "https://raw.githubusercontent.com/nmcosta5/3dportfolio/main/public/Stylized%20Beanie-Wearing%20Memoji%20Portrait%20(1).png";
+  const githubAvatar = "/Stylized%20Beanie-Wearing%20Memoji%20Portrait%20(1).png";
   const [githubStats, setGithubStats] = useState<{ repos: number; followers: number } | null>(null);
   const [theme, setTheme] = useState<"light" | "dark">(() => (localStorage.getItem("merci-theme") === "dark" ? "dark" : "light"));
   const [challenge, setChallenge] = useState("Build a tiny app that helps someone in your community solve a daily problem.");
@@ -248,7 +249,7 @@ Portfolio: https://nzabana.vercel.app/
         <div className="availability"><span className="availability-dot"/> AVAILABLE FOR COLLABORATION</div>
         <h1>Hey, I'm Merci <span className="wave">👋</span></h1>
         <p className="role-title">Full Stack Developer</p>
-        <div className="portrait-wrap"><div className="portrait-halo"/><img className="portrait" src={githubAvatar} alt="Nzabana Merci wearing his beanie Memoji avatar" loading="eager" referrerPolicy="no-referrer"/></div>
+        <div className="portrait-wrap"><div className="portrait-halo"/><img className="portrait" src={githubAvatar} alt="Nzabana Merci wearing his beanie Memoji avatar" loading="eager" fetchPriority="high" decoding="async" onLoad={() => setAvatarReady(true)} onError={() => setAvatarReady(true)}/></div>
         <p className="hero-caption">A curious developer from Rwanda, building thoughtful things for the web.</p>
         <button className="cv-download" onClick={downloadCV}><Download size={14}/> Download CV <span>TXT</span></button>
         {githubStats && <div className="profile-stats"><span><b>{githubStats.repos}</b> PUBLIC REPOSITORIES</span><i/> <span><b>{githubStats.followers}</b> FOLLOWERS</span></div>}
@@ -275,7 +276,7 @@ Portfolio: https://nzabana.vercel.app/
     <nav className="section-nav" aria-label="Portfolio sections">
       {sections.map((section, i) => {
         const prompts: Record<Section, string> = {
-          Me: "Introduce me, Nzabana Merci, warmly and accurately. Explain that I am from Rwanda, study Software Development at Giheke TSS, expect to graduate in 2027, and am hardworking, curious, and disciplined. Include my profile photo as ![Nzabana Merci](https://github.com/nmcosta5.png).",
+          Me: "Introduce me, Nzabana Merci, warmly and accurately. Explain that I am from Rwanda and graduated from Giheke TSS in Software Development in 2026. I am hardworking, curious, and disciplined. Include my profile photo as ![Nzabana Merci](/Stylized%20Beanie-Wearing%20Memoji%20Portrait%20(1).png).",
           Projects: "Introduce my software projects using accurate details only. Highlight Agasobanuye Free, Sonora Lemon, Spend Wise, and other known projects. Explain their purpose and verified technologies; do not invent features, metrics, or links.",
           Skills: "Give visitors a clear overview of my real software-development skills. Group frontend, backend, databases, and workflow tools; explain what I use them for, distinguish experience from expertise, and mention I am still learning. Do not invent proficiency levels.",
           Fun: "Show my human side: gaming, curiosity, exploring technology, experimenting with ideas, and what motivates me to build. Make it playful and personable, but only use known facts.",
