@@ -13,10 +13,11 @@ const content: Record<Section, { prompt: string; intro: string; suggestions: str
   Contact: { prompt: "Ask how to get in touch…", intro: "Want to connect, collaborate or talk about a project? The best way to reach me online is through GitHub. You can also explore my personal website.", suggestions: ["How can I contact you?", "Can we collaborate?", "Show me your GitHub"] }
 };
 const projects = [
-  { name: "Agasobanuye Free", desc: "A movie and entertainment discovery platform.", tags: "React · TypeScript · Supabase", url: "https://github.com/nmcosta5/Agsobanuye-New" },
-  { name: "Expense Tracker", desc: "A simple way to record expenses and understand spending.", tags: "React · TypeScript", url: "https://github.com/nmcosta5?tab=repositories" },
-  { name: "XM Bakery", desc: "A clean storefront concept for a bakery business.", tags: "React · TypeScript", url: "https://github.com/nmcosta5?tab=repositories" },
-  { name: "Cooperative", desc: "A web app concept for useful cooperative workflows.", tags: "React · TypeScript", url: "https://github.com/nmcosta5?tab=repositories" }
+  { name: "Agasobanuye Free", desc: "An entertainment platform for discovering movies and shows.", url: "https://agasobanuyefree.vercel.app", type: "Entertainment" },
+  { name: "Sonora Lemon", desc: "A music-focused web experience.", url: "https://sonoralemon.vercel.app", type: "Music" },
+  { name: "VocalPiano", desc: "An interactive project exploring voice and piano.", url: "https://vocalpiano.vercel.app", type: "Music tool" },
+  { name: "AskVolt", desc: "A live web project. Open it to explore the experience.", url: "https://askvolt.vercel.app", type: "Web application" },
+  { name: "MerciHub", desc: "A central hub for useful digital experiences.", url: "https://mercihub.vercel.app", type: "Web application" }
 ];
 
 function FluidCanvas() {
@@ -103,8 +104,16 @@ function App() {
       </div>
       <div className="conversation" aria-live="polite">
         <div className="conversation-heading"><span className="sparkle"><Sparkles size={14}/></span><span>{active === "Me" ? "A LITTLE INTRODUCTION" : "LET'S TALK " + active.toUpperCase()}</span><i/></div>
+        {active === "Projects" ? <div className="project-gallery">{projects.map((project, index) => <article className="project-card" key={project.name}>
+          <div className="project-preview">
+            <iframe src={project.url} title={project.name + " live preview"} loading="lazy" allow="autoplay; fullscreen" referrerPolicy="strict-origin-when-cross-origin" />
+            <span className="project-live"><i /> LIVE PREVIEW</span>
+            <a className="preview-open" href={project.url} target="_blank" rel="noreferrer" aria-label={"Open " + project.name + " in a new tab"}><ArrowUpRight size={14}/></a>
+          </div>
+          <div className="project-info"><div><span className="project-type">{project.type} · 0{index + 1}</span><h3>{project.name}</h3><p>{project.desc}</p></div><a className="project-visit" href={project.url} target="_blank" rel="noreferrer">Visit site <ArrowUpRight size={13}/></a></div>
+        </article>)}</div> : null}
         {displayed ? <div className="answer-card"><div className="user-question">{displayed.question}</div><p>{displayed.answer}</p>
-          {active === "Projects" && <div className="mini-projects">{projects.map(p => <a href={p.url} key={p.name} target="_blank" rel="noreferrer"><span><b>{p.name}</b><small>{p.desc}</small></span><ArrowUpRight size={15}/></a>)}</div>}
+          
           {active === "Skills" && <div className="skill-cloud">{["JavaScript","TypeScript","React","Node.js","HTML","CSS","Supabase","MySQL","MongoDB","Git"].map(s => <span key={s}>{s}</span>)}</div>}
           {active === "Contact" && <div className="contact-links"><a href={profile.github} target="_blank" rel="noreferrer"><Github size={15}/> GitHub <ArrowUpRight size={13}/></a><a href={profile.website} target="_blank" rel="noreferrer"><Globe2 size={15}/> Portfolio <ArrowUpRight size={13}/></a></div>}
         </div> : <div className="intro-answer"><span className="answer-dot"/><p>{current.intro}</p></div>}
