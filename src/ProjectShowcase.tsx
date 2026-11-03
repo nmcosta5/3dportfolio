@@ -72,6 +72,13 @@ function Scene({ projects, active, setActive }: { projects: Project[]; active: n
 export default function ProjectShowcase({ projects }: { projects: Project[] }) {
   const [active, setActive] = useState(2);
   const [isMobile, setIsMobile] = useState(false);
+  const [query, setQuery] = useState("");
+  const [category, setCategory] = useState("ALL");
+  const filteredProjects = projects.filter(item => {
+    const matchesQuery = (item.name + " " + item.desc + " " + item.stack).toLowerCase().includes(query.toLowerCase());
+    const matchesCategory = category === "ALL" || item.type.toLowerCase().includes(category.toLowerCase());
+    return matchesQuery && matchesCategory;
+  });
   useEffect(() => {
     const media = window.matchMedia("(max-width: 760px)");
     const update = () => setIsMobile(media.matches);
@@ -79,8 +86,9 @@ export default function ProjectShowcase({ projects }: { projects: Project[] }) {
     return () => media.removeEventListener("change", update);
   }, []);
   const dragStart = useRef<number | null>(null);
-  const project = projects[active];
-  const change = (direction: number) => setActive(current => (current + direction + projects.length) % projects.length);
+  useEffect(() => { if (active >= filteredProjects.length) setActive(Math.max(0, filteredProjects.length - 1)); }, [filteredProjects.length, active]);
+  const project = filteredProjects[active] || filteredProjects[0];
+  const change = (direction: number) => { if (!filteredProjects.length) return; setActive(current => (current + direction + filteredProjects.length) % filteredProjects.length); };
   const onPointerDown = (event: React.PointerEvent<HTMLDivElement>) => { dragStart.current = event.clientX; event.currentTarget.setPointerCapture(event.pointerId); };
   const onPointerUp = (event: React.PointerEvent<HTMLDivElement>) => {
     if (dragStart.current === null) return;
@@ -96,7 +104,7 @@ export default function ProjectShowcase({ projects }: { projects: Project[] }) {
     <div className="mobile-project-footer"><span>SWIPE TO EXPLORE · {filteredProjects.length} PROJECTS</span><div><button type="button" onClick={() => change(-1)} aria-label="Previous project">←</button><button type="button" onClick={() => change(1)} aria-label="Next project">→</button></div></div>
   </section>;
   return <section className="r3f-showcase" aria-label="Interactive 3D project showcase">
-    <div className="r3f-stage" onPointerDown={onPointerDown} onPointerUp={onPointerUp} onPointerCancel={() => { dragStart.current = null; }}>
+    {controls}<div className="r3f-stage" onPointerDown={onPointerDown} onPointerUp={onPointerUp} onPointerCancel={() => { dragStart.current = null; }}>
       <Canvas dpr={[1, 1.7]} camera={{ position: [0, 0.1, 7.2], fov: 38 }} gl={{ antialias: true, alpha: true }}>
         <Suspense fallback={null}><Scene projects={filteredProjects} active={active} setActive={setActive} /></Suspense>
       </Canvas>
@@ -113,6 +121,6 @@ export default function ProjectShowcase({ projects }: { projects: Project[] }) {
         <a href={project.url} target="_blank" rel="noreferrer">EXPLORE PROJECT ↗</a>
       </div>
     </div>
-    <div className="r3f-pagination">{projects.map((item, index) => <button type="button" key={item.name} onClick={() => setActive(index)} className={index === active ? "active" : ""} aria-label={"Show " + item.name}/>)}</div>
+    <div className="r3f-pagination">{filteredProjects.map((item, index) => <button type="button" key={item.name} onClick={() => setActive(index)} className={index === active ? "active" : ""} aria-label={"Show " + item.name}/>)}</div>
   </section>;
 }
