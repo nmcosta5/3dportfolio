@@ -149,7 +149,6 @@ function App() {
   }, []);
   const current = content[active];
   const displayed = useMemo(() => messages.length ? messages[messages.length - 1] : null, [messages]);
-  const selectSection = (section: Section) => { setActive(section); setQuestion(""); setMessages([]); setLoading(false); };
   const downloadCV = () => {
     const cv = `NZABANA MERCI
 Full Stack Software Developer
