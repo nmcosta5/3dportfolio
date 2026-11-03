@@ -198,3 +198,8 @@
 .app-shell>.fluid-canvas{position:fixed!important;inset:0!important;z-index:0!important;pointer-events:none!important}
 .app-shell>.topbar,.app-shell>.main-stage,.app-shell>.bottom-footer{position:relative;z-index:1}
 .app-shell>.section-nav{z-index:5}
+
+/* AI answer media */
+.answer-copy .ai-inline-image{display:block;width:auto;max-width:min(100%,560px);max-height:420px;object-fit:contain;margin:12px auto;border:1px solid #e7ebe6;border-radius:13px;background:#f4f6f3;box-shadow:0 8px 26px rgba(30,40,32,.08)}
+.answer-copy p:has(.ai-inline-image){width:100%}
+:root[data-theme="dark"] .answer-copy .ai-inline-image{border-color:#354139;background:#202823}
