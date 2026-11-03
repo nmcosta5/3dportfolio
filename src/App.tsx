@@ -6,7 +6,13 @@ type Message = { question: string; answer: string };
 
 function AnswerBody({ text }: { text: string }) {
   const paragraphs = text.split(/\n{2,}/).filter(Boolean);
-  return <div className="answer-copy">{paragraphs.map((paragraph, index) => <p key={index}>{paragraph.split(/(https?:\/\/[^\s)]+)/g).map((part, partIndex) => /^https?:\/\//.test(part) ? <a key={partIndex} href={part} target="_blank" rel="noreferrer">{part.replace(/^https?:\/\//, "").replace(/\/$/, "")} <ArrowUpRight size={11}/></a> : part)}</p>)}</div>;
+  const renderInline = (value: string, prefix: string) => value.split(/(!\[[^\]]*\]\(https?:\/\/[^)\s]+\)|https?:\/\/[^\s)]+)/g).map((part, i) => {
+    const image = part.match(/^!\[([^\]]*)\]\((https?:\/\/[^)\s]+)\)$/);
+    if (image) return <img key={prefix + i} className="ai-inline-image" src={image[2]} alt={image[1] || "AI shared image"} loading="lazy" referrerPolicy="no-referrer" />;
+    if (/^https?:\/\//.test(part)) return <a key={prefix + i} href={part} target="_blank" rel="noreferrer">{part.replace(/^https?:\/\//, "").replace(/\/$/, "")} <ArrowUpRight size={11}/></a>;
+    return part;
+  });
+  return <div className="answer-copy">{paragraphs.map((paragraph, index) => <p key={index}>{renderInline(paragraph, String(index))}</p>)}</div>;
 }
 const sections: Section[] = ["Me", "Skills", "Fun", "Contact"];
 const profile = { name: "Nzabana Merci", github: "https://github.com/nmcosta5", website: "https://nzabana.vercel.app/" };
@@ -212,7 +218,7 @@ function App() {
         <div className="input-note">{modelStatus} <span>·</span> ONLINE MODEL · CHAT HISTORY IS SESSION-ONLY</div>
       </div>
     </section>
-    <nav className="section-nav" aria-label="Portfolio sections">{sections.map((section, i) => <button key={section} onClick={() => selectSection(section)} className={active === section ? "nav-item active" : "nav-item"} aria-current={active === section ? "page" : undefined}><span className="nav-number">0{i + 1}</span>{section}</button>)}</nav>
+    <nav className="section-nav" aria-label="Portfolio sections">{sections.map((section, i) => <button key={section} onClick={() => { const prompts: Record<Section, string> = { Me: "Introduce me, Nzabana Merci, in a friendly and detailed way.", Skills: "Explain my software development skills and technologies with examples.", Fun: "Tell visitors about my interests, gaming, and what makes me curious.", Contact: "How can visitors connect or collaborate with me? Show my links." }; setActive(section); ask(prompts[section]); }} className={active === section ? "nav-item active" : "nav-item"} aria-current={active === section ? "page" : undefined}><span className="nav-number">0{i + 1}</span>{section}</button>)}</nav>
     <footer className="bottom-footer"><span>© {new Date().getFullYear()} {profile.name.toUpperCase()}</span><span>MADE WITH CURIOSITY IN RWANDA</span><button onClick={() => setPromoOpen(true)}>BUILT WITH <b>FASTFOLIO</b> <ArrowUpRight size={11}/></button></footer>
     {promoOpen && <div className="modal-backdrop" role="presentation" onMouseDown={e => { if (e.target === e.currentTarget) setPromoOpen(false); }}>
       <section className="promo-modal" role="dialog" aria-modal="true" aria-labelledby="promo-title"><button className="modal-close" onClick={() => setPromoOpen(false)} aria-label="Close promotion"><X size={17}/></button>
