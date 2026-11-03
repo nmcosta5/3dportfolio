@@ -60,8 +60,8 @@ function FluidCanvas() {
       pointer.x = event.clientX;
       pointer.y = event.clientY;
       pointer.active = true;
-      const distance = Math.hypot(pointer.x - pointer.lastX, pointer.y - pointer.lastY);
-      const count = Math.min(5, Math.max(1, Math.floor(distance / 13)));
+      const distance = pointer.lastX < 0 ? 0 : Math.hypot(pointer.x - pointer.lastX, pointer.y - pointer.lastY);
+      const count = pointer.lastX < 0 ? 1 : Math.min(5, Math.max(1, Math.floor(distance / 13)));
       for (let i = 0; i < count; i++) {
         const t = (i + 1) / count;
         const x = pointer.lastX < 0 ? pointer.x : pointer.lastX + (pointer.x - pointer.lastX) * t;
