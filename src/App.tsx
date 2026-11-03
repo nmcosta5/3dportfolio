@@ -40,7 +40,7 @@ function AnswerBody({ text }: { text: string }) {
 const sections: Section[] = ["Me", "Projects", "Skills", "Fun", "Contact"];
 const profile = { name: "Nzabana Merci", github: "https://github.com/nmcosta5", website: "https://nzabana.vercel.app/" };
 const content: Record<Section, { prompt: string; intro: string; suggestions: string[] }> = {
-  Me: { prompt: "Ask me anything about Merci…", intro: "I'm Merci — a student developer from Rwanda, currently studying at Giheke TSS. I enjoy turning ideas into useful digital experiences, learning how things work, and improving with every project. I'm hardworking, curious and disciplined, with a growing focus on full-stack web development.", suggestions: ["Tell me about yourself", "Where are you from?", "What are you studying?"] },
+  Me: { prompt: "Ask me anything about Merci…", intro: "I'm Merci — a software developer from Rwanda and a 2026 Giheke TSS graduate. I enjoy turning ideas into useful digital experiences, learning how things work, and improving with every project. I'm hardworking, curious and disciplined, with a growing focus on full-stack web development.", suggestions: ["Tell me about yourself", "Where are you from?", "What are you studying?"] },
   Projects: { prompt: "Ask about my projects…", intro: "I build practical web experiences while learning full-stack development. Ask me about Agasobanuye Free, Sonora Lemon, Spend Wise, and other projects to explore the goals, technologies, and decisions behind them.", suggestions: ["Show me your best projects", "What did you build with React?", "Tell me about Agasobanuye Free"] },
   Skills: { prompt: "Ask about my technical skills…", intro: "My current toolkit includes JavaScript, TypeScript, React, HTML, CSS, Node.js, REST APIs, Supabase, MySQL, MongoDB, Git and GitHub. I keep strengthening these skills through coursework and hands-on projects.", suggestions: ["What are your strongest skills?", "Do you know React?", "What are you learning now?"] },
   Fun: { prompt: "Ask me something fun…", intro: "Outside the code, I'm a curious learner who enjoys gaming, exploring technology, experimenting with ideas and finding better ways to build things.", suggestions: ["What do you do for fun?", "Are you a gamer?", "What inspires you?"] },
@@ -178,7 +178,7 @@ Full Stack Software Developer
 Rwanda
 
 PROFILE
-Hardworking, curious and disciplined Software Development student at Giheke TSS, interested in building useful web applications and growing as a full-stack developer. Expected graduation: 2027.
+Hardworking, curious and disciplined Software Development graduate from Giheke TSS (2026), interested in building useful web applications and growing as a full-stack developer. Graduated in 2026.
 
 TECHNICAL SKILLS
 JavaScript, TypeScript, React, HTML, CSS, Node.js, REST APIs, Supabase, MySQL, MongoDB, Git and GitHub.
@@ -259,7 +259,7 @@ Portfolio: https://nzabana.vercel.app/
         {active === "Fun" && <div className="challenge-card"><span className="challenge-label">A SMALL DEVELOPER CHALLENGE</span><p>{challenge}</p><button onClick={nextChallenge}><RotateCcw size={13}/> Give me another</button></div>}
         {active === "Contact" && <div className="contact-quick"><button onClick={copyGithub}>{copied ? <Check size={14}/> : <Copy size={14}/>} {copied ? "GitHub link copied" : "Copy GitHub link"}</button><a href={profile.github} target="_blank" rel="noreferrer"><Github size={14}/> Open GitHub <ArrowUpRight size={12}/></a><a href={profile.website} target="_blank" rel="noreferrer"><Globe2 size={14}/> Visit website <ArrowUpRight size={12}/></a></div>}
 
-        {displayed ? <div className="answer-card"><div className="user-question">{displayed.question}</div>{active === "Me" && <div className="profile-response"><img src={githubAvatar} alt="Nzabana Merci beanie Memoji avatar"/><div><h2>Nzabana Merci</h2><p>Software Development student · Rwanda</p><div className="profile-tags"><span>Full-stack development</span><span>Curious learner</span><span>Problem solving</span></div></div></div>}<div className="answer-meta"><img src={githubAvatar} alt="" /><span>MERCI’S AI ASSISTANT</span><i>·</i><span>JUST NOW</span></div><AnswerBody text={displayed.answer}/>
+        {displayed ? <div className="answer-card"><div className="user-question">{displayed.question}</div>{active === "Me" && <div className="profile-response"><img src={githubAvatar} alt="Nzabana Merci beanie Memoji avatar"/><div><h2>Nzabana Merci</h2><p>Software Development graduate · Rwanda</p><div className="profile-tags"><span>Full-stack development</span><span>Curious learner</span><span>Problem solving</span></div></div></div>}<div className="answer-meta"><img src={githubAvatar} alt="" /><span>MERCI’S AI ASSISTANT</span><i>·</i><span>JUST NOW</span></div><AnswerBody text={displayed.answer}/>
           
           {active === "Skills" && <div className="skill-cloud">{["JavaScript","TypeScript","React","Node.js","HTML","CSS","Supabase","MySQL","MongoDB","Git"].map(s => <span key={s}>{s}</span>)}</div>}
           {active === "Contact" && <div className="contact-links"><a href={profile.github} target="_blank" rel="noreferrer"><Github size={15}/> GitHub <ArrowUpRight size={13}/></a><a href={profile.website} target="_blank" rel="noreferrer"><Globe2 size={15}/> Portfolio <ArrowUpRight size={13}/></a></div>}
