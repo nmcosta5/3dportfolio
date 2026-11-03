@@ -96,8 +96,11 @@ export default function ProjectShowcase({ projects }: { projects: Project[] }) {
     if (Math.abs(distance) > 34) change(distance < 0 ? 1 : -1);
     dragStart.current = null;
   };
+  const filters = ["ALL", "MUSIC", "AI", "ENTERTAINMENT", "DIGITAL"];
+  const controls = <div className="project-controls"><input value={query} onChange={event => { setQuery(event.target.value); setActive(0); }} placeholder="Search projects…" aria-label="Search projects"/><div>{filters.map(item => <button type="button" key={item} className={category === item ? "active" : ""} onClick={() => { setCategory(item); setActive(0); }}>{item}</button>)}</div></div>;
+  if (!filteredProjects.length) return <section className="r3f-showcase">{controls}<p className="project-empty">No projects match that search. Try another keyword or category.</p></section>;
   if (isMobile) return <section className="r3f-showcase mobile-projects" aria-label="Project showcase">
-    <div className="mobile-project-track">{filteredProjects.map((item, index) => <article className={index === active ? "mobile-project-card selected" : "mobile-project-card"} key={item.name} onClick={() => setActive(index)}>
+    {controls}<div className="mobile-project-track">{filteredProjects.map((item, index) => <article className={index === active ? "mobile-project-card selected" : "mobile-project-card"} key={item.name} onClick={() => setActive(index)}>
       <a href={item.url} target="_blank" rel="noreferrer" onClick={event => event.stopPropagation()} aria-label={"Open " + item.name}><img src={item.shot} alt={item.name + " website preview"} loading="lazy"/><span className="mobile-project-open"><ArrowUpRight size={14}/></span></a>
       <div className="mobile-project-info"><span>{item.type}</span><h3>{item.name}</h3><p>{item.desc}</p><small>{item.stack}</small></div>
     </article>)}</div>
@@ -112,7 +115,7 @@ export default function ProjectShowcase({ projects }: { projects: Project[] }) {
     </div>
     <div className="r3f-details" aria-live="polite">
       <div className="r3f-project-copy">
-        <span className="r3f-project-type">{project.type} <i/> 0{active + 1} / 0{projects.length}</span>
+        <span className="r3f-project-type">{project.type} <i/> 0{active + 1} / 0{filteredProjects.length}</span>
         <h3>{project.name}</h3><p>{project.desc}</p>
         <span className="r3f-stack">{project.stack}</span>
       </div>
