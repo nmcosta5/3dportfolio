@@ -106,7 +106,7 @@ async function getLiveGithubContext() {
       `- Followers: ${Number(profile.followers || 0)}`,
       `- Profile: ${String(profile.html_url || "https://github.com/nmcosta5")}`,
       "Recent public repositories:", repoFacts || "- Repository list is temporarily unavailable."
-    ].join("\\n");
+    ].join("\n");
     githubCache = { context, expires: Date.now() + 15 * 60 * 1000 };
     return context;
   } catch {
@@ -155,7 +155,7 @@ export default async function handler(req: any, res: any) {
       },
       body: JSON.stringify({
         model: "openai/gpt-oss-120b",
-        messages: [{ role: "system", content: SYSTEM_PROMPT + "\\n\\n" + githubContext }, ...messages],
+        messages: [{ role: "system", content: SYSTEM_PROMPT + "\n\n" + githubContext }, ...messages],
         temperature: 0.65,
         max_tokens: 550
       })
