@@ -136,7 +136,6 @@ function App() {
   const [githubAvatar, setGithubAvatar] = useState("https://github.com/nmcosta5.png");
   const [githubStats, setGithubStats] = useState<{ repos: number; followers: number } | null>(null);
   const [theme, setTheme] = useState<"light" | "dark">(() => (localStorage.getItem("merci-theme") === "dark" ? "dark" : "light"));
-  const [selectedSkill, setSelectedSkill] = useState<string | null>(null);
   const [challenge, setChallenge] = useState("Build a tiny app that helps someone in your community solve a daily problem.");
   const [copied, setCopied] = useState(false);
   useEffect(() => { document.documentElement.dataset.theme = theme; localStorage.setItem("merci-theme", theme); }, [theme]);
