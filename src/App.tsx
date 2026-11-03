@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { ArrowUpRight, ArrowUp, Sparkles, X, Github, Globe2, ChevronRight, Sun, Moon, Download, RotateCcw, Copy, Check } from "lucide-react";
+import { ArrowUpRight, ArrowUp, Sparkles, Github, Globe2, ChevronRight, Sun, Moon, Download, RotateCcw, Copy, Check } from "lucide-react";
 
 type Section = "Me" | "Projects" | "Skills" | "Fun" | "Contact";
 type Message = { question: string; answer: string };
@@ -152,7 +152,6 @@ function App() {
   const [active, setActive] = useState<Section>("Me");
   const [question, setQuestion] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
-  const [promoOpen, setPromoOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [avatarReady, setAvatarReady] = useState(false);
   const [streamingAnswer, setStreamingAnswer] = useState("");
