@@ -63,11 +63,12 @@ function App() {
   const [streamingAnswer, setStreamingAnswer] = useState("");
   const [modelStatus, setModelStatus] = useState("ONLINE AI · CONNECTING TO GROQ");
   const [githubAvatar, setGithubAvatar] = useState("https://github.com/nmcosta5.png");
+  const [githubStats, setGithubStats] = useState<{ repos: number; followers: number } | null>(null);
   useEffect(() => {
     let active = true;
     fetch("https://api.github.com/users/nmcosta5", { headers: { Accept: "application/vnd.github+json" } })
       .then(response => { if (!response.ok) throw new Error("GitHub profile unavailable"); return response.json(); })
-      .then(user => { if (active && typeof user.avatar_url === "string") setGithubAvatar(user.avatar_url); })
+      .then(user => { if (active) { if (typeof user.avatar_url === "string") setGithubAvatar(user.avatar_url); setGithubStats({ repos: Number(user.public_repos || 0), followers: Number(user.followers || 0) }); } })
       .catch(() => { if (active) setGithubAvatar("https://github.com/nmcosta5.png"); });
     return () => { active = false; };
   }, []);
@@ -116,6 +117,7 @@ function App() {
         <p className="role-title">Software Developer</p>
         <div className="portrait-wrap"><div className="portrait-halo"/><img className="portrait" src={githubAvatar} alt="Nzabana Merci GitHub profile photo" loading="eager" referrerPolicy="no-referrer"/></div>
         <p className="hero-caption">A curious developer from Rwanda, building thoughtful things for the web.</p>
+        {githubStats && <div className="profile-stats"><span><b>{githubStats.repos}</b> PUBLIC REPOSITORIES</span><i/> <span><b>{githubStats.followers}</b> FOLLOWERS</span></div>}
       </div>
       <div className="conversation" aria-live="polite">
         <div className="conversation-heading"><span className="sparkle"><Sparkles size={14}/></span><span>{active === "Me" ? "A LITTLE INTRODUCTION" : "LET'S TALK " + active.toUpperCase()}</span><i/></div>
@@ -133,6 +135,7 @@ function App() {
         </div> : active !== "Projects" ? <div className="intro-answer"><span className="answer-dot"/><p>{current.intro}</p></div> : null}
         <div className="suggestions">{current.suggestions.map(s => <button key={s} onClick={() => ask(s)}>{s}<ChevronRight size={12}/></button>)}</div>
         <form className="ask-form" onSubmit={e => { e.preventDefault(); ask(); }}><input value={question} onChange={e => setQuestion(e.target.value)} placeholder={current.prompt} aria-label={current.prompt} maxLength={240}/><button type="submit" disabled={!question.trim() || loading} aria-label="Send question">{loading ? <span className="loader"/> : <ArrowUp size={17}/>}</button></form>
+        {loading && !streamingAnswer && <div className="thinking-card" role="status"><span className="thinking-dots"><i/><i/><i/></span><span>Merci is thinking…</span></div>}
         {loading && streamingAnswer && <div className="answer-card live-answer"><div className="answer-meta"><img src={githubAvatar} alt="" /><span>MERCI’S AI ASSISTANT</span><i>·</i><span>WRITING</span></div><AnswerBody text={streamingAnswer}/><span className="typing-caret">▍</span></div>}
         <div className="input-note">{modelStatus} <span>·</span> ONLINE MODEL · CHAT HISTORY IS SESSION-ONLY</div>
       </div>
