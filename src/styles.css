@@ -189,5 +189,5 @@
 /* Keep the pointer-fluid layer visible above the page paint, below all interface controls. */
 .app-shell{background:radial-gradient(ellipse at 50% 46%,rgba(238,240,237,.46),transparent 48%),#fbfbfa!important}
 .app-shell>.fluid-canvas{z-index:1!important}
-.app-shell>.topbar,.app-shell>.main-stage,.app-shell>.section-nav,.app-shell>.bottom-footer{position:relative;z-index:2}
+.app-shell>.topbar,.app-shell>.main-stage,.app-shell>.bottom-footer{position:relative;z-index:2}
 :root[data-theme="dark"] .app-shell{background:radial-gradient(ellipse at 50% 46%,rgba(53,65,56,.34),transparent 52%),#141816!important}
