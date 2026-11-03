@@ -125,7 +125,8 @@ function App() {
         <h1>Hey, I'm Merci <span className="wave">👋</span></h1>
         <p className="role-title">Full Stack Developer</p>
         <div className="portrait-wrap"><div className="portrait-halo"/><img className="portrait" src={githubAvatar} alt="Nzabana Merci GitHub profile photo" loading="eager" referrerPolicy="no-referrer"/></div>
-        <p className="hero-caption">A curious developer from Rwanda, building thoughtful things for the web.</p>\n        <button className="cv-download" onClick={downloadCV}><Download size={14}/> Download CV <span>TXT</span></button>
+        <p className="hero-caption">A curious developer from Rwanda, building thoughtful things for the web.</p>
+        <button className="cv-download" onClick={downloadCV}><Download size={14}/> Download CV <span>TXT</span></button>
         {githubStats && <div className="profile-stats"><span><b>{githubStats.repos}</b> PUBLIC REPOSITORIES</span><i/> <span><b>{githubStats.followers}</b> FOLLOWERS</span></div>}
       </div>
       <div className="conversation" aria-live="polite">
