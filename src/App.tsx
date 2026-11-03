@@ -4,6 +4,11 @@ import ProjectShowcase from "./ProjectShowcase";
 
 type Section = "Me" | "Projects" | "Skills" | "Fun" | "Contact";
 type Message = { question: string; answer: string };
+
+function AnswerBody({ text }: { text: string }) {
+  const paragraphs = text.split(/\\n{2,}/).filter(Boolean);
+  return <div className="answer-copy">{paragraphs.map((paragraph, index) => <p key={index}>{paragraph.split(/(https?:\\/\\/[^\\s)]+)/g).map((part, partIndex) => /^https?:\\/\\//.test(part) ? <a key={partIndex} href={part} target="_blank" rel="noreferrer">{part.replace(/^https?:\\/\\//, "").replace(/\\/$/, "")} <ArrowUpRight size={11}/></a> : part)}</p>)}</div>;
+}
 const sections: Section[] = ["Me", "Projects", "Skills", "Fun", "Contact"];
 const profile = { name: "Nzabana Merci", github: "https://github.com/nmcosta5", website: "https://nzabana.vercel.app/" };
 const content: Record<Section, { prompt: string; intro: string; suggestions: string[] }> = {
@@ -57,6 +62,15 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [streamingAnswer, setStreamingAnswer] = useState("");
   const [modelStatus, setModelStatus] = useState("ONLINE AI · CONNECTING TO GROQ");
+  const [githubAvatar, setGithubAvatar] = useState("https://github.com/nmcosta5.png");
+  useEffect(() => {
+    let active = true;
+    fetch("https://api.github.com/users/nmcosta5", { headers: { Accept: "application/vnd.github+json" } })
+      .then(response => { if (!response.ok) throw new Error("GitHub profile unavailable"); return response.json(); })
+      .then(user => { if (active && typeof user.avatar_url === "string") setGithubAvatar(user.avatar_url); })
+      .catch(() => { if (active) setGithubAvatar("https://github.com/nmcosta5.png"); });
+    return () => { active = false; };
+  }, []);
   const current = content[active];
   const displayed = useMemo(() => messages.length ? messages[messages.length - 1] : null, [messages]);
   const selectSection = (section: Section) => { setActive(section); setQuestion(""); setMessages([]); setLoading(false); };
@@ -100,7 +114,7 @@ function App() {
         <div className="availability"><span className="availability-dot"/> AVAILABLE FOR COLLABORATION</div>
         <h1>Hey, I'm Merci <span className="wave">👋</span></h1>
         <p className="role-title">Software Developer</p>
-        <div className="portrait-wrap"><div className="portrait-halo"/><img className="portrait" src="https://www.aaabadcode.com/_next/image?q=75&url=%2Flanding-memojis.png&w=3840" alt="3D Memoji-style portrait"/></div>
+        <div className="portrait-wrap"><div className="portrait-halo"/><img className="portrait" src={githubAvatar} alt="Nzabana Merci GitHub profile photo" loading="eager" referrerPolicy="no-referrer"/></div>
         <p className="hero-caption">A curious developer from Rwanda, building thoughtful things for the web.</p>
       </div>
       <div className="conversation" aria-live="polite">
@@ -112,14 +126,14 @@ function App() {
         </section>}
         {active === "Projects" ? <ProjectShowcase projects={projects} /> : null}
 
-        {displayed ? <div className="answer-card"><div className="user-question">{displayed.question}</div><p>{displayed.answer}</p>
+        {displayed ? <div className="answer-card"><div className="user-question">{displayed.question}</div><div className="answer-meta"><img src={githubAvatar} alt="" /><span>MERCI’S AI ASSISTANT</span><i>·</i><span>JUST NOW</span></div><AnswerBody text={displayed.answer}/>
           
           {active === "Skills" && <div className="skill-cloud">{["JavaScript","TypeScript","React","Node.js","HTML","CSS","Supabase","MySQL","MongoDB","Git"].map(s => <span key={s}>{s}</span>)}</div>}
           {active === "Contact" && <div className="contact-links"><a href={profile.github} target="_blank" rel="noreferrer"><Github size={15}/> GitHub <ArrowUpRight size={13}/></a><a href={profile.website} target="_blank" rel="noreferrer"><Globe2 size={15}/> Portfolio <ArrowUpRight size={13}/></a></div>}
         </div> : active !== "Projects" ? <div className="intro-answer"><span className="answer-dot"/><p>{current.intro}</p></div> : null}
         <div className="suggestions">{current.suggestions.map(s => <button key={s} onClick={() => ask(s)}>{s}<ChevronRight size={12}/></button>)}</div>
         <form className="ask-form" onSubmit={e => { e.preventDefault(); ask(); }}><input value={question} onChange={e => setQuestion(e.target.value)} placeholder={current.prompt} aria-label={current.prompt} maxLength={240}/><button type="submit" disabled={!question.trim() || loading} aria-label="Send question">{loading ? <span className="loader"/> : <ArrowUp size={17}/>}</button></form>
-        {loading && streamingAnswer && <div className="answer-card live-answer"><p>{streamingAnswer}<span className="typing-caret">▍</span></p></div>}
+        {loading && streamingAnswer && <div className="answer-card live-answer"><div className="answer-meta"><img src={githubAvatar} alt="" /><span>MERCI’S AI ASSISTANT</span><i>·</i><span>WRITING</span></div><AnswerBody text={streamingAnswer}/><span className="typing-caret">▍</span></div>}
         <div className="input-note">{modelStatus} <span>·</span> ONLINE MODEL · CHAT HISTORY IS SESSION-ONLY</div>
       </div>
     </section>
