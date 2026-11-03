@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { ArrowUpRight, ArrowUp, Sparkles, X, Github, Globe2, ChevronRight } from "lucide-react";
+import { ArrowUpRight, ArrowUp, Sparkles, X, Github, Globe2, ChevronRight, Sun, Moon, Download, RotateCcw, Copy, Check } from "lucide-react";
 import ProjectShowcase from "./ProjectShowcase";
 
 type Section = "Me" | "Projects" | "Skills" | "Fun" | "Contact";
@@ -64,6 +64,11 @@ function App() {
   const [modelStatus, setModelStatus] = useState("ONLINE AI · CONNECTING TO GROQ");
   const [githubAvatar, setGithubAvatar] = useState("https://github.com/nmcosta5.png");
   const [githubStats, setGithubStats] = useState<{ repos: number; followers: number } | null>(null);
+  const [theme, setTheme] = useState<"light" | "dark">(() => (localStorage.getItem("merci-theme") === "dark" ? "dark" : "light"));
+  const [selectedSkill, setSelectedSkill] = useState<string | null>(null);
+  const [challenge, setChallenge] = useState("Build a tiny app that helps someone in your community solve a daily problem.");
+  const [copied, setCopied] = useState(false);
+  useEffect(() => { document.documentElement.dataset.theme = theme; localStorage.setItem("merci-theme", theme); }, [theme]);
   useEffect(() => {
     let active = true;
     fetch("https://api.github.com/users/nmcosta5", { headers: { Accept: "application/vnd.github+json" } })
@@ -74,8 +79,8 @@ function App() {
   }, []);
   const current = content[active];
   const displayed = useMemo(() => messages.length ? messages[messages.length - 1] : null, [messages]);
-  const selectSection = (section: Section) => { setActive(section); setQuestion(""); setMessages([]); setLoading(false); };
-  const ask = async (value = question) => {
+  const selectSection = (section: Section) => { setActive(section); setQuestion(""); setMessages([]); setLoading(false); setSelectedSkill(null); };
+  const downloadCV = () => {\n    const cv = `NZABANA MERCI\\nFull Stack Software Developer\\nRwanda\\n\\nPROFILE\\nHardworking, curious and disciplined Software Development student at Giheke TSS, interested in building useful web applications and growing as a full-stack developer. Expected graduation: 2027.\\n\\nTECHNICAL SKILLS\\nJavaScript, TypeScript, React, HTML, CSS, Node.js, REST APIs, Supabase, MySQL, MongoDB, Git and GitHub.\\n\\nSELECTED PROJECTS\\nAgasobanuye Free — entertainment platform for discovering movies and series.\\nSonora Lemon — music experience built for sound and discovery.\\nVocalPiano — interactive voice and piano web experience.\\nAskVolt — AI-powered assistant experience.\\nMerciHub — personal hub for digital tools and experiences.\\n\\nEDUCATION\\nAdvanced Level, Software Development (SOD)\\nGiheke TSS, Rwanda | Expected 2027\\n\\nLINKS\\nGitHub: https://github.com/nmcosta5\\nPortfolio: https://nzabana.vercel.app/\\n`;\n    const blob = new Blob([cv], { type: "text/plain;charset=utf-8" }); const url = URL.createObjectURL(blob); const link = document.createElement("a"); link.href = url; link.download = "Nzabana-Merci-CV.txt"; link.click(); URL.revokeObjectURL(url);\n  };\n  const copyGithub = async () => { try { await navigator.clipboard.writeText(profile.github); setCopied(true); window.setTimeout(() => setCopied(false), 1800); } catch { window.open(profile.github, "_blank", "noopener,noreferrer"); } };\n  const nextChallenge = () => { const prompts = ["Create a simple tool that makes studying more organized.", "Design a useful digital service for a small Rwandan business.", "Build a mini game using only HTML, CSS and JavaScript.", "Create a dashboard that turns confusing data into clear insights.", "Make a lightweight app that works well on slow internet."]; setChallenge(current => { const options = prompts.filter(item => item !== current); return options[Math.floor(Math.random() * options.length)]; }); };\n  const ask = async (value = question) => {
     const clean = value.trim(); if (!clean || loading) return;
     setQuestion(clean); setLoading(true); setStreamingAnswer(""); setModelStatus("CONNECTING TO ONLINE AI…");
     try {
@@ -116,7 +121,7 @@ function App() {
         <h1>Hey, I'm Merci <span className="wave">👋</span></h1>
         <p className="role-title">Full Stack Developer</p>
         <div className="portrait-wrap"><div className="portrait-halo"/><img className="portrait" src={githubAvatar} alt="Nzabana Merci GitHub profile photo" loading="eager" referrerPolicy="no-referrer"/></div>
-        <p className="hero-caption">A curious developer from Rwanda, building thoughtful things for the web.</p>
+        <p className="hero-caption">A curious developer from Rwanda, building thoughtful things for the web.</p>\n        <button className="cv-download" onClick={downloadCV}><Download size={14}/> Download CV <span>TXT</span></button>
         {githubStats && <div className="profile-stats"><span><b>{githubStats.repos}</b> PUBLIC REPOSITORIES</span><i/> <span><b>{githubStats.followers}</b> FOLLOWERS</span></div>}
       </div>
       <div className="conversation" aria-live="polite">
@@ -126,7 +131,7 @@ function App() {
           <h2>Things I've <em>built.</em></h2>
           <p>A collection of projects I've brought to life — each one a chance to learn, experiment and build something useful.</p>
         </section>}
-        {active === "Projects" ? <ProjectShowcase projects={projects} /> : null}
+        {active === "Projects" ? <ProjectShowcase projects={projects} /> : null}\n        {active === "Skills" && <div className="interactive-skills"><div className="skill-grid">{[{name:"Frontend",items:"React · TypeScript · JavaScript · HTML · CSS",detail:"I build responsive interfaces and interactive experiences with a focus on clear structure and usability."},{name:"Backend",items:"Node.js · REST APIs · Supabase",detail:"I connect interfaces to data and services, and I am continuing to strengthen my backend architecture skills."},{name:"Databases",items:"MySQL · MongoDB · Supabase",detail:"I have worked with relational and document databases while building practical applications."},{name:"Workflow",items:"Git · GitHub · Vite",detail:"I use version control and modern development tooling to organize projects and iterate on features."}].map(skill => <button key={skill.name} className={selectedSkill === skill.name ? "skill-card selected" : "skill-card"} onClick={() => setSelectedSkill(selectedSkill === skill.name ? null : skill.name)}><span>{skill.name}</span><p>{skill.items}</p><small>{selectedSkill === skill.name ? skill.detail : "CLICK TO EXPLORE"}</small></button>)}</div></div>}\n        {active === "Fun" && <div className="challenge-card"><span className="challenge-label">A SMALL DEVELOPER CHALLENGE</span><p>{challenge}</p><button onClick={nextChallenge}><RotateCcw size={13}/> Give me another</button></div>}\n        {active === "Contact" && <div className="contact-quick"><button onClick={copyGithub}>{copied ? <Check size={14}/> : <Copy size={14}/>} {copied ? "GitHub link copied" : "Copy GitHub link"}</button><a href={profile.github} target="_blank" rel="noreferrer"><Github size={14}/> Open GitHub <ArrowUpRight size={12}/></a><a href={profile.website} target="_blank" rel="noreferrer"><Globe2 size={14}/> Visit website <ArrowUpRight size={12}/></a></div>}
 
         {displayed ? <div className="answer-card"><div className="user-question">{displayed.question}</div><div className="answer-meta"><img src={githubAvatar} alt="" /><span>MERCI’S AI ASSISTANT</span><i>·</i><span>JUST NOW</span></div><AnswerBody text={displayed.answer}/>
           
@@ -137,7 +142,7 @@ function App() {
         <form className="ask-form" onSubmit={e => { e.preventDefault(); ask(); }}><input value={question} onChange={e => setQuestion(e.target.value)} placeholder={current.prompt} aria-label={current.prompt} maxLength={240}/><button type="submit" disabled={!question.trim() || loading} aria-label="Send question">{loading ? <span className="loader"/> : <ArrowUp size={17}/>}</button></form>
         {loading && !streamingAnswer && <div className="thinking-card" role="status"><span className="thinking-dots"><i/><i/><i/></span><span>Merci is thinking…</span></div>}
         {loading && streamingAnswer && <div className="answer-card live-answer"><div className="answer-meta"><img src={githubAvatar} alt="" /><span>MERCI’S AI ASSISTANT</span><i>·</i><span>WRITING</span></div><AnswerBody text={streamingAnswer}/><span className="typing-caret">▍</span></div>}
-        <div className="input-note">{modelStatus} <span>·</span> ONLINE MODEL · CHAT HISTORY IS SESSION-ONLY</div>
+        <div className="chat-tools">{messages.length > 0 && <button onClick={() => { setMessages([]); setQuestion(""); }}><RotateCcw size={12}/> Clear conversation</button>}</div>\n        <div className="input-note">{modelStatus} <span>·</span> ONLINE MODEL · CHAT HISTORY IS SESSION-ONLY</div>
       </div>
     </section>
     <nav className="section-nav" aria-label="Portfolio sections">{sections.map((section, i) => <button key={section} onClick={() => selectSection(section)} className={active === section ? "nav-item active" : "nav-item"} aria-current={active === section ? "page" : undefined}><span className="nav-number">0{i + 1}</span>{section}</button>)}</nav>
