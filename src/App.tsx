@@ -6,12 +6,12 @@ type Message = { question: string; answer: string };
 
 function AnswerBody({ text }: { text: string }) {
   const cleanText = text
-    .replace(/\\*\\*([^*]+)\\*\\*/g, "$1")
-    .replace(/(^|[^\\w])\\*([^*\\n]+)\\*(?=$|[^\\w])/g, "$1$2")
-    .replace(/\\*{1,3}/g, "")
-    .replace(/\\\\\\*/g, "");
+    .replace(/\*\*([^*]+)\*\*/g, "$1")
+    .replace(/(^|[^\w])\*([^*\n]+)\*(?=$|[^\w])/g, "$1$2")
+    .replace(/\*{1,3}/g, "")
+    .replace(/\\\*/g, "");
   const renderInline = (value: string, prefix: string) => {
-    const pattern = /(!\\[([^\\]]*)\\]\\((https?:\\/\\/[^)\\s]+)\\))|(\\[([^\\]]+)\\]\\((https?:\\/\\/[^)\\s]+)\\))|(https?:\\/\\/[^\\s)]+)/g;
+    const pattern = /(!\[([^\]]*)\]\((https?:\/\/[^)\s]+)\))|(\[([^\]]+)\]\((https?:\/\/[^)\s]+)\))|(https?:\/\/[^\s)]+)/g;
     const nodes: React.ReactNode[] = [];
     let last = 0;
     let match: RegExpExecArray | null;
@@ -21,7 +21,7 @@ function AnswerBody({ text }: { text: string }) {
         nodes.push(<figure className="answer-image" key={prefix + match.index}><a href={match[3]} target="_blank" rel="noreferrer"><img src={match[3]} alt={match[2] || "Project image"} loading="lazy" referrerPolicy="no-referrer"/></a>{match[2] && <figcaption>{match[2]}</figcaption>}</figure>);
       } else {
         const url = match[6] || match[7];
-        const label = match[5] || url.replace(/^https?:\\/\\//, "").replace(/\\/$/, "");
+        const label = match[5] || url.replace(/^https?:\/\//, "").replace(/\/$/, "");
         nodes.push(<a className="answer-link-button" key={prefix + match.index} href={url} target="_blank" rel="noreferrer"><span>{label}</span><ArrowUpRight size={14}/></a>);
       }
       last = pattern.lastIndex;
@@ -29,11 +29,11 @@ function AnswerBody({ text }: { text: string }) {
     if (last < value.length) nodes.push(value.slice(last));
     return nodes;
   };
-  const blocks = cleanText.trim().split(/\\n{2,}/).filter(Boolean);
+  const blocks = cleanText.trim().split(/\n{2,}/).filter(Boolean);
   return <div className="answer-copy">{blocks.map((block, index) => {
-    const lines = block.split("\\n").filter(Boolean);
-    if (lines.every(line => /^\\s*[-•]\\s+/.test(line))) return <ul className="answer-list" key={index}>{lines.map((line, i) => <li key={i}>{renderInline(line.replace(/^\\s*[-•]\\s+/, ""), index + "-" + i)}</li>)}</ul>;
-    if (lines.length === 1 && /^#{1,3}\\s/.test(lines[0])) return <h3 className="answer-heading" key={index}>{lines[0].replace(/^#{1,3}\\s/, "")}</h3>;
+    const lines = block.split("\n").filter(Boolean);
+    if (lines.every(line => /^\s*[-•]\s+/.test(line))) return <ul className="answer-list" key={index}>{lines.map((line, i) => <li key={i}>{renderInline(line.replace(/^\s*[-•]\s+/, ""), index + "-" + i)}</li>)}</ul>;
+    if (lines.length === 1 && /^#{1,3}\s/.test(lines[0])) return <h3 className="answer-heading" key={index}>{lines[0].replace(/^#{1,3}\s/, "")}</h3>;
     return <p key={index}>{lines.map((line, i) => <span key={i}>{renderInline(line, index + "-" + i)}{i < lines.length - 1 && <br/>}</span>)}</p>;
   })}</div>;
 }
