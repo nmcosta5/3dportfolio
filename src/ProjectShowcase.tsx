@@ -1,4 +1,4 @@
-import { Suspense, useMemo, useRef, useState } from "react";
+import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { RoundedBox, useTexture } from "@react-three/drei";
 import * as THREE from "three";
@@ -70,6 +70,13 @@ function Scene({ projects, active, setActive }: { projects: Project[]; active: n
 }
 export default function ProjectShowcase({ projects }: { projects: Project[] }) {
   const [active, setActive] = useState(2);
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const media = window.matchMedia("(max-width: 760px)");
+    const update = () => setIsMobile(media.matches);
+    update(); media.addEventListener("change", update);
+    return () => media.removeEventListener("change", update);
+  }, []);
   const dragStart = useRef<number | null>(null);
   const project = projects[active];
   const change = (direction: number) => setActive(current => (current + direction + projects.length) % projects.length);
@@ -80,6 +87,13 @@ export default function ProjectShowcase({ projects }: { projects: Project[] }) {
     if (Math.abs(distance) > 34) change(distance < 0 ? 1 : -1);
     dragStart.current = null;
   };
+  if (isMobile) return <section className="r3f-showcase mobile-projects" aria-label="Project showcase">
+    <div className="mobile-project-track">{projects.map((item, index) => <article className={index === active ? "mobile-project-card selected" : "mobile-project-card"} key={item.name} onClick={() => setActive(index)}>
+      <a href={item.url} target="_blank" rel="noreferrer" onClick={event => event.stopPropagation()} aria-label={"Open " + item.name}><img src={item.shot} alt={item.name + " website preview"} loading="lazy"/><span className="mobile-project-open"><ArrowUpRight size={14}/></span></a>
+      <div className="mobile-project-info"><span>{item.type}</span><h3>{item.name}</h3><p>{item.desc}</p><small>{item.stack}</small></div>
+    </article>)}</div>
+    <div className="mobile-project-footer"><span>SWIPE TO EXPLORE · {projects.length} PROJECTS</span><div><button type="button" onClick={() => change(-1)} aria-label="Previous project">←</button><button type="button" onClick={() => change(1)} aria-label="Next project">→</button></div></div>
+  </section>;
   return <section className="r3f-showcase" aria-label="Interactive 3D project showcase">
     <div className="r3f-stage" onPointerDown={onPointerDown} onPointerUp={onPointerUp} onPointerCancel={() => { dragStart.current = null; }}>
       <Canvas dpr={[1, 1.7]} camera={{ position: [0, 0.1, 7.2], fov: 38 }} gl={{ antialias: true, alpha: true }}>
