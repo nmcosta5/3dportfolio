@@ -169,7 +169,7 @@ export default async function handler(req: any, res: any) {
     return res.status(405).json({ error: "Method not allowed." });
   }
 
-  const apiKey = process.env.GROQ_API_KEY;
+  const apiKey = (globalThis as any).process?.env?.GROQ_API_KEY as string | undefined;
   if (!apiKey) {
     return res.status(503).json({
       error: "Online chat is not configured yet. The portfolio owner needs to add the GROQ_API_KEY environment variable in Vercel."
