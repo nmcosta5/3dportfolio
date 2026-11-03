@@ -5,17 +5,17 @@ type Section = "Me" | "Projects" | "Skills" | "Fun" | "Contact";
 type Message = { question: string; answer: string };
 
 function AnswerBody({ text }: { text: string }) {
-  const renderInline = (value: string, prefix: string) => value.split(/(!\\[[^\\]]*\\]\\(https?:\\/\\/[^)\\s]+\\)|https?:\\/\\/[^\\s)]+)/g).map((part, i) => {
-    const image = part.match(/^!\\[([^\\]]*)\\]\\((https?:\\/\\/[^)\\s]+)\\)$/);
+  const renderInline = (value: string, prefix: string) => value.split(/(!\[[^\]]*\]\(https?:\/\/[^)\s]+\)|https?:\/\/[^\s)]+)/g).map((part, i) => {
+    const image = part.match(/^!\[([^\]]*)\]\((https?:\/\/[^)\s]+)\)$/);
     if (image) return <figure className="answer-image" key={prefix + i}><a href={image[2]} target="_blank" rel="noreferrer"><img src={image[2]} alt={image[1] || "Shared image"} loading="lazy" referrerPolicy="no-referrer" /></a>{image[1] && <figcaption>{image[1]}</figcaption>}</figure>;
-    if (/^https?:\\/\\//.test(part)) return <a key={prefix + i} href={part} target="_blank" rel="noreferrer">{part.replace(/^https?:\\/\\//, "").replace(/\\/$/, "")} <ArrowUpRight size={11}/></a>;
+    if (/^https?:\/\//.test(part)) return <a key={prefix + i} href={part} target="_blank" rel="noreferrer">{part.replace(/^https?:\/\//, "").replace(/\/$/, "")} <ArrowUpRight size={11}/></a>;
     return part;
   });
-  const blocks = text.trim().split(/\\n{2,}/).filter(Boolean);
+  const blocks = text.trim().split(/\n{2,}/).filter(Boolean);
   return <div className="answer-copy">{blocks.map((block, index) => {
-    const lines = block.split("\\n").filter(Boolean);
-    if (lines.every(line => /^\\s*[-*•]\\s+/.test(line))) return <ul className="answer-list" key={index}>{lines.map((line, i) => <li key={i}>{renderInline(line.replace(/^\\s*[-*•]\\s+/, ""), index + "-" + i)}</li>)}</ul>;
-    if (lines.length === 1 && /^#{1,3}\\s/.test(lines[0])) return <h3 className="answer-heading" key={index}>{lines[0].replace(/^#{1,3}\\s/, "")}</h3>;
+    const lines = block.split("\n").filter(Boolean);
+    if (lines.every(line => /^\s*[-*•]\s+/.test(line))) return <ul className="answer-list" key={index}>{lines.map((line, i) => <li key={i}>{renderInline(line.replace(/^\s*[-*•]\s+/, ""), index + "-" + i)}</li>)}</ul>;
+    if (lines.length === 1 && /^#{1,3}\s/.test(lines[0])) return <h3 className="answer-heading" key={index}>{lines[0].replace(/^#{1,3}\s/, "")}</h3>;
     return <p key={index}>{lines.map((line, i) => <span key={i}>{renderInline(line, index + "-" + i)}{i < lines.length - 1 && <br/>}</span>)}</p>;
   })}</div>;
 }
@@ -149,7 +149,7 @@ function App() {
     fetch("https://api.github.com/users/nmcosta5", { headers: { Accept: "application/vnd.github+json" } })
       .then(response => { if (!response.ok) throw new Error("GitHub profile unavailable"); return response.json(); })
       .then(user => { if (active) { setGithubStats({ repos: Number(user.public_repos || 0), followers: Number(user.followers || 0) }); } })
-      .catch(() => { if (active)  });
+      .catch(() => {});
     return () => { active = false; };
   }, []);
   const current = content[active];
