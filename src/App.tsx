@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import {
-  ArrowDown, ArrowDownRight, ArrowRight, ArrowUpRight, Github,
-  Linkedin, Mail, Menu, X, Code2, Layers3, Globe2, Sparkles,
+  ArrowDown, ArrowDownRight, ArrowUpRight, Github,
+  Menu, X, Code2, Layers3, Globe2, Sparkles,
   Terminal, ExternalLink, MapPin, GraduationCap
 } from "lucide-react";
 
@@ -57,7 +57,6 @@ const skills = [
 function App() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
-  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     const sections = ["home", "about", "work", "skills", "contact"];
@@ -74,16 +73,6 @@ function App() {
   }, []);
 
   const closeMenu = () => setMenuOpen(false);
-  const copyEmail = async () => {
-    try {
-      await navigator.clipboard.writeText("hello@nzabana.vercel.app");
-      setCopied(true);
-      window.setTimeout(() => setCopied(false), 1800);
-    } catch {
-      window.location.href = "mailto:hello@nzabana.vercel.app";
-    }
-  };
-
   const navItems = ["about", "work", "skills", "contact"];
 
   return (
@@ -194,15 +183,15 @@ function App() {
           <div className="section-kicker"><span>04</span> / YOUR NEXT IDEA STARTS HERE</div>
           <p className="contact-overline">HAVE A PROJECT IN MIND?</p>
           <h2>Let's make<br /><span className="serif-accent">something matter.</span></h2>
-          <a className="contact-email" href="mailto:hello@nzabana.vercel.app">hello@nzabana.vercel.app <ArrowUpRight size={22} /></a>
-          <div className="contact-actions"><button className="button button-primary" onClick={copyEmail}><Mail size={16} /> {copied ? "Email copied" : "Copy email"}</button><a className="button button-ghost" href="https://github.com/nmcosta5" target="_blank" rel="noreferrer"><Github size={16} /> GitHub <ExternalLink size={13} /></a></div>
+          <a className="contact-email" href="https://github.com/nmcosta5" target="_blank" rel="noreferrer">github.com/nmcosta5 <ArrowUpRight size={22} /></a>
+          <div className="contact-actions"><a className="button button-primary" href="https://github.com/nmcosta5" target="_blank" rel="noreferrer"><Github size={16} /> Connect on GitHub <ExternalLink size={13} /></a></div>
         </div>
       </section>
 
       <footer className="site-footer section-shell">
         <a className="brand" href="#home"><span className="brand-mark">N<span>.</span></span><span className="brand-name">NZABANA MERCI</span></a>
         <span className="footer-note">DESIGNED WITH INTENTION · BUILT WITH CURIOSITY</span>
-        <div className="social-links"><a href="https://github.com/nmcosta5" target="_blank" rel="noreferrer" aria-label="GitHub"><Github size={17} /></a><a href="https://www.linkedin.com/" target="_blank" rel="noreferrer" aria-label="LinkedIn"><Linkedin size={17} /></a><a href="mailto:hello@nzabana.vercel.app" aria-label="Email"><Mail size={17} /></a></div>
+        <div className="social-links"><a href="https://github.com/nmcosta5" target="_blank" rel="noreferrer" aria-label="GitHub"><Github size={17} /></a><a href="https://nzabana.vercel.app/" target="_blank" rel="noreferrer" aria-label="Portfolio website"><Globe2 size={17} /></a></div>
         <span className="copyright">© {new Date().getFullYear()} NZABANA MERCI</span>
       </footer>
     </main>
