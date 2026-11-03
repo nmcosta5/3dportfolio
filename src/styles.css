@@ -461,3 +461,6 @@
 :root[data-theme="dark"] .app-boot-screen{background:radial-gradient(ellipse at 50% 42%,#253329 0%,#18211a 50%,#141916 100%)}
 :root[data-theme="dark"] .app-boot-screen p{color:#a6b9a7}
 @media(prefers-reduced-motion:reduce){.boot-logo,.boot-orbit{animation:none!important}.app-boot-screen{transition:none}}
+
+.app-boot-screen{opacity:1;visibility:visible;pointer-events:auto}
+.app-ready .app-boot-screen{opacity:0;visibility:hidden;pointer-events:none;animation:none}
