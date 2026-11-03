@@ -422,3 +422,42 @@
 :root[data-theme="dark"] .answer-link-button{background:linear-gradient(145deg,#29372b,#202b22)!important;color:#cce2ca!important;border-color:#405642!important}
 :root[data-theme="dark"] .profile-response{background:linear-gradient(130deg,#263329,#202922)!important;border-color:#405642!important}
 @media(max-width:640px){.answer-copy p,.answer-copy li{font-size:14px!important}.answer-link-button{font-size:12px!important;min-height:40px!important}.profile-response>img{width:88px!important;height:88px!important}}
+
+
+/* Mobile dock parity: every destination is an equal, touch-friendly action */
+@media(max-width:640px){
+ .section-nav{display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;width:calc(100% - 20px)!important;gap:5px!important;padding:6px!important}
+ .section-nav .nav-item,.section-nav .nav-item:last-child,.section-nav .nav-item[data-section="Contact"]{
+   width:100%!important;min-width:0!important;max-width:100%!important;min-height:56px!important;height:56px!important;
+   padding:5px 2px!important;margin:0!important;display:flex!important;align-items:center!important;justify-content:center!important;
+   border:1px solid transparent!important;border-radius:12px!important;background:transparent!important;
+   color:#68736a!important;box-shadow:none!important;font-size:clamp(9px,2.6vw,11px)!important;font-weight:650!important;
+   white-space:nowrap!important;overflow:hidden!important;
+ }
+ .section-nav .nav-item.active,.section-nav .nav-item:last-child.active{
+   background:linear-gradient(145deg,#eaf3e8,#f8fbf6)!important;border-color:#c4d9c1!important;color:#284d31!important;
+   box-shadow:0 5px 16px rgba(49,75,52,.08)!important
+ }
+ .section-nav .nav-item:last-child:not(.active),.section-nav .nav-item[data-section="Contact"]:not(.active){background:transparent!important;border-color:transparent!important;color:#68736a!important;box-shadow:none!important}
+ .section-nav .nav-item:last-child::after,.section-nav .nav-item[data-section="Contact"]::after{display:none!important}
+ .section-nav .nav-item::before{font-size:15px!important}
+ .section-nav .nav-number{display:none!important}
+}
+
+/* Branded, accessible first-load experience */
+.app-boot-screen{position:fixed;inset:0;z-index:1000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;background:radial-gradient(ellipse at 50% 42%,#edf4eb 0%,#f8faf7 48%,#fbfcfa 100%);animation:bootFadeIn .35s ease both;transition:opacity .55s ease,visibility .55s ease}
+.app-shell:has(.portrait[src]) .app-boot-screen{animation:bootFadeOut .55s ease forwards}
+.boot-logo{width:82px;height:82px;padding:13px;border-radius:24px;background:#080a09;box-shadow:0 16px 45px rgba(29,43,31,.16);animation:bootFloat 2.6s ease-in-out infinite}
+.boot-logo img{display:block;width:100%;height:100%;object-fit:contain}
+.boot-orbit{width:48px;height:48px;position:relative;border:1px solid rgba(112,145,116,.24);border-radius:50%;animation:bootSpin 1.6s linear infinite}
+.boot-orbit:before{content:"";position:absolute;inset:7px;border:1px dashed rgba(112,145,116,.4);border-radius:50%}
+.boot-orbit span{position:absolute;width:7px;height:7px;border-radius:50%;background:#78977c;box-shadow:0 0 12px rgba(120,151,124,.35)}
+.boot-orbit span:nth-child(1){left:19px;top:-3px}.boot-orbit span:nth-child(2){right:-3px;top:20px;opacity:.65}.boot-orbit span:nth-child(3){left:5px;bottom:0;opacity:.4}
+.app-boot-screen p{margin:0;color:#849486;font:9px "DM Mono",monospace;letter-spacing:.19em}
+@keyframes bootSpin{to{transform:rotate(360deg)}}
+@keyframes bootFloat{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-5px) scale(1.025)}}
+@keyframes bootFadeIn{from{opacity:0}to{opacity:1}}
+@keyframes bootFadeOut{to{opacity:0;visibility:hidden;pointer-events:none}}
+:root[data-theme="dark"] .app-boot-screen{background:radial-gradient(ellipse at 50% 42%,#253329 0%,#18211a 50%,#141916 100%)}
+:root[data-theme="dark"] .app-boot-screen p{color:#a6b9a7}
+@media(prefers-reduced-motion:reduce){.boot-logo,.boot-orbit{animation:none!important}.app-boot-screen{transition:none}}
