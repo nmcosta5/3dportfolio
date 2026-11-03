@@ -13,11 +13,11 @@ const content: Record<Section, { prompt: string; intro: string; suggestions: str
   Contact: { prompt: "Ask how to get in touch…", intro: "Want to connect, collaborate or talk about a project? The best way to reach me online is through GitHub. You can also explore my personal website.", suggestions: ["How can I contact you?", "Can we collaborate?", "Show me your GitHub"] }
 };
 const projects = [
-  { name: "Agasobanuye Free", desc: "An entertainment platform for discovering movies and shows.", url: "https://agasobanuyefree.vercel.app", type: "Entertainment" },
-  { name: "Sonora Lemon", desc: "A music-focused web experience.", url: "https://sonoralemon.vercel.app", type: "Music" },
-  { name: "VocalPiano", desc: "An interactive project exploring voice and piano.", url: "https://vocalpiano.vercel.app", type: "Music tool" },
-  { name: "AskVolt", desc: "A live web project. Open it to explore the experience.", url: "https://askvolt.vercel.app", type: "Web application" },
-  { name: "MerciHub", desc: "A central hub for useful digital experiences.", url: "https://mercihub.vercel.app", type: "Web application" }
+  { name: "Agasobanuye Free", desc: "Discover movies, series and entertainment.", url: "https://agasobanuyefree.vercel.app", type: "ENTERTAINMENT", stack: "React · TypeScript · Supabase", shot: "https://image.thum.io/get/width/1200/crop/760/noanimate/https://agasobanuyefree.vercel.app" },
+  { name: "Sonora Lemon", desc: "A music experience built around sound and discovery.", url: "https://sonoralemon.vercel.app", type: "MUSIC EXPERIENCE", stack: "React · TypeScript", shot: "https://image.thum.io/get/width/1200/crop/760/noanimate/https://sonoralemon.vercel.app" },
+  { name: "VocalPiano", desc: "An interactive space for voice and piano.", url: "https://vocalpiano.vercel.app", type: "MUSIC TOOL", stack: "Web · Audio", shot: "https://image.thum.io/get/width/1200/crop/760/noanimate/https://vocalpiano.vercel.app" },
+  { name: "AskVolt", desc: "An AI-powered assistant experience.", url: "https://askvolt.vercel.app", type: "AI APPLICATION", stack: "React · AI", shot: "https://image.thum.io/get/width/1200/crop/760/noanimate/https://askvolt.vercel.app" },
+  { name: "MerciHub", desc: "A personal hub for digital tools and experiences.", url: "https://mercihub.vercel.app", type: "DIGITAL HUB", stack: "React · Web", shot: "https://image.thum.io/get/width/1200/crop/760/noanimate/https://mercihub.vercel.app" }
 ];
 
 function FluidCanvas() {
@@ -104,6 +104,17 @@ function App() {
       </div>
       <div className="conversation" aria-live="polite">
         <div className="conversation-heading"><span className="sparkle"><Sparkles size={14}/></span><span>{active === "Me" ? "A LITTLE INTRODUCTION" : "LET'S TALK " + active.toUpperCase()}</span><i/></div>
+        {active === "Projects" && <section className="showcase-intro">
+          <span className="showcase-kicker">SELECTED WORK <span>✳</span> 2024 — 2026</span>
+          <h2>Things I've <em>built.</em></h2>
+          <p>A collection of projects I've brought to life — each one a chance to learn, experiment and build something useful.</p>
+        </section>}
+        {active === "Projects" ? <div className="project-gallery">{projects.map((project, index) => <article className="project-card" key={project.name}>
+          <a className="project-image-link" href={project.url} target="_blank" rel="noreferrer" aria-label={"Open " + project.name}>
+            <div className="project-shot-frame"><img className="project-shot" src={project.shot} alt={project.name + " website preview"} loading="lazy" decoding="async" draggable={false}/><span className="project-index">0{index + 1}</span></div>
+          </a>
+          <div className="project-info"><div className="project-meta"><span>{project.type}</span><span className="project-stack">{project.stack}</span></div><div className="project-title-row"><div><h3>{project.name}</h3><p>{project.desc}</p></div><a className="project-visit" href={project.url} target="_blank" rel="noreferrer" aria-label={"Visit " + project.name}><ArrowUpRight size={16}/></a></div></div>
+        </article>)}</div> : null}
         {active === "Projects" ? <div className="project-gallery">{projects.map((project, index) => <article className="project-card" key={project.name}>
           <div className="project-preview">
             <iframe src={project.url} title={project.name + " live preview"} loading="lazy" allow="autoplay; fullscreen" referrerPolicy="strict-origin-when-cross-origin" />
@@ -116,7 +127,7 @@ function App() {
           
           {active === "Skills" && <div className="skill-cloud">{["JavaScript","TypeScript","React","Node.js","HTML","CSS","Supabase","MySQL","MongoDB","Git"].map(s => <span key={s}>{s}</span>)}</div>}
           {active === "Contact" && <div className="contact-links"><a href={profile.github} target="_blank" rel="noreferrer"><Github size={15}/> GitHub <ArrowUpRight size={13}/></a><a href={profile.website} target="_blank" rel="noreferrer"><Globe2 size={15}/> Portfolio <ArrowUpRight size={13}/></a></div>}
-        </div> : <div className="intro-answer"><span className="answer-dot"/><p>{current.intro}</p></div>}
+        </div> : active !== "Projects" ? <div className="intro-answer"><span className="answer-dot"/><p>{current.intro}</p></div> : null}
         <div className="suggestions">{current.suggestions.map(s => <button key={s} onClick={() => ask(s)}>{s}<ChevronRight size={12}/></button>)}</div>
         <form className="ask-form" onSubmit={e => { e.preventDefault(); ask(); }}><input value={question} onChange={e => setQuestion(e.target.value)} placeholder={current.prompt} aria-label={current.prompt} maxLength={240}/><button type="submit" disabled={!question.trim() || loading} aria-label="Send question">{loading ? <span className="loader"/> : <ArrowUp size={17}/>}</button></form>
         {loading && streamingAnswer && <div className="answer-card live-answer"><p>{streamingAnswer}<span className="typing-caret">▍</span></p></div>}
