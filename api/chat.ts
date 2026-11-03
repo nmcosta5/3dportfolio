@@ -105,6 +105,15 @@ async function getLiveGithubContext() {
     const repoFacts = ownedRepos.map((repo: any) =>
       `- ${String(repo.name || "").slice(0, 80)}: ${String(repo.description || "No public description").slice(0, 220)}; language: ${String(repo.language || "not specified")}; URL: ${String(repo.html_url || "")}`
     ).join("\n");
+    const portfolioAssets = await (async () => {
+      try {
+        const response = await fetch("https://api.github.com/repos/nmcosta5/3dportfolio/git/trees/main?recursive=1", { headers });
+        if (!response.ok) return "";
+        const tree = await response.json();
+        const files = Array.isArray(tree.tree) ? tree.tree.filter((file: any) => file.type === "blob" && String(file.path).startsWith("public/") && /\.(png|jpe?g|webp|gif|avif)$/i.test(String(file.path)) && !/(badge|icon-small)/i.test(String(file.path))).slice(0, 30) : [];
+        return files.map((file: any) => "- " + file.path + ": https://raw.githubusercontent.com/nmcosta5/3dportfolio/main/" + String(file.path).split("/").map(encodeURIComponent).join("/")).join("\\n");
+      } catch { return ""; }
+    })();
     const visualInventory = (await Promise.all(ownedRepos.map(async (repo: any) => {
       try {
         const branch = String(repo.default_branch || "main");
@@ -123,7 +132,7 @@ async function getLiveGithubContext() {
       `- Public repositories: ${Number(profile.public_repos || 0)}`,
       `- Followers: ${Number(profile.followers || 0)}`,
       `- Profile: ${String(profile.html_url || "https://github.com/nmcosta5")}`,
-      "Recent public repositories:", repoFacts || "- Repository list is temporarily unavailable.",\n      "VERIFIED PROJECT VISUAL ASSETS (use these exact raw image URLs in Markdown image embeds when relevant; never guess filenames):", visualInventory || "- No public repository screenshots or image assets were found in the scanned repositories."
+      "Recent public repositories:", repoFacts || "- Repository list is temporarily unavailable.",\n      "VERIFIED PROJECT VISUAL ASSETS (use these exact raw image URLs in Markdown image embeds when relevant; never guess filenames):", (portfolioAssets ? "3dportfolio public gallery:\\n" + portfolioAssets + "\\n" : "") + (visualInventory || "- No public repository screenshots or image assets were found in the scanned repositories.")
     ].join("\n");
     githubCache = { context, expires: Date.now() + 15 * 60 * 1000 };
     return context;
