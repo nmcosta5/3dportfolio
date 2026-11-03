@@ -1,9 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { CreateMLCEngine } from "@mlc-ai/web-llm";
 import { ArrowUpRight, ArrowUp, Sparkles, X, Github, Globe2, ChevronRight } from "lucide-react";
 
 type Section = "Me" | "Projects" | "Skills" | "Fun" | "Contact";
 type Message = { question: string; answer: string };
 const sections: Section[] = ["Me", "Projects", "Skills", "Fun", "Contact"];
+const MODEL_ID = "Llama-3.2-1B-Instruct-q4f16_1-MLC";
 const profile = { name: "Nzabana Merci", github: "https://github.com/nmcosta5", website: "https://nzabana.vercel.app/" };
 const content: Record<Section, { prompt: string; intro: string; suggestions: string[] }> = {
   Me: { prompt: "Ask me anything about Merci…", intro: "I'm Merci — a student developer from Rwanda, currently studying at Giheke TSS. I enjoy turning ideas into useful digital experiences, learning how things work, and improving with every project. I'm hardworking, curious and disciplined, with a growing focus on full-stack web development.", suggestions: ["Tell me about yourself", "Where are you from?", "What are you studying?"] },
@@ -18,18 +20,7 @@ const projects = [
   { name: "XM Bakery", desc: "A clean storefront concept for a bakery business.", tags: "React · TypeScript", url: "https://github.com/nmcosta5?tab=repositories" },
   { name: "Cooperative", desc: "A web app concept for useful cooperative workflows.", tags: "React · TypeScript", url: "https://github.com/nmcosta5?tab=repositories" }
 ];
-function answerQuestion(section: Section, raw: string) {
-  const q = raw.toLowerCase();
-  if (/\b(name|who are you|about you|yourself|introduce)/.test(q)) return content.Me.intro;
-  if (/\b(from|country|where.*live|location)/.test(q)) return "I'm from Rwanda. I study at Giheke TSS and I'm working toward graduating in 2027.";
-  if (/\b(study|school|education|graduate)/.test(q)) return "I'm currently an Advanced Level student at Giheke TSS in Rwanda, with a focus on software development. My expected graduation year is 2027.";
-  if (/\b(project|built|build|agasobanuye|expense|bakery|cooperative)/.test(q)) return "Some of my projects include Agasobanuye Free, an entertainment discovery platform; Expense Tracker, a personal finance project; XM Bakery, a business website; and a Cooperative management concept. You can explore the code through my GitHub profile.";
-  if (/\b(skill|stack|technology|tech|react|typescript|javascript|node|database)/.test(q)) return content.Skills.intro;
-  if (/\b(fun|game|gaming|hobby|free time|inspire)/.test(q)) return content.Fun.intro;
-  if (/\b(contact|email|reach|collaborat|hire|github|website)/.test(q)) return "You can connect with me on GitHub at github.com/nmcosta5 or visit nzabana.vercel.app. I'm open to learning, collaboration and meaningful project conversations.";
-  if (/\b(ai|artificial intelligence|machine learning)/.test(q)) return "I'm interested in exploring AI and modern software tools, while my current core focus is full-stack web development with JavaScript, TypeScript, React and Node.js.";
-  return content[section].intro;
-}
+
 function FluidCanvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   useEffect(() => {
@@ -64,13 +55,54 @@ function App() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [promoOpen, setPromoOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [streamingAnswer, setStreamingAnswer] = useState("");
+  const [modelStatus, setModelStatus] = useState("LOCAL AI · FIRST MESSAGE DOWNLOADS THE MODEL");
+  const engineRef = useRef<Awaited<ReturnType<typeof CreateMLCEngine>> | null>(null);
   const current = content[active];
   const displayed = useMemo(() => messages.length ? messages[messages.length - 1] : null, [messages]);
   const selectSection = (section: Section) => { setActive(section); setQuestion(""); setMessages([]); setLoading(false); };
-  const ask = (value = question) => {
+  const ask = async (value = question) => {
     const clean = value.trim(); if (!clean || loading) return;
-    setQuestion(clean); setLoading(true);
-    window.setTimeout(() => { setMessages(prev => [...prev, { question: clean, answer: answerQuestion(active, clean) }]); setLoading(false); }, 320);
+    setQuestion(clean); setLoading(true); setStreamingAnswer(""); setModelStatus("Checking browser GPU support…");
+    try {
+      if (!(navigator as Navigator & { gpu?: unknown }).gpu) {
+        throw new Error("This browser does not expose WebGPU. Please try the latest Google Chrome or Microsoft Edge on a device with WebGPU support.");
+      }
+      if (!engineRef.current) {
+        setModelStatus("Downloading and preparing the local AI model…");
+        engineRef.current = await CreateMLCEngine(MODEL_ID, {
+          initProgressCallback: (report) => setModelStatus(report.text || "Preparing local AI model…")
+        });
+      }
+      setModelStatus("AI is ready · generating locally");
+      const history = messages.slice(-6).flatMap(item => [
+        { role: "user" as const, content: item.question },
+        { role: "assistant" as const, content: item.answer }
+      ]);
+      const systemPrompt = "You are Merci's portfolio assistant. Be friendly, clear, useful and concise. Answer general questions when appropriate, but never invent personal facts about Merci. Verified details: Name Nzabana Merci; from Rwanda; Advanced Level student at Giheke TSS, expected to graduate in 2027; interested in full-stack software development. Skills: JavaScript, TypeScript, React, Node.js, HTML, CSS, REST APIs, Supabase, MySQL, MongoDB, Git and GitHub. Projects: Agasobanuye Free (entertainment discovery platform), Expense Tracker, XM Bakery, and a Cooperative management concept. GitHub: https://github.com/nmcosta5. Portfolio: https://nzabana.vercel.app/. If asked for private information or facts not listed here, say you don't have that information. Do not claim to have performed actions or accessed live websites.";
+      const chunks = await engineRef.current.chat.completions.create({
+        messages: [{ role: "system", content: systemPrompt }, ...history, { role: "user", content: clean }],
+        stream: true,
+        temperature: 0.7,
+        max_tokens: 420
+      });
+      let answer = "";
+      for await (const chunk of chunks as AsyncIterable<{ choices?: Array<{ delta?: { content?: string } }> }>) {
+        const token = chunk.choices?.[0]?.delta?.content || "";
+        if (token) { answer += token; setStreamingAnswer(answer); }
+      }
+      const finalAnswer = answer.trim() || "I couldn't generate a response. Please try asking in a different way.";
+      setMessages(prev => [...prev, { question: clean, answer: finalAnswer }]);
+      setStreamingAnswer("");
+      setModelStatus("LOCAL AI READY · RUNNING ON THIS DEVICE");
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "The local AI could not start on this device.";
+      setMessages(prev => [...prev, { question: clean, answer: "I couldn't start the local AI. " + message }]);
+      setStreamingAnswer("");
+      setModelStatus("LOCAL AI UNAVAILABLE · CHECK WEBGPU SUPPORT");
+    } finally {
+      setLoading(false);
+    }
   };
   return <main className="app-shell">
     <FluidCanvas />
@@ -94,7 +126,8 @@ function App() {
         </div> : <div className="intro-answer"><span className="answer-dot"/><p>{current.intro}</p></div>}
         <div className="suggestions">{current.suggestions.map(s => <button key={s} onClick={() => ask(s)}>{s}<ChevronRight size={12}/></button>)}</div>
         <form className="ask-form" onSubmit={e => { e.preventDefault(); ask(); }}><input value={question} onChange={e => setQuestion(e.target.value)} placeholder={current.prompt} aria-label={current.prompt} maxLength={240}/><button type="submit" disabled={!question.trim() || loading} aria-label="Send question">{loading ? <span className="loader"/> : <ArrowUp size={17}/>}</button></form>
-        <div className="input-note">PRESS ENTER TO ASK <span>·</span> ANSWERS BASED ON PUBLIC PROFILE INFO</div>
+        {loading && streamingAnswer && <div className="answer-card live-answer"><p>{streamingAnswer}<span className="typing-caret">▍</span></p></div>}
+        <div className="input-note">{modelStatus} <span>·</span> YOUR MESSAGES STAY IN THIS BROWSER</div>
       </div>
     </section>
     <nav className="section-nav" aria-label="Portfolio sections">{sections.map((section, i) => <button key={section} onClick={() => selectSection(section)} className={active === section ? "nav-item active" : "nav-item"} aria-current={active === section ? "page" : undefined}><span className="nav-number">0{i + 1}</span>{section}</button>)}</nav>
