@@ -247,7 +247,7 @@ Portfolio: https://nzabana.vercel.app/
     <section className="main-stage">
       <div className="hero">
         <div className="availability"><span className="availability-dot"/> AVAILABLE FOR COLLABORATION</div>
-        <img className="hero-brand-mark" src="/Monochrome%20Geometric%20NM%20Crest%20(1).png" alt="NM crest" loading="eager"/><h1>Hey, I'm Merci <span className="wave">👋</span></h1>
+        <h1 className="hero-title"><img className="hero-brand-mark" src="/Monochrome%20Geometric%20NM%20Crest%20(1).png" alt="" loading="eager"/>Hey, I'm Merci <span className="wave">👋</span></h1>
         <p className="role-title">Full Stack Developer</p>
         <div className="portrait-wrap"><div className="portrait-halo"/><img className="portrait" src={githubAvatar} alt="Nzabana Merci wearing his beanie Memoji avatar" loading="eager" fetchPriority="high" decoding="async" onLoad={() => setAvatarReady(true)} onError={() => setAvatarReady(true)}/></div>
         <p className="hero-caption">A curious developer from Rwanda, building thoughtful things for the web.</p>
