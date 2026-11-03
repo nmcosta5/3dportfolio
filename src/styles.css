@@ -203,3 +203,29 @@
 .answer-copy .ai-inline-image{display:block;width:auto;max-width:min(100%,560px);max-height:420px;object-fit:contain;margin:12px auto;border:1px solid #e7ebe6;border-radius:13px;background:#f4f6f3;box-shadow:0 8px 26px rgba(30,40,32,.08)}
 .answer-copy p:has(.ai-inline-image){width:100%}
 :root[data-theme="dark"] .answer-copy .ai-inline-image{border-color:#354139;background:#202823}
+
+
+/* Merci — soft liquid-grass polish */
+:root{--grass:#7d9e83;--grass-deep:#47664f;--grass-wash:#eaf1e8}
+.app-shell{background:radial-gradient(ellipse at 50% 12%,rgba(221,235,219,.55),transparent 42%),#fbfcfa!important}
+.fluid-canvas{filter:saturate(.72) hue-rotate(8deg);opacity:.82!important}
+.hero h1{letter-spacing:-.085em}
+.role-title{color:#75877a}
+.availability-dot{background:#89ad8d;box-shadow:0 0 0 4px #89ad8d20}
+.conversation{margin-top:28px}
+.intro-answer,.answer-card{border-color:#e4ebe3;background:rgba(255,255,255,.72);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);box-shadow:0 12px 38px rgba(54,83,59,.045);border-radius:17px}
+.ask-form{border-color:#dce7dc;background:rgba(255,255,255,.78);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);border-radius:15px;box-shadow:0 12px 34px rgba(54,83,59,.07)}
+.ask-form:focus-within{border-color:#a8c2aa;box-shadow:0 0 0 4px rgba(133,173,139,.13),0 14px 36px rgba(54,83,59,.08)}
+.nav-item{border-color:#e4ebe3;background:rgba(255,255,255,.68);backdrop-filter:blur(15px);-webkit-backdrop-filter:blur(15px);transition:transform .28s cubic-bezier(.2,.8,.2,1),background .25s,border-color .25s,box-shadow .25s}
+.nav-item:hover{transform:translateY(-3px);border-color:#bfd0bf;box-shadow:0 8px 22px rgba(65,95,70,.07)}
+.nav-item.active{background:linear-gradient(135deg,#edf4eb,#f8faf6);border-color:#cfdfcf;color:#496b50;box-shadow:inset 0 1px rgba(255,255,255,.9)}
+.suggestions button{border-color:#e3ebe2;background:rgba(255,255,255,.62);border-radius:999px;transition:transform .25s cubic-bezier(.2,.8,.2,1),background .2s,border-color .2s}
+.suggestions button:hover{transform:translateY(-2px) scale(1.015);border-color:#b8cfba;background:#f7fbf5}
+.answer-dot{background:#8eaf91}
+.hero-caption{color:#7f8d81}
+@keyframes grass-breathe{0%,100%{opacity:.65;transform:translateY(0)}50%{opacity:.95;transform:translateY(-3px)}}
+.portrait-halo{background:radial-gradient(ellipse,rgba(180,211,179,.28) 0%,rgba(214,231,211,.12) 50%,transparent 74%);animation:grass-breathe 6s ease-in-out infinite}
+:root[data-theme="dark"] .app-shell{background:radial-gradient(ellipse at 50% 10%,rgba(56,83,62,.36),transparent 45%),#141916!important}
+:root[data-theme="dark"] .intro-answer,:root[data-theme="dark"] .answer-card,:root[data-theme="dark"] .ask-form,:root[data-theme="dark"] .nav-item{background:rgba(30,40,32,.76);backdrop-filter:blur(18px);border-color:#344438}
+:root[data-theme="dark"] .nav-item.active{background:linear-gradient(135deg,#27392c,#202b23);border-color:#526c55;color:#cde0ce}
+@media(prefers-reduced-motion:reduce){.portrait-halo{animation:none}.nav-item,.suggestions button{transition:none}}
