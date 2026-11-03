@@ -359,3 +359,49 @@
 @media(max-width:640px){
  .portrait-wrap .portrait,.portrait-wrap img.portrait{width:250px!important;height:185px!important}
 }
+
+
+/* Focused layout polish: centered portrait, legible chat, clear contact action */
+.hero{display:flex!important;flex-direction:column!important;align-items:center!important;text-align:center!important;width:100%!important;margin-inline:auto!important}
+.portrait-wrap{align-self:center!important;display:grid!important;place-items:center!important;margin:10px auto 8px!important;width:min(100%,360px)!important;height:clamp(190px,24vw,250px)!important}
+.portrait-wrap .portrait,.portrait-wrap img.portrait{display:block!important;margin-inline:auto!important;object-position:center center!important}
+.portrait-halo{left:50%!important;top:50%!important;transform:translate(-50%,-50%)!important}
+.hero-caption{text-align:center!important}
+.conversation{margin-left:auto!important;margin-right:auto!important}
+.answer-copy{gap:17px!important}
+.answer-copy p,.answer-copy li{font-size:clamp(14px,1.08vw,16px)!important;line-height:1.9!important;letter-spacing:-.012em!important}
+.answer-copy p{margin:0!important}
+.answer-heading{font-size:clamp(18px,1.5vw,21px)!important;line-height:1.4!important;margin:8px 0 0!important}
+.answer-list{gap:10px!important;padding-left:23px!important}
+.answer-list li{padding-left:5px!important}
+.answer-card{padding:clamp(20px,3vw,30px)!important;border-radius:22px!important}
+.user-question{font-size:13px!important;line-height:1.6!important;padding:11px 15px!important;margin-bottom:20px!important}
+.answer-meta{font-size:10px!important;letter-spacing:.12em!important}
+.answer-image{margin:14px 0!important;border-radius:18px!important}
+.answer-image img{max-height:540px!important;width:100%!important;object-fit:contain!important}
+.contact-quick{display:flex!important;flex-wrap:wrap!important;gap:10px!important;margin:18px 0 8px!important}
+.contact-quick button,.contact-quick a,.contact-links a{
+ display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:9px!important;
+ min-height:46px!important;padding:0 17px!important;border:1px solid #d8e4d7!important;border-radius:14px!important;
+ background:rgba(255,255,255,.88)!important;color:#344d38!important;font:600 12px "Plus Jakarta Sans",sans-serif!important;
+ box-shadow:0 7px 20px rgba(49,75,52,.06)!important;transition:transform .2s ease,background .2s ease,border-color .2s ease!important
+}
+.contact-quick button:hover,.contact-quick a:hover,.contact-links a:hover{transform:translateY(-2px)!important;background:#edf4eb!important;border-color:#b9cfb8!important}
+.nav-item{min-width:104px!important;min-height:58px!important;font-size:12px!important;font-weight:650!important}
+.nav-item[data-section="Contact"],.nav-item:last-child{color:#365d3d!important;background:rgba(235,244,232,.78)!important;border:1px solid #d2e3d0!important}
+.nav-item[data-section="Contact"]::after,.nav-item:last-child::after{content:"";width:5px;height:5px;border-radius:50%;background:#82a985;position:absolute;top:10px;right:12px}
+.fluid-canvas{opacity:.92!important;filter:saturate(.9) contrast(1.04)!important}
+.app-shell{background:radial-gradient(ellipse at 50% 45%,rgba(248,250,246,.25),transparent 52%),#fbfcfa!important}
+.app-shell:before,.app-shell:after{display:none!important}
+.app-shell>.fluid-canvas{z-index:0!important}
+.app-shell>.topbar,.app-shell>.main-stage,.app-shell>.bottom-footer{z-index:2!important;position:relative!important}
+@media(max-width:640px){
+ .portrait-wrap{height:190px!important;margin:8px auto 5px!important}
+ .portrait-wrap .portrait,.portrait-wrap img.portrait{width:250px!important;height:185px!important}
+ .answer-card{padding:17px!important;border-radius:18px!important}
+ .answer-copy p,.answer-copy li{font-size:14px!important;line-height:1.85!important}
+ .answer-heading{font-size:17px!important}
+ .contact-quick button,.contact-quick a,.contact-links a{min-height:43px!important;font-size:11px!important}
+ .nav-item{min-width:0!important;min-height:52px!important;font-size:10px!important}
+}
+@media(prefers-reduced-motion:reduce){.contact-quick button,.contact-quick a,.contact-links a{transition:none!important}}
