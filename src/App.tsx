@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ArrowUpRight, ArrowUp, Sparkles, X, Github, Globe2, ChevronRight } from "lucide-react";
+import ProjectShowcase from "./ProjectShowcase";
 
 type Section = "Me" | "Projects" | "Skills" | "Fun" | "Contact";
 type Message = { question: string; answer: string };
@@ -109,12 +110,7 @@ function App() {
           <h2>Things I've <em>built.</em></h2>
           <p>A collection of projects I've brought to life — each one a chance to learn, experiment and build something useful.</p>
         </section>}
-        {active === "Projects" ? <div className="project-gallery">{projects.map((project, index) => <article className="project-card" key={project.name}>
-          <a className="project-image-link" href={project.url} target="_blank" rel="noreferrer" aria-label={"Open " + project.name}>
-            <div className="project-shot-frame"><img className="project-shot" src={project.shot} alt={project.name + " website preview"} loading="lazy" decoding="async" draggable={false}/><span className="project-index">0{index + 1}</span></div>
-          </a>
-          <div className="project-info"><div className="project-meta"><span>{project.type}</span><span className="project-stack">{project.stack}</span></div><div className="project-title-row"><div><h3>{project.name}</h3><p>{project.desc}</p></div><a className="project-visit" href={project.url} target="_blank" rel="noreferrer" aria-label={"Visit " + project.name}><ArrowUpRight size={16}/></a></div></div>
-        </article>)}</div> : null}
+        {active === "Projects" ? <ProjectShowcase projects={projects} /> : null}
 
         {displayed ? <div className="answer-card"><div className="user-question">{displayed.question}</div><p>{displayed.answer}</p>
           
