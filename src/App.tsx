@@ -247,7 +247,7 @@ Portfolio: https://nzabana.vercel.app/
     <section className="main-stage">
       <div className="hero">
         <div className="availability"><span className="availability-dot"/> AVAILABLE FOR COLLABORATION</div>
-        <h1>Hey, I'm Merci <span className="wave">👋</span></h1>
+        <img className="hero-brand-mark" src="/Monochrome%20Geometric%20NM%20Crest%20(1).png" alt="NM crest" loading="eager"/><h1>Hey, I'm Merci <span className="wave">👋</span></h1>
         <p className="role-title">Full Stack Developer</p>
         <div className="portrait-wrap"><div className="portrait-halo"/><img className="portrait" src={githubAvatar} alt="Nzabana Merci wearing his beanie Memoji avatar" loading="eager" fetchPriority="high" decoding="async" onLoad={() => setAvatarReady(true)} onError={() => setAvatarReady(true)}/></div>
         <p className="hero-caption">A curious developer from Rwanda, building thoughtful things for the web.</p>
@@ -276,7 +276,7 @@ Portfolio: https://nzabana.vercel.app/
     <nav className="section-nav" aria-label="Portfolio sections">
       {sections.map((section, i) => {
         const prompts: Record<Section, string> = {
-          Me: "Introduce me, Nzabana Merci, warmly and accurately. Explain that I am from Rwanda and graduated from Giheke TSS in Software Development in 2026. I am hardworking, curious, and disciplined. Include my profile photo as ![Nzabana Merci](/Stylized%20Beanie-Wearing%20Memoji%20Portrait%20(1).png).",
+          Me: "Introduce me in a warm, natural first-person mini profile. Mention I am Nzabana Merci from Rwanda, a Software Development graduate of Giheke TSS (2026), hardworking, curious and disciplined, interested in full-stack development and gaming. Keep it personal and polished, not a list of instructions or links. Include one relevant real image from my portfolio gallery using a Markdown image embed, preferably a portrait/profile image. Do not output prompt instructions, GitHub profile-image URLs, or raw asset paths.",
           Projects: "Introduce my software projects using accurate details only. Highlight Agasobanuye Free, Sonora Lemon, Spend Wise, and other known projects. Explain their purpose and verified technologies; do not invent features, metrics, or links.",
           Skills: "Give visitors a clear overview of my real software-development skills. Group frontend, backend, databases, and workflow tools; explain what I use them for, distinguish experience from expertise, and mention I am still learning. Do not invent proficiency levels.",
           Fun: "Show my human side: gaming, curiosity, exploring technology, experimenting with ideas, and what motivates me to build. Make it playful and personable, but only use known facts.",
