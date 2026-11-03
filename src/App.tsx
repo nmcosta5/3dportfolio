@@ -151,7 +151,39 @@ function App() {
   const displayed = useMemo(() => messages.length ? messages[messages.length - 1] : null, [messages]);
   const selectSection = (section: Section) => { setActive(section); setQuestion(""); setMessages([]); setLoading(false); };
   const downloadCV = () => {
-    const cv = `NZABANA MERCI\\nFull Stack Software Developer\\nRwanda\\n\\nPROFILE\\nHardworking, curious and disciplined Software Development student at Giheke TSS, interested in building useful web applications and growing as a full-stack developer. Expected graduation: 2027.\\n\\nTECHNICAL SKILLS\\nJavaScript, TypeScript, React, HTML, CSS, Node.js, REST APIs, Supabase, MySQL, MongoDB, Git and GitHub.\\n\\nSELECTED PROJECTS\\nAgasobanuye Free — entertainment platform for discovering movies and series.\\nSonora Lemon — music experience built for sound and discovery.\\nVocalPiano — interactive voice and piano web experience.\\nAskVolt — AI-powered assistant experience.\\nMerciHub — personal hub for digital tools and experiences.\\n\\nEDUCATION\\nAdvanced Level, Software Development (SOD)\\nGiheke TSS, Rwanda | Expected 2027\\n\\nLINKS\\nGitHub: https://github.com/nmcosta5\\nPortfolio: https://nzabana.vercel.app/\\n`;\n    const blob = new Blob([cv], { type: "text/plain;charset=utf-8" }); const url = URL.createObjectURL(blob); const link = document.createElement("a"); link.href = url; link.download = "Nzabana-Merci-CV.txt"; link.click(); URL.revokeObjectURL(url);\n  };
+    const cv = `NZABANA MERCI
+Full Stack Software Developer
+Rwanda
+
+PROFILE
+Hardworking, curious and disciplined Software Development student at Giheke TSS, interested in building useful web applications and growing as a full-stack developer. Expected graduation: 2027.
+
+TECHNICAL SKILLS
+JavaScript, TypeScript, React, HTML, CSS, Node.js, REST APIs, Supabase, MySQL, MongoDB, Git and GitHub.
+
+SELECTED PROJECTS
+Agasobanuye Free — entertainment platform for discovering movies and series.
+Sonora Lemon — music experience built for sound and discovery.
+VocalPiano — interactive voice and piano web experience.
+AskVolt — AI-powered assistant experience.
+MerciHub — personal hub for digital tools and experiences.
+
+EDUCATION
+Advanced Level, Software Development (SOD)
+Giheke TSS, Rwanda | Expected 2027
+
+LINKS
+GitHub: https://github.com/nmcosta5
+Portfolio: https://nzabana.vercel.app/
+`;
+    const blob = new Blob([cv], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "Nzabana-Merci-CV.txt";
+    link.click();
+    URL.revokeObjectURL(url);
+  };
   const copyGithub = async () => { try { await navigator.clipboard.writeText(profile.github); setCopied(true); window.setTimeout(() => setCopied(false), 1800); } catch { window.open(profile.github, "_blank", "noopener,noreferrer"); } };
   const nextChallenge = () => { const prompts = ["Create a simple tool that makes studying more organized.", "Design a useful digital service for a small Rwandan business.", "Build a mini game using only HTML, CSS and JavaScript.", "Create a dashboard that turns confusing data into clear insights.", "Make a lightweight app that works well on slow internet."]; setChallenge(current => { const options = prompts.filter(item => item !== current); return options[Math.floor(Math.random() * options.length)]; }); };
   const ask = async (value = question) => {
@@ -218,13 +250,33 @@ function App() {
         <div className="input-note">{modelStatus} <span>·</span> ONLINE MODEL · CHAT HISTORY IS SESSION-ONLY</div>
       </div>
     </section>
-    <nav className="section-nav" aria-label="Portfolio sections">{sections.map((section, i) => <button key={section} onClick={() => { const prompts: Record<Section, string> = {
-Me: "Introduce me, Nzabana Merci, warmly and accurately. Explain that I am from Rwanda, study Software Development at Giheke TSS, expect to graduate in 2027, and am hardworking, curious, and disciplined. Include my profile photo as ![Nzabana Merci](https://github.com/nmcosta5.png).",
-Projects: "Introduce my software projects using accurate details only. Highlight Agasobanuye Free, Sonora Lemon, Spend Wise, and other known projects. Explain their purpose and verified technologies; do not invent features, metrics, or links.",
-Skills: "Give visitors a clear overview of my real software-development skills. Group frontend, backend, databases, and workflow tools; explain what I use them for, distinguish experience from expertise, and mention I am still learning. Do not invent proficiency levels.",
-Fun: "Show my human side: gaming, curiosity, exploring technology, experimenting with ideas, and what motivates me to build. Make it playful and personable, but only use known facts.",
-Contact: "Help visitors connect or collaborate with me. Include clickable GitHub https://github.com/nmcosta5 and portfolio https://nzabana.vercel.app links. Do not invent email or phone details."
-} }; setActive(section); setMessages([]); setQuestion("");  ask(prompts[section]); }} className={active === section ? "nav-item active" : "nav-item"} aria-current={active === section ? "page" : undefined}><span className="nav-number">0{i + 1}</span>{section}</button>)}</nav>
+    <nav className="section-nav" aria-label="Portfolio sections">
+      {sections.map((section, i) => {
+        const prompts: Record<Section, string> = {
+          Me: "Introduce me, Nzabana Merci, warmly and accurately. Explain that I am from Rwanda, study Software Development at Giheke TSS, expect to graduate in 2027, and am hardworking, curious, and disciplined. Include my profile photo as ![Nzabana Merci](https://github.com/nmcosta5.png).",
+          Projects: "Introduce my software projects using accurate details only. Highlight Agasobanuye Free, Sonora Lemon, Spend Wise, and other known projects. Explain their purpose and verified technologies; do not invent features, metrics, or links.",
+          Skills: "Give visitors a clear overview of my real software-development skills. Group frontend, backend, databases, and workflow tools; explain what I use them for, distinguish experience from expertise, and mention I am still learning. Do not invent proficiency levels.",
+          Fun: "Show my human side: gaming, curiosity, exploring technology, experimenting with ideas, and what motivates me to build. Make it playful and personable, but only use known facts.",
+          Contact: "Help visitors connect or collaborate with me. Include clickable GitHub https://github.com/nmcosta5 and portfolio https://nzabana.vercel.app links. Do not invent email or phone details."
+        };
+        return (
+          <button
+            key={section}
+            onClick={() => {
+              setActive(section);
+              setMessages([]);
+              setQuestion("");
+              ask(prompts[section]);
+            }}
+            className={active === section ? "nav-item active" : "nav-item"}
+            aria-current={active === section ? "page" : undefined}
+          >
+            <span className="nav-number">0{i + 1}</span>
+            {section}
+          </button>
+        );
+      })}
+    </nav>
     <footer className="bottom-footer"><span>© {new Date().getFullYear()} {profile.name.toUpperCase()}</span><span>MADE WITH CURIOSITY IN RWANDA</span><button onClick={() => setPromoOpen(true)}>BUILT WITH <b>FASTFOLIO</b> <ArrowUpRight size={11}/></button></footer>
     {promoOpen && <div className="modal-backdrop" role="presentation" onMouseDown={e => { if (e.target === e.currentTarget) setPromoOpen(false); }}>
       <section className="promo-modal" role="dialog" aria-modal="true" aria-labelledby="promo-title"><button className="modal-close" onClick={() => setPromoOpen(false)} aria-label="Close promotion"><X size={17}/></button>
