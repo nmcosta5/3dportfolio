@@ -239,10 +239,10 @@ Portfolio: https://nzabana.vercel.app/
       setLoading(false);
     }
   };
-  return <main className="app-shell">
+  return <main className={avatarReady ? "app-shell app-ready" : "app-shell"}>
     <FluidCanvas />
     <header className="topbar">
-      <div className="topbar-actions"><button className="theme-toggle" onClick={() => setTheme(theme === "light" ? "dark" : "light")} aria-label={theme === "light" ? "Switch to dark mode" : "Switch to light mode"}>{theme === "light" ? <Moon size={16}/> : <Sun size={16}/>}</button><a className="about-mark" href={profile.github} target="_blank" rel="noreferrer" aria-label="Open GitHub profile"><img src="/merci-mark.svg" alt="Merci logo"/></a></div>
+      <div className="topbar-actions"><button className="theme-toggle" onClick={() => setTheme(theme === "light" ? "dark" : "light")} aria-label={theme === "light" ? "Switch to dark mode" : "Switch to light mode"}>{theme === "light" ? <Moon size={16}/> : <Sun size={16}/>}</button><a className="about-mark" href={profile.github} target="_blank" rel="noreferrer" aria-label="Open GitHub profile"><img src="/merci-favicon.svg" alt="Merci logo"/></a></div>
     </header>
     <section className="main-stage">
       <div className="hero">
