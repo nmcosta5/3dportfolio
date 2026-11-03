@@ -153,7 +153,8 @@ async function getLiveGithubContext() {
       `- Followers: ${Number(profile.followers || 0)}`,
       `- Profile: ${String(profile.html_url || "https://github.com/nmcosta5")}`,
       "Recent public repositories:", repoFacts || "- Repository list is temporarily unavailable.",
-      "VERIFIED PERSONAL PHOTOS IN MY PORTFOLIO /public (use these exact direct image URLs for about-me replies; choose two distinct files):", personalPhotoAssets,\n      "VERIFIED PROJECT VISUAL ASSETS (use these exact raw image URLs in Markdown image embeds when relevant; never guess filenames):", (portfolioAssets ? "3dportfolio public gallery:\\n" + portfolioAssets + "\\n" : "") + (visualInventory || "- No public repository screenshots or image assets were found in the scanned repositories.")
+      "VERIFIED PERSONAL PHOTOS IN MY PORTFOLIO /public (use these exact direct image URLs for about-me replies; choose two distinct files):", personalPhotoAssets,
+      "VERIFIED PROJECT VISUAL ASSETS (use these exact raw image URLs in Markdown image embeds when relevant; never guess filenames):", (portfolioAssets ? "3dportfolio public gallery:\\n" + portfolioAssets + "\\n" : "") + (visualInventory || "- No public repository screenshots or image assets were found in the scanned repositories.")
     ].join("\n");
     githubCache = { context, expires: Date.now() + 15 * 60 * 1000 };
     return context;
