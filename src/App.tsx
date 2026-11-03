@@ -93,7 +93,7 @@ function App() {
               {item}
             </a>
           ))}
-          <a className="nav-cta" href="mailto:hello@nzabana.vercel.app">Let's talk <ArrowUpRight size={15} /></a>
+          <a className="nav-cta" href="https://github.com/nmcosta5" target="_blank" rel="noreferrer">Let's talk <ArrowUpRight size={15} /></a>
         </nav>
       </header>
 
