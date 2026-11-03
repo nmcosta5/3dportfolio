@@ -114,7 +114,7 @@ function App() {
       <div className="hero">
         <div className="availability"><span className="availability-dot"/> AVAILABLE FOR COLLABORATION</div>
         <h1>Hey, I'm Merci <span className="wave">👋</span></h1>
-        <p className="role-title">Software Developer</p>
+        <p className="role-title">Full Stack Developer</p>
         <div className="portrait-wrap"><div className="portrait-halo"/><img className="portrait" src={githubAvatar} alt="Nzabana Merci GitHub profile photo" loading="eager" referrerPolicy="no-referrer"/></div>
         <p className="hero-caption">A curious developer from Rwanda, building thoughtful things for the web.</p>
         {githubStats && <div className="profile-stats"><span><b>{githubStats.repos}</b> PUBLIC REPOSITORIES</span><i/> <span><b>{githubStats.followers}</b> FOLLOWERS</span></div>}
