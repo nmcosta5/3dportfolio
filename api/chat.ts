@@ -56,7 +56,7 @@ MY LINKS
 
 VISUAL ANSWERS
 - The portfolio chat supports Markdown image embeds. When a visitor explicitly asks to see a picture, profile image, project visual, or visual reference, include a Markdown image in this exact format, using a real direct image URL (not a webpage URL): ![Short descriptive alt text](https://full-image-url)
-- For personal/about-me answers, choose a genuine portrait or personal image from the verified 3dportfolio public asset inventory and embed it using Markdown image syntax. Never output the instruction itself, raw local paths, or a GitHub profile avatar URL.
+- Whenever a visitor asks for an about-me introduction, personal profile, biography, or “who are you?” response, ALWAYS include two different real personal photos from the dedicated verified /public photo list supplied in the live GitHub context. Embed them as Markdown images using the exact direct URLs, with short accurate alt text. Place one image after the opening introduction and the second after the next paragraph. Do not merely mention the photos or show plain URL text. Never use the crest/logo as a personal photo, and never output local paths or GitHub blob-page URLs. For narrow factual questions, only include photos when they genuinely help.
 - The live GitHub context may include a verified visual asset inventory for my public repositories. When asked to show a project, screenshot, interface, logo, or artwork, select relevant image URLs from that inventory and embed them directly in the answer. Include a short caption and explain which project each image belongs to.\n- Prefer screenshots and images committed inside the actual project repository over generic stock images. If no verified screenshot exists, say that no public screenshot was found and link to the project repository instead.\n- Only embed image URLs you know are valid and relevant; never invent a URL or claim an image depicts a specific project if uncertain.
 - For other visuals, use a stable direct image URL from Wikimedia Commons or Unsplash only when you can confidently provide one. If you cannot, explain that you can share a link instead.
 - Use image embeds sparingly, and only when visuals genuinely help. Normal answers should remain text-first.
@@ -122,6 +122,18 @@ async function getLiveGithubContext() {
         return files.map((file: any) => "- " + file.path + ": https://raw.githubusercontent.com/nmcosta5/3dportfolio/main/" + String(file.path).split("/").map(encodeURIComponent).join("/")).join("\\n");
       } catch { return ""; }
     })();
+    const personalPhotoAssets = [
+      "- 36879.jpg: https://raw.githubusercontent.com/nmcosta5/3dportfolio/main/public/36879.jpg",
+      "- 38464.jpg: https://raw.githubusercontent.com/nmcosta5/3dportfolio/main/public/38464.jpg",
+      "- 38465.jpg: https://raw.githubusercontent.com/nmcosta5/3dportfolio/main/public/38465.jpg",
+      "- IMG-20250720-WA0030.jpg: https://raw.githubusercontent.com/nmcosta5/3dportfolio/main/public/IMG-20250720-WA0030.jpg",
+      "- IMG-20250726-WA0034.jpg: https://raw.githubusercontent.com/nmcosta5/3dportfolio/main/public/IMG-20250726-WA0034.jpg",
+      "- IMG-20250726-WA0038.jpg: https://raw.githubusercontent.com/nmcosta5/3dportfolio/main/public/IMG-20250726-WA0038.jpg",
+      "- IMG-20250726-WA0040.jpg: https://raw.githubusercontent.com/nmcosta5/3dportfolio/main/public/IMG-20250726-WA0040.jpg",
+      "- Picsart_26-08-09_09-58-23-576.jpg: https://raw.githubusercontent.com/nmcosta5/3dportfolio/main/public/Picsart_26-08-09_09-58-23-576.jpg",
+      "- Picsart_26-09-12_19-32-15-103.jpg: https://raw.githubusercontent.com/nmcosta5/3dportfolio/main/public/Picsart_26-09-12_19-32-15-103.jpg",
+      "- Picsart_26-09-15_00-59-56-011.jpg: https://raw.githubusercontent.com/nmcosta5/3dportfolio/main/public/Picsart_26-09-15_00-59-56-011.jpg"
+    ].join("\n");
     const visualInventory = (await Promise.all(ownedRepos.map(async (repo: any) => {
       try {
         const branch = String(repo.default_branch || "main");
@@ -140,7 +152,8 @@ async function getLiveGithubContext() {
       `- Public repositories: ${Number(profile.public_repos || 0)}`,
       `- Followers: ${Number(profile.followers || 0)}`,
       `- Profile: ${String(profile.html_url || "https://github.com/nmcosta5")}`,
-      "Recent public repositories:", repoFacts || "- Repository list is temporarily unavailable.",\n      "VERIFIED PROJECT VISUAL ASSETS (use these exact raw image URLs in Markdown image embeds when relevant; never guess filenames):", (portfolioAssets ? "3dportfolio public gallery:\\n" + portfolioAssets + "\\n" : "") + (visualInventory || "- No public repository screenshots or image assets were found in the scanned repositories.")
+      "Recent public repositories:", repoFacts || "- Repository list is temporarily unavailable.",
+      "VERIFIED PERSONAL PHOTOS IN MY PORTFOLIO /public (use these exact direct image URLs for about-me replies; choose two distinct files):", personalPhotoAssets,\n      "VERIFIED PROJECT VISUAL ASSETS (use these exact raw image URLs in Markdown image embeds when relevant; never guess filenames):", (portfolioAssets ? "3dportfolio public gallery:\\n" + portfolioAssets + "\\n" : "") + (visualInventory || "- No public repository screenshots or image assets were found in the scanned repositories.")
     ].join("\n");
     githubCache = { context, expires: Date.now() + 15 * 60 * 1000 };
     return context;
