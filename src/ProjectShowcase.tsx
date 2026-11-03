@@ -89,16 +89,16 @@ export default function ProjectShowcase({ projects }: { projects: Project[] }) {
     dragStart.current = null;
   };
   if (isMobile) return <section className="r3f-showcase mobile-projects" aria-label="Project showcase">
-    <div className="mobile-project-track">{projects.map((item, index) => <article className={index === active ? "mobile-project-card selected" : "mobile-project-card"} key={item.name} onClick={() => setActive(index)}>
+    <div className="mobile-project-track">{filteredProjects.map((item, index) => <article className={index === active ? "mobile-project-card selected" : "mobile-project-card"} key={item.name} onClick={() => setActive(index)}>
       <a href={item.url} target="_blank" rel="noreferrer" onClick={event => event.stopPropagation()} aria-label={"Open " + item.name}><img src={item.shot} alt={item.name + " website preview"} loading="lazy"/><span className="mobile-project-open"><ArrowUpRight size={14}/></span></a>
       <div className="mobile-project-info"><span>{item.type}</span><h3>{item.name}</h3><p>{item.desc}</p><small>{item.stack}</small></div>
     </article>)}</div>
-    <div className="mobile-project-footer"><span>SWIPE TO EXPLORE · {projects.length} PROJECTS</span><div><button type="button" onClick={() => change(-1)} aria-label="Previous project">←</button><button type="button" onClick={() => change(1)} aria-label="Next project">→</button></div></div>
+    <div className="mobile-project-footer"><span>SWIPE TO EXPLORE · {filteredProjects.length} PROJECTS</span><div><button type="button" onClick={() => change(-1)} aria-label="Previous project">←</button><button type="button" onClick={() => change(1)} aria-label="Next project">→</button></div></div>
   </section>;
   return <section className="r3f-showcase" aria-label="Interactive 3D project showcase">
     <div className="r3f-stage" onPointerDown={onPointerDown} onPointerUp={onPointerUp} onPointerCancel={() => { dragStart.current = null; }}>
       <Canvas dpr={[1, 1.7]} camera={{ position: [0, 0.1, 7.2], fov: 38 }} gl={{ antialias: true, alpha: true }}>
-        <Suspense fallback={null}><Scene projects={projects} active={active} setActive={setActive} /></Suspense>
+        <Suspense fallback={null}><Scene projects={filteredProjects} active={active} setActive={setActive} /></Suspense>
       </Canvas>
       <span className="r3f-hint">DRAG TO BROWSE · SELECT A CARD</span>
     </div>
