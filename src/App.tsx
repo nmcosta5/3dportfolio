@@ -192,7 +192,7 @@ Portfolio: https://nzabana.vercel.app/
   const nextChallenge = () => { const prompts = ["Create a simple tool that makes studying more organized.", "Design a useful digital service for a small Rwandan business.", "Build a mini game using only HTML, CSS and JavaScript.", "Create a dashboard that turns confusing data into clear insights.", "Make a lightweight app that works well on slow internet."]; setChallenge(current => { const options = prompts.filter(item => item !== current); return options[Math.floor(Math.random() * options.length)]; }); };
   const ask = async (value = question) => {
     const clean = value.trim(); if (!clean || loading) return;
-    setQuestion(clean); setLoading(true); setStreamingAnswer(""); setModelStatus("CONNECTING TO ONLINE AI…");
+    setQuestion(""); setLoading(true); setStreamingAnswer(""); setModelStatus("CONNECTING TO ONLINE AI…");
     try {
       const history = messages.slice(-6).flatMap(item => [
         { role: "user", content: item.question },
