@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import {
-  ArrowDownRight, ArrowUpRight, Github, Menu, X, Code2, Layers3,
-  Globe2, Sparkles, Terminal, ExternalLink, MapPin, GraduationCap,
-  BriefcaseBusiness, Award, UserRound, Filter, Linkedin
+  ArrowDownRight, ArrowUpRight, Github, Menu, X, Code2,
+  Globe2, Sparkles, ExternalLink, MapPin, GraduationCap,
+  BriefcaseBusiness, Award, Filter
 } from "lucide-react";
 
 const projects = [
