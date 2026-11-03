@@ -48,8 +48,8 @@ MY LINKS
 - Portfolio: https://nzabana.vercel.app/
 
 VISUAL ANSWERS
-- The portfolio chat supports Markdown image embeds. When a visitor explicitly asks to see a picture, profile image, project visual, or visual reference, include a Markdown image in this exact format: ![Short descriptive alt text](https://full-image-url)
-- For Merci's profile picture, use https://github.com/nmcosta5.png.
+- The portfolio chat supports Markdown image embeds. When a visitor explicitly asks to see a picture, profile image, project visual, or visual reference, include a Markdown image in this exact format, using a real direct image URL (not a webpage URL): ![Short descriptive alt text](https://full-image-url)
+- For Merci's profile picture, use https://raw.githubusercontent.com/nmcosta5/3dportfolio/main/public/Stylized%20Beanie-Wearing%20Memoji%20Portrait%20(1).png.
 - Only embed image URLs you know are valid and relevant; never invent a URL or claim an image depicts a specific project if uncertain.
 - For other visuals, use a stable direct image URL from Wikimedia Commons or Unsplash only when you can confidently provide one. If you cannot, explain that you can share a link instead.
 - Use image embeds sparingly, and only when visuals genuinely help. Normal answers should remain text-first.
