@@ -29,28 +29,96 @@ const projects = [
 function FluidCanvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   useEffect(() => {
-    const canvas = canvasRef.current; const ctx = canvas?.getContext("2d"); if (!canvas || !ctx) return;
-    let raf = 0, width = 0, height = 0, tick = 0;
-    const pointer = { x: -1000, y: -1000 };
-    const blobs = Array.from({ length: 7 }, (_, i) => ({ x: Math.random(), y: Math.random(), r: 90 + Math.random() * 150, vx: (Math.random() - .5) * .00045, vy: (Math.random() - .5) * .0004, phase: i * 1.7 }));
-    const resize = () => { const dpr = Math.min(window.devicePixelRatio || 1, 1.6); width = window.innerWidth; height = window.innerHeight; canvas.width = width * dpr; canvas.height = height * dpr; canvas.style.width = width + "px"; canvas.style.height = height + "px"; ctx.setTransform(dpr, 0, 0, dpr, 0, 0); };
-    const move = (e: PointerEvent) => { pointer.x = e.clientX; pointer.y = e.clientY; };
-    const leave = () => { pointer.x = -1000; pointer.y = -1000; };
-    const draw = () => {
-      tick += .006; ctx.clearRect(0, 0, width, height); ctx.globalCompositeOperation = "screen";
-      blobs.forEach((b, i) => {
-        b.x += b.vx; b.y += b.vy; if (b.x < -.1 || b.x > 1.1) b.vx *= -1; if (b.y < -.1 || b.y > 1.1) b.vy *= -1;
-        const x = b.x * width + Math.sin(tick * .7 + b.phase) * 24, y = b.y * height + Math.cos(tick * .8 + b.phase) * 22;
-        const dx = x - pointer.x, dy = y - pointer.y, dist = Math.hypot(dx, dy), push = dist < 220 ? (220 - dist) / 220 : 0;
-        const px = x + (dist ? dx / dist * push * 35 : 0), py = y + (dist ? dy / dist * push * 35 : 0), radius = b.r + Math.sin(tick + b.phase) * 22;
-        const g = ctx.createRadialGradient(px, py, 0, px, py, radius);
-        g.addColorStop(0, i % 2 ? "rgba(205,213,221,.16)" : "rgba(190,205,196,.17)"); g.addColorStop(.48, "rgba(210,216,220,.065)"); g.addColorStop(1, "rgba(255,255,255,0)");
-        ctx.fillStyle = g; ctx.beginPath(); ctx.arc(px, py, radius, 0, Math.PI * 2); ctx.fill();
-      });
-      ctx.globalCompositeOperation = "source-over"; raf = requestAnimationFrame(draw);
+    const canvas = canvasRef.current;
+    const ctx = canvas?.getContext("2d", { alpha: true });
+    if (!canvas || !ctx) return;
+
+    let width = 0;
+    let height = 0;
+    let frame = 0;
+    let lastTime = 0;
+    const pointer = { x: -1000, y: -1000, lastX: -1000, lastY: -1000, active: false };
+    const particles: Array<{ x: number; y: number; vx: number; vy: number; radius: number; life: number; maxLife: number; hue: number }> = [];
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const palette = [148, 158, 174, 190];
+
+    const resize = () => {
+      const dpr = Math.min(window.devicePixelRatio || 1, 1.35);
+      width = window.innerWidth;
+      height = window.innerHeight;
+      canvas.width = Math.round(width * dpr);
+      canvas.height = Math.round(height * dpr);
+      canvas.style.width = width + "px";
+      canvas.style.height = height + "px";
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     };
-    resize(); draw(); window.addEventListener("resize", resize); window.addEventListener("pointermove", move, { passive: true }); window.addEventListener("pointerleave", leave);
-    return () => { cancelAnimationFrame(raf); window.removeEventListener("resize", resize); window.removeEventListener("pointermove", move); window.removeEventListener("pointerleave", leave); };
+
+    const move = (event: PointerEvent) => {
+      if (event.pointerType === "touch") return;
+      pointer.lastX = pointer.x;
+      pointer.lastY = pointer.y;
+      pointer.x = event.clientX;
+      pointer.y = event.clientY;
+      pointer.active = true;
+      const distance = Math.hypot(pointer.x - pointer.lastX, pointer.y - pointer.lastY);
+      const count = Math.min(5, Math.max(1, Math.floor(distance / 13)));
+      for (let i = 0; i < count; i++) {
+        const t = (i + 1) / count;
+        const x = pointer.lastX < 0 ? pointer.x : pointer.lastX + (pointer.x - pointer.lastX) * t;
+        const y = pointer.lastY < 0 ? pointer.y : pointer.lastY + (pointer.y - pointer.lastY) * t;
+        particles.push({
+          x: x + (Math.random() - .5) * 10,
+          y: y + (Math.random() - .5) * 10,
+          vx: (Math.random() - .5) * 0.65,
+          vy: (Math.random() - .5) * 0.65,
+          radius: 18 + Math.random() * 25,
+          life: 1,
+          maxLife: .72 + Math.random() * .5,
+          hue: palette[Math.floor(Math.random() * palette.length)]
+        });
+      }
+      if (particles.length > 110) particles.splice(0, particles.length - 110);
+    };
+    const leave = () => { pointer.active = false; pointer.lastX = -1000; pointer.lastY = -1000; };
+    const draw = (time: number) => {
+      const delta = Math.min((time - (lastTime || time)) / 16.67, 2);
+      lastTime = time;
+      ctx.clearRect(0, 0, width, height);
+      ctx.globalCompositeOperation = "screen";
+      for (let i = particles.length - 1; i >= 0; i--) {
+        const p = particles[i];
+        p.life -= .012 * delta / p.maxLife;
+        p.x += p.vx * delta;
+        p.y += p.vy * delta;
+        p.vx *= .986;
+        p.vy *= .986;
+        if (p.life <= 0) { particles.splice(i, 1); continue; }
+        const alpha = Math.max(0, p.life) * .105;
+        const radius = p.radius * (1 + (1 - p.life) * .65);
+        const gradient = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, radius);
+        gradient.addColorStop(0, `hsla(${p.hue}, 13%, 72%, ${alpha})`);
+        gradient.addColorStop(.42, `hsla(${p.hue}, 12%, 78%, ${alpha * .58})`);
+        gradient.addColorStop(1, `hsla(${p.hue}, 10%, 85%, 0)`);
+        ctx.fillStyle = gradient;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, radius, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.globalCompositeOperation = "source-over";
+      if (!reducedMotion || particles.length) frame = requestAnimationFrame(draw);
+    };
+
+    resize();
+    frame = requestAnimationFrame(draw);
+    window.addEventListener("resize", resize, { passive: true });
+    window.addEventListener("pointermove", move, { passive: true });
+    window.addEventListener("pointerleave", leave);
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener("resize", resize);
+      window.removeEventListener("pointermove", move);
+      window.removeEventListener("pointerleave", leave);
+    };
   }, []);
   return <canvas ref={canvasRef} className="fluid-canvas" aria-hidden="true" />;
 }
