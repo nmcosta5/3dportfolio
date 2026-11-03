@@ -70,6 +70,9 @@ function FluidCanvas() {
         });
       }
       if (particles.length > 110) particles.splice(0, particles.length - 110);
+      // Restart the render loop after pointer input when reduced-motion mode
+      // allowed the idle loop to pause.
+      if (reducedMotion && !frame) frame = requestAnimationFrame(draw);
     };
     const leave = () => { pointer.active = false; pointer.lastX = -1000; pointer.lastY = -1000; };
     const draw = (time: number) => {
@@ -98,6 +101,7 @@ function FluidCanvas() {
       }
       ctx.globalCompositeOperation = "source-over";
       if (!reducedMotion || particles.length) frame = requestAnimationFrame(draw);
+      else frame = 0;
     };
 
     resize();
