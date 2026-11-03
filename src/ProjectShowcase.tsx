@@ -1,6 +1,6 @@
 import { Suspense, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { RoundedBox, Text, useTexture } from "@react-three/drei";
+import { RoundedBox, useTexture } from "@react-three/drei";
 import * as THREE from "three";
 
 type Project = { name: string; desc: string; url: string; type: string; stack: string; shot: string };
@@ -70,14 +70,22 @@ function Scene({ projects, active, setActive }: { projects: Project[]; active: n
 }
 export default function ProjectShowcase({ projects }: { projects: Project[] }) {
   const [active, setActive] = useState(2);
+  const dragStart = useRef<number | null>(null);
   const project = projects[active];
   const change = (direction: number) => setActive(current => (current + direction + projects.length) % projects.length);
+  const onPointerDown = (event: React.PointerEvent<HTMLDivElement>) => { dragStart.current = event.clientX; event.currentTarget.setPointerCapture(event.pointerId); };
+  const onPointerUp = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (dragStart.current === null) return;
+    const distance = event.clientX - dragStart.current;
+    if (Math.abs(distance) > 34) change(distance < 0 ? 1 : -1);
+    dragStart.current = null;
+  };
   return <section className="r3f-showcase" aria-label="Interactive 3D project showcase">
-    <div className="r3f-stage">
+    <div className="r3f-stage" onPointerDown={onPointerDown} onPointerUp={onPointerUp} onPointerCancel={() => { dragStart.current = null; }}>
       <Canvas dpr={[1, 1.7]} camera={{ position: [0, 0.1, 7.2], fov: 38 }} gl={{ antialias: true, alpha: true }}>
         <Suspense fallback={null}><Scene projects={projects} active={active} setActive={setActive} /></Suspense>
       </Canvas>
-      <span className="r3f-hint">DRAG THE VIEW · SELECT A CARD</span>
+      <span className="r3f-hint">DRAG TO BROWSE · SELECT A CARD</span>
     </div>
     <div className="r3f-details" aria-live="polite">
       <div className="r3f-project-copy">
