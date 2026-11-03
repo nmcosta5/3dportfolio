@@ -1,103 +1,114 @@
-import { useEffect, useMemo, useState } from "react";
-import {
-  ArrowDownRight, ArrowUpRight, Github, Menu, X, Code2,
-  Globe2, Sparkles, ExternalLink, MapPin, GraduationCap,
-  BriefcaseBusiness, Award, Filter
-} from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { ArrowUpRight, ArrowUp, Sparkles, X, Github, Globe2, ChevronRight } from "lucide-react";
 
+type Section = "Me" | "Projects" | "Skills" | "Fun" | "Contact";
+type Message = { question: string; answer: string };
+const sections: Section[] = ["Me", "Projects", "Skills", "Fun", "Contact"];
+const profile = { name: "Nzabana Merci", github: "https://github.com/nmcosta5", website: "https://nzabana.vercel.app/" };
+const content: Record<Section, { prompt: string; intro: string; suggestions: string[] }> = {
+  Me: { prompt: "Ask me anything about Merci…", intro: "I'm Merci — a student developer from Rwanda, currently studying at Giheke TSS. I enjoy turning ideas into useful digital experiences, learning how things work, and improving with every project. I'm hardworking, curious and disciplined, with a growing focus on full-stack web development.", suggestions: ["Tell me about yourself", "Where are you from?", "What are you studying?"] },
+  Projects: { prompt: "Ask about my projects…", intro: "I learn by building. My projects explore practical web experiences, from entertainment and personal finance to business websites and management tools.", suggestions: ["Tell me about Agasobanuye Free", "What have you built?", "Which technologies do you use?"] },
+  Skills: { prompt: "Ask about my technical skills…", intro: "My current toolkit includes JavaScript, TypeScript, React, HTML, CSS, Node.js, REST APIs, Supabase, MySQL, MongoDB, Git and GitHub. I keep strengthening these skills through coursework and hands-on projects.", suggestions: ["What are your strongest skills?", "Do you know React?", "What are you learning now?"] },
+  Fun: { prompt: "Ask me something fun…", intro: "Outside the code, I'm a curious learner who enjoys gaming, exploring technology, experimenting with ideas and finding better ways to build things.", suggestions: ["What do you do for fun?", "Are you a gamer?", "What inspires you?"] },
+  Contact: { prompt: "Ask how to get in touch…", intro: "Want to connect, collaborate or talk about a project? The best way to reach me online is through GitHub. You can also explore my personal website.", suggestions: ["How can I contact you?", "Can we collaborate?", "Show me your GitHub"] }
+};
 const projects = [
-  { number: "01", date: "2026", name: "Agasobanuye Free", type: "Entertainment platform", description: "A platform concept for discovering movies, series and local entertainment, with a focus on a clean browsing experience.", stack: ["React", "TypeScript", "Supabase"], link: "https://github.com/nmcosta5/Agsobanuye-New", tone: "project-amber", mark: "A." },
-  { number: "02", date: "2026", name: "Expense Tracker", type: "Personal finance", description: "A simple finance experience for recording expenses, understanding spending habits and keeping a budget in view.", stack: ["React", "TypeScript"], link: "https://github.com/nmcosta5?tab=repositories", tone: "project-green", mark: "₣" },
-  { number: "03", date: "2026", name: "XM Bakery", type: "Business website", description: "A modern storefront concept with thoughtful product presentation and a responsive browsing experience.", stack: ["React", "TypeScript"], link: "https://github.com/nmcosta5?tab=repositories", tone: "project-rose", mark: "XM" },
-  { number: "04", date: "2026", name: "Cooperative", type: "Management platform", description: "A web application concept exploring how useful cooperative workflows and information can be brought together.", stack: ["React", "TypeScript"], link: "https://github.com/nmcosta5?tab=repositories", tone: "project-blue", mark: "CO" }
+  { name: "Agasobanuye Free", desc: "A movie and entertainment discovery platform.", tags: "React · TypeScript · Supabase", url: "https://github.com/nmcosta5/Agsobanuye-New" },
+  { name: "Expense Tracker", desc: "A simple way to record expenses and understand spending.", tags: "React · TypeScript", url: "https://github.com/nmcosta5?tab=repositories" },
+  { name: "XM Bakery", desc: "A clean storefront concept for a bakery business.", tags: "React · TypeScript", url: "https://github.com/nmcosta5?tab=repositories" },
+  { name: "Cooperative", desc: "A web app concept for useful cooperative workflows.", tags: "React · TypeScript", url: "https://github.com/nmcosta5?tab=repositories" }
 ];
-
-const skillGroups = [
-  { category: "Languages", items: ["JavaScript", "TypeScript", "HTML", "CSS"] },
-  { category: "Frontend", items: ["React", "Responsive UI", "Tailwind CSS"] },
-  { category: "Backend", items: ["Node.js", "REST APIs", "Supabase"] },
-  { category: "Databases", items: ["MySQL", "MongoDB", "PostgreSQL"] },
-  { category: "Tools", items: ["Git", "GitHub", "Vite", "VS Code"] }
-];
-const filters = ["All", ...skillGroups.map(group => group.category)];
-
-function App() {
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [activeSection, setActiveSection] = useState("home");
-  const [activeFilter, setActiveFilter] = useState("All");
-  const visibleSkills = useMemo(() => activeFilter === "All" ? skillGroups : skillGroups.filter(group => group.category === activeFilter), [activeFilter]);
-
+function answerQuestion(section: Section, raw: string) {
+  const q = raw.toLowerCase();
+  if (/\b(name|who are you|about you|yourself|introduce)/.test(q)) return content.Me.intro;
+  if (/\b(from|country|where.*live|location)/.test(q)) return "I'm from Rwanda. I study at Giheke TSS and I'm working toward graduating in 2027.";
+  if (/\b(study|school|education|graduate)/.test(q)) return "I'm currently an Advanced Level student at Giheke TSS in Rwanda, with a focus on software development. My expected graduation year is 2027.";
+  if (/\b(project|built|build|agasobanuye|expense|bakery|cooperative)/.test(q)) return "Some of my projects include Agasobanuye Free, an entertainment discovery platform; Expense Tracker, a personal finance project; XM Bakery, a business website; and a Cooperative management concept. You can explore the code through my GitHub profile.";
+  if (/\b(skill|stack|technology|tech|react|typescript|javascript|node|database)/.test(q)) return content.Skills.intro;
+  if (/\b(fun|game|gaming|hobby|free time|inspire)/.test(q)) return content.Fun.intro;
+  if (/\b(contact|email|reach|collaborat|hire|github|website)/.test(q)) return "You can connect with me on GitHub at github.com/nmcosta5 or visit nzabana.vercel.app. I'm open to learning, collaboration and meaningful project conversations.";
+  if (/\b(ai|artificial intelligence|machine learning)/.test(q)) return "I'm interested in exploring AI and modern software tools, while my current core focus is full-stack web development with JavaScript, TypeScript, React and Node.js.";
+  return content[section].intro;
+}
+function FluidCanvas() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
   useEffect(() => {
-    const ids = ["home", "about", "experience", "projects", "skills", "learning", "profiles", "contact"];
-    const observer = new IntersectionObserver(entries => entries.forEach(entry => {
-      if (entry.isIntersecting) setActiveSection(entry.target.id);
-    }), { rootMargin: "-32% 0px -58% 0px" });
-    ids.forEach(id => { const node = document.getElementById(id); if (node) observer.observe(node); });
-    return () => observer.disconnect();
+    const canvas = canvasRef.current; const ctx = canvas?.getContext("2d"); if (!canvas || !ctx) return;
+    let raf = 0, width = 0, height = 0, tick = 0;
+    const pointer = { x: -1000, y: -1000 };
+    const blobs = Array.from({ length: 7 }, (_, i) => ({ x: Math.random(), y: Math.random(), r: 90 + Math.random() * 150, vx: (Math.random() - .5) * .00045, vy: (Math.random() - .5) * .0004, phase: i * 1.7 }));
+    const resize = () => { const dpr = Math.min(window.devicePixelRatio || 1, 1.6); width = window.innerWidth; height = window.innerHeight; canvas.width = width * dpr; canvas.height = height * dpr; canvas.style.width = width + "px"; canvas.style.height = height + "px"; ctx.setTransform(dpr, 0, 0, dpr, 0, 0); };
+    const move = (e: PointerEvent) => { pointer.x = e.clientX; pointer.y = e.clientY; };
+    const leave = () => { pointer.x = -1000; pointer.y = -1000; };
+    const draw = () => {
+      tick += .006; ctx.clearRect(0, 0, width, height); ctx.globalCompositeOperation = "screen";
+      blobs.forEach((b, i) => {
+        b.x += b.vx; b.y += b.vy; if (b.x < -.1 || b.x > 1.1) b.vx *= -1; if (b.y < -.1 || b.y > 1.1) b.vy *= -1;
+        const x = b.x * width + Math.sin(tick * .7 + b.phase) * 24, y = b.y * height + Math.cos(tick * .8 + b.phase) * 22;
+        const dx = x - pointer.x, dy = y - pointer.y, dist = Math.hypot(dx, dy), push = dist < 220 ? (220 - dist) / 220 : 0;
+        const px = x + (dist ? dx / dist * push * 35 : 0), py = y + (dist ? dy / dist * push * 35 : 0), radius = b.r + Math.sin(tick + b.phase) * 22;
+        const g = ctx.createRadialGradient(px, py, 0, px, py, radius);
+        g.addColorStop(0, i % 2 ? "rgba(205,213,221,.16)" : "rgba(190,205,196,.17)"); g.addColorStop(.48, "rgba(210,216,220,.065)"); g.addColorStop(1, "rgba(255,255,255,0)");
+        ctx.fillStyle = g; ctx.beginPath(); ctx.arc(px, py, radius, 0, Math.PI * 2); ctx.fill();
+      });
+      ctx.globalCompositeOperation = "source-over"; raf = requestAnimationFrame(draw);
+    };
+    resize(); draw(); window.addEventListener("resize", resize); window.addEventListener("pointermove", move, { passive: true }); window.addEventListener("pointerleave", leave);
+    return () => { cancelAnimationFrame(raf); window.removeEventListener("resize", resize); window.removeEventListener("pointermove", move); window.removeEventListener("pointerleave", leave); };
   }, []);
-
-  const closeMenu = () => setMenuOpen(false);
-  const navItems = ["About", "Experience", "Projects", "Skills", "Learning", "Profiles", "Contact"];
-
-  return (
-    <main>
-      <div className="ambient ambient-one" /><div className="ambient ambient-two" />
-      <header className="site-header">
-        <a className="brand" href="#home" onClick={closeMenu} aria-label="Nzabana Merci home"><span className="brand-mark">N<span>.</span></span><span className="brand-name">NZABANA MERCI</span></a>
-        <button className="mobile-toggle" onClick={() => setMenuOpen(!menuOpen)} aria-label="Toggle navigation">{menuOpen ? <X size={20} /> : <Menu size={20} />}</button>
-        <nav className={menuOpen ? "navigation navigation-open" : "navigation"}>
-          {navItems.map(item => <a key={item} className={activeSection === item.toLowerCase() ? "nav-link active" : "nav-link"} href={`#${item.toLowerCase()}`} onClick={closeMenu}>{item}</a>)}
-          <a className="nav-cta" href="https://github.com/nmcosta5" target="_blank" rel="noreferrer">Let's connect <ArrowUpRight size={15} /></a>
-        </nav>
-      </header>
-
-      <section className="hero section-shell" id="home">
-        <div className="hero-copy">
-          <div className="eyebrow"><span className="status-dot" /> SOFTWARE DEVELOPER IN THE MAKING <span className="eyebrow-line" /></div>
-          <h1>Turning ideas<br />into <span className="serif-accent">digital reality.</span></h1>
-          <p className="hero-description">Hello, I'm <strong>Nzabana Merci</strong> — a student developer from Rwanda who enjoys building useful, intuitive web experiences with modern technologies.</p>
-          <div className="hero-actions"><a className="button button-primary" href="#projects">Explore my work <ArrowDownRight size={17} /></a><a className="text-link" href="https://github.com/nmcosta5" target="_blank" rel="noreferrer">View GitHub <ArrowUpRight size={15} /></a></div>
-          <div className="hero-meta"><span><MapPin size={14} /> Rwanda</span><span className="meta-divider" /><span><GraduationCap size={15} /> Giheke TSS · Class of 2027</span></div>
-        </div>
-        <div className="hero-visual" aria-label="Abstract 3D portfolio artwork"><div className="visual-grid" /><div className="orbit orbit-a" /><div className="orbit orbit-b" /><div className="orbit orbit-c" /><div className="core-object"><span>N</span><i /></div><div className="float-card float-card-top"><Sparkles size={15} /><span>Curiosity → creation</span></div><div className="float-card float-card-bottom"><span className="mini-code">{"</>"}</span><span>Learn. Build. Improve.</span></div><span className="visual-index">FIG. 001 / CREATIVE ENGINEERING</span></div>
-        <a className="scroll-cue" href="#about"><span /> SCROLL TO EXPLORE</a>
+  return <canvas ref={canvasRef} className="fluid-canvas" aria-hidden="true" />;
+}
+function App() {
+  const [active, setActive] = useState<Section>("Me");
+  const [question, setQuestion] = useState("");
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [promoOpen, setPromoOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const current = content[active];
+  const displayed = useMemo(() => messages.length ? messages[messages.length - 1] : null, [messages]);
+  const selectSection = (section: Section) => { setActive(section); setQuestion(""); setMessages([]); setLoading(false); };
+  const ask = (value = question) => {
+    const clean = value.trim(); if (!clean || loading) return;
+    setQuestion(clean); setLoading(true);
+    window.setTimeout(() => { setMessages(prev => [...prev, { question: clean, answer: answerQuestion(active, clean) }]); setLoading(false); }, 320);
+  };
+  return <main className="app-shell">
+    <FluidCanvas />
+    <header className="topbar">
+      <button className="fastfolio-link" onClick={() => setPromoOpen(true)}><img src="https://www.aaabadcode.com/_next/image?q=75&url=%2Ffastfolio-logo.png&w=48" alt="" /><span>Build your AI portfolio</span><ArrowUpRight size={13}/></button>
+      <a className="about-mark" href={profile.github} target="_blank" rel="noreferrer" aria-label="Open GitHub profile"><Github size={17}/></a>
+    </header>
+    <section className="main-stage">
+      <div className="hero">
+        <div className="availability"><span className="availability-dot"/> AVAILABLE FOR COLLABORATION</div>
+        <h1>Hey, I'm Merci <span className="wave">👋</span></h1>
+        <p className="role-title">Software Developer</p>
+        <div className="portrait-wrap"><div className="portrait-halo"/><img className="portrait" src="https://www.aaabadcode.com/_next/image?q=75&url=%2Flanding-memojis.png&w=3840" alt="3D Memoji-style portrait"/></div>
+        <p className="hero-caption">A curious developer from Rwanda, building thoughtful things for the web.</p>
+      </div>
+      <div className="conversation" aria-live="polite">
+        <div className="conversation-heading"><span className="sparkle"><Sparkles size={14}/></span><span>{active === "Me" ? "A LITTLE INTRODUCTION" : "LET'S TALK " + active.toUpperCase()}</span><i/></div>
+        {displayed ? <div className="answer-card"><div className="user-question">{displayed.question}</div><p>{displayed.answer}</p>
+          {active === "Projects" && <div className="mini-projects">{projects.map(p => <a href={p.url} key={p.name} target="_blank" rel="noreferrer"><span><b>{p.name}</b><small>{p.desc}</small></span><ArrowUpRight size={15}/></a>)}</div>}
+          {active === "Skills" && <div className="skill-cloud">{["JavaScript","TypeScript","React","Node.js","HTML","CSS","Supabase","MySQL","MongoDB","Git"].map(s => <span key={s}>{s}</span>)}</div>}
+          {active === "Contact" && <div className="contact-links"><a href={profile.github} target="_blank" rel="noreferrer"><Github size={15}/> GitHub <ArrowUpRight size={13}/></a><a href={profile.website} target="_blank" rel="noreferrer"><Globe2 size={15}/> Portfolio <ArrowUpRight size={13}/></a></div>}
+        </div> : <div className="intro-answer"><span className="answer-dot"/><p>{current.intro}</p></div>}
+        <div className="suggestions">{current.suggestions.map(s => <button key={s} onClick={() => ask(s)}>{s}<ChevronRight size={12}/></button>)}</div>
+        <form className="ask-form" onSubmit={e => { e.preventDefault(); ask(); }}><input value={question} onChange={e => setQuestion(e.target.value)} placeholder={current.prompt} aria-label={current.prompt} maxLength={240}/><button type="submit" disabled={!question.trim() || loading} aria-label="Send question">{loading ? <span className="loader"/> : <ArrowUp size={17}/>}</button></form>
+        <div className="input-note">PRESS ENTER TO ASK <span>·</span> ANSWERS BASED ON PUBLIC PROFILE INFO</div>
+      </div>
+    </section>
+    <nav className="section-nav" aria-label="Portfolio sections">{sections.map((section, i) => <button key={section} onClick={() => selectSection(section)} className={active === section ? "nav-item active" : "nav-item"} aria-current={active === section ? "page" : undefined}><span className="nav-number">0{i + 1}</span>{section}</button>)}</nav>
+    <footer className="bottom-footer"><span>© {new Date().getFullYear()} {profile.name.toUpperCase()}</span><span>MADE WITH CURIOSITY IN RWANDA</span><button onClick={() => setPromoOpen(true)}>BUILT WITH <b>FASTFOLIO</b> <ArrowUpRight size={11}/></button></footer>
+    {promoOpen && <div className="modal-backdrop" role="presentation" onMouseDown={e => { if (e.target === e.currentTarget) setPromoOpen(false); }}>
+      <section className="promo-modal" role="dialog" aria-modal="true" aria-labelledby="promo-title"><button className="modal-close" onClick={() => setPromoOpen(false)} aria-label="Close promotion"><X size={17}/></button>
+        <div className="modal-logo"><img src="https://www.aaabadcode.com/_next/image?q=75&url=%2Ffastfolio-logo.png&w=48" alt="Fastfolio logo"/></div>
+        <span className="modal-eyebrow">YOUR STORY, POWERED BY AI</span><h2 id="promo-title">Build your AI<br/><em>portfolio.</em></h2>
+        <p>Turn your experience, projects and personality into a portfolio that feels like you. Start with Fastfolio and bring your work to life.</p>
+        <a className="modal-cta" href="https://www.aaabadcode.com/" target="_blank" rel="noreferrer">Explore Fastfolio <ArrowUpRight size={15}/></a>
+        <span className="modal-footnote">A PORTFOLIO BUILDER FOR THE NEXT GENERATION</span>
       </section>
-
-      <section className="intro-strip"><div className="section-shell strip-inner"><span className="strip-label">MY DEVELOPMENT PHILOSOPHY</span><p>Build with purpose. Keep it <em>simple, useful and human.</em></p><span className="strip-symbol">✳</span></div></section>
-
-      <section className="section-shell about-section" id="about">
-        <div className="section-kicker"><span>01</span> / ABOUT ME — BEHIND THE CODE</div>
-        <div className="about-grid"><div><h2>Curious by nature.<br /><span className="serif-accent">Builder</span> by choice.</h2></div><div className="about-copy"><p className="large-copy">I enjoy taking an idea from a rough sketch to a working product — solving problems, learning new tools and refining the details that make an experience feel right.</p><p>I'm currently studying at Giheke TSS in Rwanda, building my foundation in software development. I’m especially interested in full-stack web development, practical problem-solving and creating digital products that solve real needs.</p><div className="trait-list"><span>Hardworking</span><span>Curious</span><span>Disciplined</span></div><a className="inline-link" href="https://github.com/nmcosta5" target="_blank" rel="noreferrer">Explore my GitHub <ArrowUpRight size={15} /></a></div></div>
-      </section>
-
-      <section className="experience-section" id="experience"><div className="section-shell">
-        <div className="section-kicker"><span>02</span> / EXPERIENCE & EDUCATION</div><div className="section-heading"><div><h2>My learning <span className="serif-accent">journey.</span></h2></div><p>My path so far is built around education, hands-on practice and learning by making.</p></div>
-        <div className="timeline">
-          <article className="timeline-item"><div className="timeline-index">01</div><div className="timeline-date">CURRENT · 2027 GRADUATION</div><div className="timeline-content"><span className="timeline-kind"><GraduationCap size={14}/> EDUCATION</span><h3>Giheke TSS</h3><p>Advanced Level student developing practical skills in software development and strengthening foundations in web technologies.</p><div className="tag-row"><span>Software Development</span><span>TVET</span><span>Rwanda</span></div></div></article>
-          <article className="timeline-item"><div className="timeline-index">02</div><div className="timeline-date">ONGOING</div><div className="timeline-content"><span className="timeline-kind"><BriefcaseBusiness size={14}/> INDEPENDENT DEVELOPMENT</span><h3>Personal projects & practice</h3><p>Building and iterating on web applications to apply what I learn, explore full-stack workflows and develop a stronger engineering mindset.</p><div className="tag-row"><span>React</span><span>TypeScript</span><span>Node.js</span></div></div></article>
-        </div>
-      </div></section>
-
-      <section className="work-section" id="projects"><div className="section-shell">
-        <div className="section-heading"><div><div className="section-kicker"><span>03</span> / PROJECTS SHOWCASE</div><h2>Ideas made <span className="serif-accent">tangible.</span></h2></div><p>A selection of projects and experiments that reflect what I enjoy building.</p></div>
-        <div className="project-grid">{projects.map(project => <article className={`project-card ${project.tone}`} key={project.number}><div className="project-top"><span>{project.date} · PROJECT {project.number}</span><a href={project.link} target="_blank" rel="noreferrer" aria-label={`View ${project.name} on GitHub`}><ArrowUpRight size={18}/></a></div><div className="project-art"><div className="art-orbit"/><div className="art-mark">{project.mark}</div><span className="art-caption">DIGITAL / EXPERIENCE</span></div><div className="project-info"><span className="project-type">{project.type}</span><h3>{project.name}</h3><p>{project.description}</p><div className="tag-row">{project.stack.map(tag => <span key={tag}>{tag}</span>)}</div></div></article>)}</div>
-        <div className="work-footer"><span>MORE EXPERIMENTS & CODE</span><a href="https://github.com/nmcosta5?tab=repositories" target="_blank" rel="noreferrer">View all repositories <ArrowUpRight size={16}/></a></div>
-      </div></section>
-
-      <section className="section-shell skills-section" id="skills"><div className="section-kicker"><span>04</span> / TECHNICAL SKILLS — CORE EXPERTISE</div><div className="section-heading skills-heading"><h2>My developer <span className="serif-accent">toolkit.</span></h2><p>Technologies I use in projects and continue to develop through hands-on practice.</p></div>
-        <div className="skill-filter"><span><Filter size={14}/> FILTER BY CATEGORY</span><div>{filters.map(filter => <button key={filter} className={activeFilter === filter ? "filter-chip selected" : "filter-chip"} onClick={() => setActiveFilter(filter)}>{filter}</button>)}</div></div>
-        <div className="skills-grid skills-filter-grid">{visibleSkills.map((group,index) => <div className="skill-card" key={group.category}><div className="skill-card-top"><span>0{index+1}</span><Code2 size={21}/></div><h3>{group.category}</h3><div className="skill-items">{group.items.map(item => <span key={item}>{item}</span>)}</div></div>)}</div>
-        <div className="principle"><Globe2 size={19}/><p>Always learning. Always building. Always looking for a better way.</p></div>
-      </section>
-
-      <section className="learning-section" id="learning"><div className="section-shell"><div className="section-kicker"><span>05</span> / LEARNING MILESTONES</div><div className="learning-card"><div className="learning-icon"><Award size={24}/></div><div><span className="project-type">A CONTINUOUS JOURNEY</span><h2>Learning never <span className="serif-accent">stops.</span></h2><p>I'm currently focused on strengthening my software development fundamentals through coursework, independent projects and consistent practice. This section will grow as I complete verifiable courses, certifications and milestones.</p></div><span className="learning-stamp">IN PROGRESS<br/>2026—2027</span></div></div></section>
-
-      <section className="profiles-section" id="profiles"><div className="section-shell"><div className="section-kicker"><span>06</span> / WEB PRESENCE — DEVELOPER NETWORK</div><div className="section-heading"><h2>Find me <span className="serif-accent">online.</span></h2><p>Explore my code, projects and ongoing work across the web.</p></div><div className="profile-grid"><a className="profile-card" href="https://github.com/nmcosta5" target="_blank" rel="noreferrer"><span className="profile-icon"><Github size={23}/></span><span className="profile-label">CODE & OPEN SOURCE</span><h3>GitHub</h3><p>@nmcosta5</p><ArrowUpRight size={18} className="profile-arrow"/></a><a className="profile-card" href="https://nzabana.vercel.app/" target="_blank" rel="noreferrer"><span className="profile-icon"><Globe2 size={23}/></span><span className="profile-label">PERSONAL WEBSITE</span><h3>Portfolio</h3><p>nzabana.vercel.app</p><ArrowUpRight size={18} className="profile-arrow"/></a></div></div></section>
-
-      <section className="contact-section" id="contact"><div className="section-shell contact-inner"><div className="section-kicker"><span>07</span> / GET IN TOUCH — LET'S CONNECT</div><p className="contact-overline">HAVE AN IDEA OR WANT TO COLLABORATE?</p><h2>Let's build<br/><span className="serif-accent">something meaningful.</span></h2><p className="contact-intro">I'm open to connecting with fellow developers, learning from others and exploring meaningful project opportunities.</p><a className="contact-email" href="https://github.com/nmcosta5" target="_blank" rel="noreferrer">Connect with me on GitHub <ArrowUpRight size={22}/></a><div className="contact-actions"><a className="button button-primary" href="https://github.com/nmcosta5" target="_blank" rel="noreferrer"><Github size={16}/> Send me a message <ExternalLink size={13}/></a></div></div></section>
-
-      <footer className="site-footer section-shell"><a className="brand" href="#home"><span className="brand-mark">N<span>.</span></span><span className="brand-name">NZABANA MERCI</span></a><span className="footer-note">INNOVATION THROUGH CURIOSITY & CODE</span><div className="social-links"><a href="https://github.com/nmcosta5" target="_blank" rel="noreferrer" aria-label="GitHub"><Github size={17}/></a><a href="https://nzabana.vercel.app/" target="_blank" rel="noreferrer" aria-label="Portfolio"><Globe2 size={17}/></a></div><span className="copyright">© {new Date().getFullYear()} NZABANA MERCI</span></footer>
-    </main>
-  );
+    </div>}
+  </main>;
 }
 export default App;
