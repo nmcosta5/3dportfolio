@@ -75,7 +75,6 @@ function App() {
   return <main className="app-shell">
     <FluidCanvas />
     <header className="topbar">
-      <button className="fastfolio-link" onClick={() => setPromoOpen(true)}><img src="https://www.aaabadcode.com/_next/image?q=75&url=%2Ffastfolio-logo.png&w=48" alt="" /><span>Build your AI portfolio</span><ArrowUpRight size={13}/></button>
       <a className="about-mark" href={profile.github} target="_blank" rel="noreferrer" aria-label="Open GitHub profile"><Github size={17}/></a>
     </header>
     <section className="main-stage">
