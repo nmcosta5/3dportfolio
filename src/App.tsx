@@ -1,30 +1,22 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ArrowUpRight, ArrowUp, Sparkles, X, Github, Globe2, ChevronRight, Sun, Moon, Download, RotateCcw, Copy, Check } from "lucide-react";
-import ProjectShowcase from "./ProjectShowcase";
 
-type Section = "Me" | "Projects" | "Skills" | "Fun" | "Contact";
+type Section = "Me" | "Skills" | "Fun" | "Contact";
 type Message = { question: string; answer: string };
 
 function AnswerBody({ text }: { text: string }) {
   const paragraphs = text.split(/\n{2,}/).filter(Boolean);
   return <div className="answer-copy">{paragraphs.map((paragraph, index) => <p key={index}>{paragraph.split(/(https?:\/\/[^\s)]+)/g).map((part, partIndex) => /^https?:\/\//.test(part) ? <a key={partIndex} href={part} target="_blank" rel="noreferrer">{part.replace(/^https?:\/\//, "").replace(/\/$/, "")} <ArrowUpRight size={11}/></a> : part)}</p>)}</div>;
 }
-const sections: Section[] = ["Me", "Projects", "Skills", "Fun", "Contact"];
+const sections: Section[] = ["Me", "Skills", "Fun", "Contact"];
 const profile = { name: "Nzabana Merci", github: "https://github.com/nmcosta5", website: "https://nzabana.vercel.app/" };
 const content: Record<Section, { prompt: string; intro: string; suggestions: string[] }> = {
   Me: { prompt: "Ask me anything about Merci…", intro: "I'm Merci — a student developer from Rwanda, currently studying at Giheke TSS. I enjoy turning ideas into useful digital experiences, learning how things work, and improving with every project. I'm hardworking, curious and disciplined, with a growing focus on full-stack web development.", suggestions: ["Tell me about yourself", "Where are you from?", "What are you studying?"] },
-  Projects: { prompt: "Ask about my projects…", intro: "I learn by building. My projects explore practical web experiences, from entertainment and personal finance to business websites and management tools.", suggestions: ["Tell me about Agasobanuye Free", "What have you built?", "Which technologies do you use?"] },
   Skills: { prompt: "Ask about my technical skills…", intro: "My current toolkit includes JavaScript, TypeScript, React, HTML, CSS, Node.js, REST APIs, Supabase, MySQL, MongoDB, Git and GitHub. I keep strengthening these skills through coursework and hands-on projects.", suggestions: ["What are your strongest skills?", "Do you know React?", "What are you learning now?"] },
   Fun: { prompt: "Ask me something fun…", intro: "Outside the code, I'm a curious learner who enjoys gaming, exploring technology, experimenting with ideas and finding better ways to build things.", suggestions: ["What do you do for fun?", "Are you a gamer?", "What inspires you?"] },
   Contact: { prompt: "Ask how to get in touch…", intro: "Want to connect, collaborate or talk about a project? The best way to reach me online is through GitHub. You can also explore my personal website.", suggestions: ["How can I contact you?", "Can we collaborate?", "Show me your GitHub"] }
 };
-const projects = [
-  { name: "Agasobanuye Free", desc: "Discover movies, series and entertainment.", url: "https://agasobanuyefree.vercel.app", type: "ENTERTAINMENT", stack: "React · TypeScript · Supabase", shot: "https://image.thum.io/get/width/1200/crop/760/noanimate/https://agasobanuyefree.vercel.app" },
-  { name: "Sonora Lemon", desc: "A music experience built around sound and discovery.", url: "https://sonoralemon.vercel.app", type: "MUSIC EXPERIENCE", stack: "React · TypeScript", shot: "https://image.thum.io/get/width/1200/crop/760/noanimate/https://sonoralemon.vercel.app" },
-  { name: "VocalPiano", desc: "An interactive space for voice and piano.", url: "https://vocalpiano.vercel.app", type: "MUSIC TOOL", stack: "Web · Audio", shot: "https://image.thum.io/get/width/1200/crop/760/noanimate/https://vocalpiano.vercel.app" },
-  { name: "AskVolt", desc: "An AI-powered assistant experience.", url: "https://askvolt.vercel.app", type: "AI APPLICATION", stack: "React · AI", shot: "https://image.thum.io/get/width/1200/crop/760/noanimate/https://askvolt.vercel.app" },
-  { name: "MerciHub", desc: "A personal hub for digital tools and experiences.", url: "https://mercihub.vercel.app", type: "DIGITAL HUB", stack: "React · Web", shot: "https://image.thum.io/get/width/1200/crop/760/noanimate/https://mercihub.vercel.app" }
-];
+
 
 function FluidCanvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -40,7 +32,7 @@ function FluidCanvas() {
     const pointer = { x: -1000, y: -1000, lastX: -1000, lastY: -1000, active: false };
     const particles: Array<{ x: number; y: number; vx: number; vy: number; radius: number; life: number; maxLife: number; hue: number }> = [];
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const palette = [148, 158, 174, 190];
+    const palette = [112, 132, 148, 158];
 
     const resize = () => {
       const dpr = Math.min(window.devicePixelRatio || 1, 1.35);
@@ -71,7 +63,7 @@ function FluidCanvas() {
           y: y + (Math.random() - .5) * 10,
           vx: (Math.random() - .5) * 0.65,
           vy: (Math.random() - .5) * 0.65,
-          radius: 18 + Math.random() * 25,
+          radius: 28 + Math.random() * 38,
           life: 1,
           maxLife: .72 + Math.random() * .5,
           hue: palette[Math.floor(Math.random() * palette.length)]
@@ -93,11 +85,11 @@ function FluidCanvas() {
         p.vx *= .986;
         p.vy *= .986;
         if (p.life <= 0) { particles.splice(i, 1); continue; }
-        const alpha = Math.max(0, p.life) * .105;
+        const alpha = Math.max(0, p.life) * .27;
         const radius = p.radius * (1 + (1 - p.life) * .65);
         const gradient = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, radius);
-        gradient.addColorStop(0, `hsla(${p.hue}, 13%, 72%, ${alpha})`);
-        gradient.addColorStop(.42, `hsla(${p.hue}, 12%, 78%, ${alpha * .58})`);
+        gradient.addColorStop(0, `hsla(${p.hue}, 18%, 48%, ${alpha})`);
+        gradient.addColorStop(.42, `hsla(${p.hue}, 16%, 56%, ${alpha * .72})`);
         gradient.addColorStop(1, `hsla(${p.hue}, 10%, 85%, 0)`);
         ctx.fillStyle = gradient;
         ctx.beginPath();
@@ -199,12 +191,6 @@ function App() {
       </div>
       <div className="conversation" aria-live="polite">
         <div className="conversation-heading"><span className="sparkle"><Sparkles size={14}/></span><span>{active === "Me" ? "A LITTLE INTRODUCTION" : "LET'S TALK " + active.toUpperCase()}</span><i/></div>
-        {active === "Projects" && <section className="showcase-intro">
-          <span className="showcase-kicker">SELECTED WORK <span>✳</span> 2024 — 2026</span>
-          <h2>Things I've <em>built.</em></h2>
-          <p>A collection of projects I've brought to life — each one a chance to learn, experiment and build something useful.</p>
-        </section>}
-        {active === "Projects" ? <ProjectShowcase projects={projects} /> : null}
         {active === "Skills" && <div className="interactive-skills"><div className="skill-grid">{[{name:"Frontend",items:"React · TypeScript · JavaScript · HTML · CSS",detail:"I build responsive interfaces and interactive experiences with a focus on clear structure and usability."},{name:"Backend",items:"Node.js · REST APIs · Supabase",detail:"I connect interfaces to data and services, and I am continuing to strengthen my backend architecture skills."},{name:"Databases",items:"MySQL · MongoDB · Supabase",detail:"I have worked with relational and document databases while building practical applications."},{name:"Workflow",items:"Git · GitHub · Vite",detail:"I use version control and modern development tooling to organize projects and iterate on features."}].map(skill => <button key={skill.name} className={selectedSkill === skill.name ? "skill-card selected" : "skill-card"} onClick={() => setSelectedSkill(selectedSkill === skill.name ? null : skill.name)}><span>{skill.name}</span><p>{skill.items}</p><small>{selectedSkill === skill.name ? skill.detail : "CLICK TO EXPLORE"}</small></button>)}</div></div>}
         {active === "Fun" && <div className="challenge-card"><span className="challenge-label">A SMALL DEVELOPER CHALLENGE</span><p>{challenge}</p><button onClick={nextChallenge}><RotateCcw size={13}/> Give me another</button></div>}
         {active === "Contact" && <div className="contact-quick"><button onClick={copyGithub}>{copied ? <Check size={14}/> : <Copy size={14}/>} {copied ? "GitHub link copied" : "Copy GitHub link"}</button><a href={profile.github} target="_blank" rel="noreferrer"><Github size={14}/> Open GitHub <ArrowUpRight size={12}/></a><a href={profile.website} target="_blank" rel="noreferrer"><Globe2 size={14}/> Visit website <ArrowUpRight size={12}/></a></div>}
@@ -213,7 +199,7 @@ function App() {
           
           {active === "Skills" && <div className="skill-cloud">{["JavaScript","TypeScript","React","Node.js","HTML","CSS","Supabase","MySQL","MongoDB","Git"].map(s => <span key={s}>{s}</span>)}</div>}
           {active === "Contact" && <div className="contact-links"><a href={profile.github} target="_blank" rel="noreferrer"><Github size={15}/> GitHub <ArrowUpRight size={13}/></a><a href={profile.website} target="_blank" rel="noreferrer"><Globe2 size={15}/> Portfolio <ArrowUpRight size={13}/></a></div>}
-        </div> : active !== "Projects" ? <div className="intro-answer"><span className="answer-dot"/><p>{current.intro}</p></div> : null}
+        </div> ? <div className="intro-answer"><span className="answer-dot"/><p>{current.intro}</p></div> : null}
         <div className="suggestions">{current.suggestions.map(s => <button key={s} onClick={() => ask(s)}>{s}<ChevronRight size={12}/></button>)}</div>
         <form className="ask-form" onSubmit={e => { e.preventDefault(); ask(); }}><input value={question} onChange={e => setQuestion(e.target.value)} placeholder={current.prompt} aria-label={current.prompt} maxLength={240}/><button type="submit" disabled={!question.trim() || loading} aria-label="Send question">{loading ? <span className="loader"/> : <ArrowUp size={17}/>}</button></form>
         {loading && !streamingAnswer && <div className="thinking-card" role="status"><span className="thinking-dots"><i/><i/><i/></span><span>Merci is thinking…</span></div>}
