@@ -191,3 +191,10 @@
 .app-shell>.fluid-canvas{z-index:1!important}
 .app-shell>.topbar,.app-shell>.main-stage,.app-shell>.bottom-footer{position:relative;z-index:2}
 :root[data-theme="dark"] .app-shell{background:radial-gradient(ellipse at 50% 46%,rgba(53,65,56,.34),transparent 52%),#141816!important}
+
+
+/* Fluid cursor is a true page background: canvas behind every UI layer. */
+.app-shell{position:relative;isolation:isolate}
+.app-shell>.fluid-canvas{position:fixed!important;inset:0!important;z-index:0!important;pointer-events:none!important}
+.app-shell>.topbar,.app-shell>.main-stage,.app-shell>.bottom-footer{position:relative;z-index:1}
+.app-shell>.section-nav{z-index:5}
