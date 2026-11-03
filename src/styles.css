@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap');
 :root{font-family:"DM Sans",sans-serif;color:#242729;background:#fbfbfa;font-synthesis:none;text-rendering:optimizeLegibility;-webkit-font-smoothing:antialiased;--line:#e9eae8;--mono:"DM Mono",monospace}
 *{box-sizing:border-box}html,body,#root{margin:0;min-width:320px;min-height:100%;width:100%}body{background:#fbfbfa;overflow-x:hidden}button,input{font:inherit}button{cursor:pointer}a{color:inherit;text-decoration:none}
@@ -74,7 +75,6 @@
 
 
 /* Reference-led layout: centered AI portfolio hero + glass action tiles */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 :root{font-family:Inter, sans-serif}
 .app-shell{min-height:100svh;background:radial-gradient(ellipse at 50% 43%,rgba(224,230,225,.55),transparent 48%),#fafaf9;overflow:hidden}
 .topbar{width:calc(100% - 48px);max-width:1320px;height:68px}
