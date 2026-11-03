@@ -6,8 +6,8 @@ type Section = "Me" | "Projects" | "Skills" | "Fun" | "Contact";
 type Message = { question: string; answer: string };
 
 function AnswerBody({ text }: { text: string }) {
-  const paragraphs = text.split(/\\n{2,}/).filter(Boolean);
-  return <div className="answer-copy">{paragraphs.map((paragraph, index) => <p key={index}>{paragraph.split(/(https?:\\/\\/[^\\s)]+)/g).map((part, partIndex) => /^https?:\\/\\//.test(part) ? <a key={partIndex} href={part} target="_blank" rel="noreferrer">{part.replace(/^https?:\\/\\//, "").replace(/\\/$/, "")} <ArrowUpRight size={11}/></a> : part)}</p>)}</div>;
+  const paragraphs = text.split(/\n{2,}/).filter(Boolean);
+  return <div className="answer-copy">{paragraphs.map((paragraph, index) => <p key={index}>{paragraph.split(/(https?:\/\/[^\s)]+)/g).map((part, partIndex) => /^https?:\/\//.test(part) ? <a key={partIndex} href={part} target="_blank" rel="noreferrer">{part.replace(/^https?:\/\//, "").replace(/\/$/, "")} <ArrowUpRight size={11}/></a> : part)}</p>)}</div>;
 }
 const sections: Section[] = ["Me", "Projects", "Skills", "Fun", "Contact"];
 const profile = { name: "Nzabana Merci", github: "https://github.com/nmcosta5", website: "https://nzabana.vercel.app/" };
@@ -107,7 +107,7 @@ function App() {
   return <main className="app-shell">
     <FluidCanvas />
     <header className="topbar">
-      <a className="about-mark" href={profile.github} target="_blank" rel="noreferrer" aria-label="Open GitHub profile"><Github size={17}/></a>
+      <a className="about-mark" href={profile.github} target="_blank" rel="noreferrer" aria-label="Open GitHub profile"><img src="/merci-mark.svg" alt="Merci logo"/></a>
     </header>
     <section className="main-stage">
       <div className="hero">
