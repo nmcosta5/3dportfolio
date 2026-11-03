@@ -11,7 +11,7 @@ function AnswerBody({ text }: { text: string }) {
     if (/^https?:\/\//.test(part)) return <a key={prefix + i} href={part} target="_blank" rel="noreferrer">{part.replace(/^https?:\/\//, "").replace(/\/$/, "")} <ArrowUpRight size={11}/></a>;
     return part;
   });
-  const blocks = text.trim().split(/\n{2,}/).filter(Boolean);
+  const cleanText = text.replace(/\\*\\*([^*]+)\\*\\*/g, "$1").replace(/(^|[^\\w])\\*([^*\\n]+)\\*(?=$|[^\\w])/g, "$1$2").replace(/\\*{1,3}/g, "");\n  const blocks = cleanText.trim().split(/\\n{2,}/).filter(Boolean);
   return <div className="answer-copy">{blocks.map((block, index) => {
     const lines = block.split("\n").filter(Boolean);
     if (lines.every(line => /^\s*[-*•]\s+/.test(line))) return <ul className="answer-list" key={index}>{lines.map((line, i) => <li key={i}>{renderInline(line.replace(/^\s*[-*•]\s+/, ""), index + "-" + i)}</li>)}</ul>;
