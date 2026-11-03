@@ -135,3 +135,51 @@
 }
 @media(max-height:760px) and (min-width:641px){.main-stage{padding-top:0;padding-bottom:14px}.portrait-wrap{height:165px}.portrait{width:160px;height:160px}.section-nav{margin-bottom:25px}.bottom-footer{height:20px}}
 @media(prefers-reduced-motion:reduce){.nav-item{transition:none}}
+
+
+/* Functional portfolio upgrades */
+.topbar-actions{display:flex;align-items:center;gap:10px}
+.theme-toggle{width:36px;height:36px;display:grid;place-items:center;border:1px solid #e6e8e5;border-radius:50%;background:#ffffffb8;color:#626b66;transition:transform .2s,border-color .2s}
+.theme-toggle:hover{transform:translateY(-2px);border-color:#aeb8b0}
+.cv-download{display:inline-flex;align-items:center;gap:8px;margin-top:15px;padding:9px 13px;border:1px solid #e5e8e4;border-radius:999px;background:#ffffffa8;color:#59625c;font-size:11px;transition:.2s}
+.cv-download:hover{transform:translateY(-2px);border-color:#aab5ac;background:#fff}
+.cv-download span{font:9px var(--mono);color:#929a94;border-left:1px solid #e4e7e3;padding-left:8px}
+.interactive-skills{margin:15px 0 4px}
+.skill-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.skill-card{padding:15px;text-align:left;border:1px solid #e7eae6;border-radius:12px;background:#ffffffb9;transition:transform .2s,border-color .2s,background .2s}
+.skill-card:hover,.skill-card.selected{transform:translateY(-2px);border-color:#b9c6bb;background:#fff}
+.skill-card>span{font-size:12px;font-weight:700;color:#39423c}
+.skill-card p{font-size:11px;line-height:1.7;color:#747e77;margin:7px 0 10px}
+.skill-card small{font:8px var(--mono);letter-spacing:.08em;color:#9aa39c;line-height:1.6;display:block}
+.challenge-card{margin:14px 0 4px;padding:18px 20px;border:1px solid #e7eae6;border-radius:13px;background:#ffffffbd}
+.challenge-label{font:9px var(--mono);letter-spacing:.12em;color:#929b94}
+.challenge-card p{font-size:14px;line-height:1.7;color:#4c554e;margin:12px 0 15px}
+.challenge-card button,.contact-quick button,.contact-quick a,.chat-tools button{display:inline-flex;align-items:center;gap:7px;border:1px solid #e6e9e5;border-radius:999px;background:#ffffffc7;padding:9px 12px;color:#657068;font-size:10px;transition:.2s}
+.challenge-card button:hover,.contact-quick button:hover,.contact-quick a:hover,.chat-tools button:hover{border-color:#b7c3b8;color:#36443a;transform:translateY(-1px)}
+.contact-quick{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.chat-tools{display:flex;justify-content:flex-end;margin-top:8px}
+.chat-tools button{padding:6px 10px;font-size:9px}
+.project-controls{display:grid;gap:10px;margin:10px 0 14px}
+.project-controls input{width:100%;height:42px;padding:0 14px;border:1px solid #e7eae6;border-radius:10px;background:#ffffffbd;color:#414943;outline:none;font-size:12px}
+.project-controls input:focus{border-color:#aab9ad;box-shadow:0 0 0 3px #91a99518}
+.project-controls>div{display:flex;gap:6px;flex-wrap:wrap}
+.project-controls button{padding:7px 10px;border:1px solid #e7eae6;border-radius:999px;background:#ffffff9c;color:#879089;font:8px var(--mono);letter-spacing:.06em}
+.project-controls button.active{background:#eaf0e9;border-color:#c9d5ca;color:#526b56}
+.project-empty{padding:24px 12px;text-align:center;color:#879089;font-size:12px}
+:root[data-theme="dark"]{color:#e5e9e5;background:#141816;--line:#303832}
+:root[data-theme="dark"] body,:root[data-theme="dark"] .app-shell{background:#141816;color:#e5e9e5}
+:root[data-theme="dark"] .app-shell{background:radial-gradient(ellipse at 50% 46%,rgba(53,65,56,.34),transparent 52%),#141816}
+:root[data-theme="dark"] .hero h1,:root[data-theme="dark"] .skill-card>span,:root[data-theme="dark"] .r3f-project-copy h3{color:#edf1ed}
+:root[data-theme="dark"] .role-title,:root[data-theme="dark"] .hero-caption,:root[data-theme="dark"] .intro-answer p,:root[data-theme="dark"] .answer-copy,:root[data-theme="dark"] .challenge-card p{color:#b0bbb2}
+:root[data-theme="dark"] .intro-answer,:root[data-theme="dark"] .answer-card,:root[data-theme="dark"] .skill-card,:root[data-theme="dark"] .challenge-card,:root[data-theme="dark"] .project-controls input{background:#202823d9;border-color:#354139;color:#e1e8e1}
+:root[data-theme="dark"] .theme-toggle,:root[data-theme="dark"] .cv-download,:root[data-theme="dark"] .contact-quick button,:root[data-theme="dark"] .contact-quick a,:root[data-theme="dark"] .chat-tools button,:root[data-theme="dark"] .project-controls button{background:#202823;border-color:#39443c;color:#c1ccc3}
+:root[data-theme="dark"] .project-controls button.active{background:#314237;border-color:#536b59;color:#d9e8dc}
+:root[data-theme="dark"] .conversation-heading i,:root[data-theme="dark"] .section-nav,:root[data-theme="dark"] .nav-item{border-color:#354039}
+:root[data-theme="dark"] .nav-item{background:#202823d9;color:#c2ccc4}
+:root[data-theme="dark"] .nav-item.active{background:#2b3830;border-color:#536b59}
+:root[data-theme="dark"] .bottom-footer,:root[data-theme="dark"] .availability,:root[data-theme="dark"] .conversation-heading,:root[data-theme="dark"] .input-note{color:#89958b}
+:root[data-theme="dark"] .ask-form{background:#202823;border-color:#39443c}
+:root[data-theme="dark"] .ask-form input{color:#e5e9e5}
+:root[data-theme="dark"] .ask-form input::placeholder{color:#89958b}
+:root[data-theme="dark"] .portrait{mix-blend-mode:normal}
+@media(max-width:640px){.skill-grid{grid-template-columns:1fr}.contact-quick{gap:6px}.contact-quick button,.contact-quick a{font-size:9px;padding:8px 10px}.project-controls>div{flex-wrap:nowrap;overflow-x:auto;padding-bottom:3px}.project-controls button{flex:none}}
