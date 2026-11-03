@@ -336,3 +336,26 @@
  .nav-item{height:58px!important;font-size:10px!important}
 }
 @media(prefers-reduced-motion:reduce){.app-shell:before,.app-shell:after{animation:none}}
+
+
+/* Keep the custom Memoji in its original silhouette — never crop it into a circle */
+.portrait-wrap{overflow:visible!important;border-radius:0!important}
+.portrait-wrap .portrait,
+.portrait-wrap img.portrait{
+  width:clamp(220px,26vw,320px)!important;
+  height:clamp(180px,22vw,230px)!important;
+  border:0!important;
+  border-radius:0!important;
+  outline:0!important;
+  box-shadow:none!important;
+  object-fit:contain!important;
+  object-position:center bottom!important;
+  background:transparent!important;
+  mix-blend-mode:multiply!important;
+  filter:drop-shadow(0 14px 18px rgba(40,55,42,.10))!important;
+}
+.portrait-halo{border-radius:0!important;opacity:.5}
+.profile-response>img{border-radius:0!important;border:0!important;box-shadow:none!important;object-fit:contain!important;background:transparent!important}
+@media(max-width:640px){
+ .portrait-wrap .portrait,.portrait-wrap img.portrait{width:250px!important;height:185px!important}
+}
