@@ -1,11 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { CreateMLCEngine } from "@mlc-ai/web-llm";
 import { ArrowUpRight, ArrowUp, Sparkles, X, Github, Globe2, ChevronRight } from "lucide-react";
 
 type Section = "Me" | "Projects" | "Skills" | "Fun" | "Contact";
 type Message = { question: string; answer: string };
 const sections: Section[] = ["Me", "Projects", "Skills", "Fun", "Contact"];
-const MODEL_ID = "Llama-3.2-1B-Instruct-q4f16_1-MLC";
 const profile = { name: "Nzabana Merci", github: "https://github.com/nmcosta5", website: "https://nzabana.vercel.app/" };
 const content: Record<Section, { prompt: string; intro: string; suggestions: string[] }> = {
   Me: { prompt: "Ask me anything about Merci…", intro: "I'm Merci — a student developer from Rwanda, currently studying at Giheke TSS. I enjoy turning ideas into useful digital experiences, learning how things work, and improving with every project. I'm hardworking, curious and disciplined, with a growing focus on full-stack web development.", suggestions: ["Tell me about yourself", "Where are you from?", "What are you studying?"] },
@@ -56,50 +54,36 @@ function App() {
   const [promoOpen, setPromoOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [streamingAnswer, setStreamingAnswer] = useState("");
-  const [modelStatus, setModelStatus] = useState("LOCAL AI · FIRST MESSAGE DOWNLOADS THE MODEL");
-  const engineRef = useRef<Awaited<ReturnType<typeof CreateMLCEngine>> | null>(null);
+  const [modelStatus, setModelStatus] = useState("ONLINE AI · CONNECTING TO GROQ");
   const current = content[active];
   const displayed = useMemo(() => messages.length ? messages[messages.length - 1] : null, [messages]);
   const selectSection = (section: Section) => { setActive(section); setQuestion(""); setMessages([]); setLoading(false); };
   const ask = async (value = question) => {
     const clean = value.trim(); if (!clean || loading) return;
-    setQuestion(clean); setLoading(true); setStreamingAnswer(""); setModelStatus("Checking browser GPU support…");
+    setQuestion(clean); setLoading(true); setStreamingAnswer(""); setModelStatus("CONNECTING TO ONLINE AI…");
     try {
-      if (!(navigator as Navigator & { gpu?: unknown }).gpu) {
-        throw new Error("This browser does not expose WebGPU. Please try the latest Google Chrome or Microsoft Edge on a device with WebGPU support.");
-      }
-      if (!engineRef.current) {
-        setModelStatus("Downloading and preparing the local AI model…");
-        engineRef.current = await CreateMLCEngine(MODEL_ID, {
-          initProgressCallback: (report) => setModelStatus(report.text || "Preparing local AI model…")
-        });
-      }
-      setModelStatus("AI is ready · generating locally");
       const history = messages.slice(-6).flatMap(item => [
-        { role: "user" as const, content: item.question },
-        { role: "assistant" as const, content: item.answer }
+        { role: "user", content: item.question },
+        { role: "assistant", content: item.answer }
       ]);
-      const systemPrompt = "You are Merci's portfolio assistant. Be friendly, clear, useful and concise. Answer general questions when appropriate, but never invent personal facts about Merci. Verified details: Name Nzabana Merci; from Rwanda; Advanced Level student at Giheke TSS, expected to graduate in 2027; interested in full-stack software development. Skills: JavaScript, TypeScript, React, Node.js, HTML, CSS, REST APIs, Supabase, MySQL, MongoDB, Git and GitHub. Projects: Agasobanuye Free (entertainment discovery platform), Expense Tracker, XM Bakery, and a Cooperative management concept. GitHub: https://github.com/nmcosta5. Portfolio: https://nzabana.vercel.app/. If asked for private information or facts not listed here, say you don't have that information. Do not claim to have performed actions or accessed live websites.";
-      const chunks = await engineRef.current.chat.completions.create({
-        messages: [{ role: "system", content: systemPrompt }, ...history, { role: "user", content: clean }],
-        stream: true,
-        temperature: 0.7,
-        max_tokens: 420
+      const response = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ messages: [...history, { role: "user", content: clean }] })
       });
-      let answer = "";
-      for await (const chunk of chunks as AsyncIterable<{ choices?: Array<{ delta?: { content?: string } }> }>) {
-        const token = chunk.choices?.[0]?.delta?.content || "";
-        if (token) { answer += token; setStreamingAnswer(answer); }
-      }
-      const finalAnswer = answer.trim() || "I couldn't generate a response. Please try asking in a different way.";
-      setMessages(prev => [...prev, { question: clean, answer: finalAnswer }]);
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || "The online AI service is temporarily unavailable.");
+      const answer = typeof data.answer === "string" ? data.answer.trim() : "";
+      if (!answer) throw new Error("The AI returned an empty response. Please try again.");
+      setStreamingAnswer(answer);
+      setMessages(prev => [...prev, { question: clean, answer }]);
       setStreamingAnswer("");
-      setModelStatus("LOCAL AI READY · RUNNING ON THIS DEVICE");
+      setModelStatus("ONLINE AI READY · POWERED BY GROQ");
     } catch (error) {
-      const message = error instanceof Error ? error.message : "The local AI could not start on this device.";
-      setMessages(prev => [...prev, { question: clean, answer: "I couldn't start the local AI. " + message }]);
+      const message = error instanceof Error ? error.message : "The online AI could not respond.";
+      setMessages(prev => [...prev, { question: clean, answer: "I couldn't get a response from the online AI. " + message }]);
       setStreamingAnswer("");
-      setModelStatus("LOCAL AI UNAVAILABLE · CHECK WEBGPU SUPPORT");
+      setModelStatus("ONLINE AI UNAVAILABLE · PLEASE TRY AGAIN");
     } finally {
       setLoading(false);
     }
@@ -127,7 +111,7 @@ function App() {
         <div className="suggestions">{current.suggestions.map(s => <button key={s} onClick={() => ask(s)}>{s}<ChevronRight size={12}/></button>)}</div>
         <form className="ask-form" onSubmit={e => { e.preventDefault(); ask(); }}><input value={question} onChange={e => setQuestion(e.target.value)} placeholder={current.prompt} aria-label={current.prompt} maxLength={240}/><button type="submit" disabled={!question.trim() || loading} aria-label="Send question">{loading ? <span className="loader"/> : <ArrowUp size={17}/>}</button></form>
         {loading && streamingAnswer && <div className="answer-card live-answer"><p>{streamingAnswer}<span className="typing-caret">▍</span></p></div>}
-        <div className="input-note">{modelStatus} <span>·</span> YOUR MESSAGES STAY IN THIS BROWSER</div>
+        <div className="input-note">{modelStatus} <span>·</span> ONLINE MODEL · CHAT HISTORY IS SESSION-ONLY</div>
       </div>
     </section>
     <nav className="section-nav" aria-label="Portfolio sections">{sections.map((section, i) => <button key={section} onClick={() => selectSection(section)} className={active === section ? "nav-item active" : "nav-item"} aria-current={active === section ? "page" : undefined}><span className="nav-number">0{i + 1}</span>{section}</button>)}</nav>
