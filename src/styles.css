@@ -814,3 +814,76 @@ img,canvas,svg{max-width:100%}
 @media(prefers-reduced-motion:reduce){
   *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
 }
+
+
+/* Dark theme: explicit contrast for Projects and Contact navigation/actions.
+   Kept last intentionally so legacy light-theme button rules cannot override it. */
+:root[data-theme="dark"] .section-nav .nav-item:nth-child(2),
+:root[data-theme="dark"] .section-nav .nav-item:nth-child(5),
+:root[data-theme="dark"] .section-nav .nav-item:last-child{
+  background:rgba(35,48,38,.94)!important;
+  color:#d4e2d5!important;
+  border-color:#465a49!important;
+  box-shadow:inset 0 1px rgba(255,255,255,.035),0 5px 16px rgba(0,0,0,.16)!important;
+}
+:root[data-theme="dark"] .section-nav .nav-item:nth-child(2).active,
+:root[data-theme="dark"] .section-nav .nav-item:nth-child(5).active,
+:root[data-theme="dark"] .section-nav .nav-item:last-child.active{
+  background:linear-gradient(145deg,#354c39,#26362b)!important;
+  border-color:#6c8a70!important;
+  color:#f0f7f0!important;
+  box-shadow:inset 0 1px rgba(255,255,255,.08),0 7px 20px rgba(0,0,0,.22)!important;
+}
+:root[data-theme="dark"] .section-nav .nav-item:nth-child(2):hover,
+:root[data-theme="dark"] .section-nav .nav-item:nth-child(5):hover,
+:root[data-theme="dark"] .section-nav .nav-item:last-child:hover{
+  background:#304234!important;border-color:#617b64!important;color:#f0f7f0!important;
+}
+:root[data-theme="dark"] .section-nav .nav-item:nth-child(2)::before,
+:root[data-theme="dark"] .section-nav .nav-item:nth-child(5)::before,
+:root[data-theme="dark"] .section-nav .nav-item:last-child::before{filter:brightness(1.3) saturate(.85)}
+:root[data-theme="dark"] .contact-quick button,
+:root[data-theme="dark"] .contact-quick a,
+:root[data-theme="dark"] .contact-links a{
+  background:#26332a!important;
+  color:#d5e2d6!important;
+  border-color:#46574a!important;
+  box-shadow:0 4px 14px rgba(0,0,0,.14)!important;
+}
+:root[data-theme="dark"] .contact-quick button:hover,
+:root[data-theme="dark"] .contact-quick a:hover,
+:root[data-theme="dark"] .contact-links a:hover{
+  background:#344a38!important;
+  border-color:#6a876d!important;
+  color:#f2f8f2!important;
+}
+:root[data-theme="dark"] .contact-quick .contact-whatsapp,
+:root[data-theme="dark"] .contact-links .contact-whatsapp{
+  background:linear-gradient(145deg,#304a35,#26392b)!important;
+  color:#e2f1e3!important;
+  border-color:#648269!important;
+}
+:root[data-theme="dark"] .contact-quick .contact-whatsapp small{color:#b5cbb7!important}
+:root[data-theme="dark"] .project-controls button{
+  background:#26332a!important;color:#bdcbbf!important;border-color:#46574a!important;
+}
+:root[data-theme="dark"] .project-controls button.active{
+  background:#354c39!important;color:#e4f0e5!important;border-color:#6c8a70!important;
+}
+:root[data-theme="dark"] .project-controls input{
+  background:#202a23!important;color:#e5ece5!important;border-color:#46574a!important;
+}
+:root[data-theme="dark"] .project-controls input::placeholder{color:#91a093!important}
+:root[data-theme="dark"] .mobile-project-card{
+  background:#202a23!important;border-color:#3d4d40!important;
+}
+:root[data-theme="dark"] .mobile-project-card>a{background:#29362d!important}
+:root[data-theme="dark"] .mobile-project-info h3{color:#e5eee6!important}
+:root[data-theme="dark"] .mobile-project-info p{color:#b0bdb2!important}
+:root[data-theme="dark"] .mobile-project-info>span,
+:root[data-theme="dark"] .mobile-project-info small,
+:root[data-theme="dark"] .mobile-project-footer{color:#91a394!important}
+:root[data-theme="dark"] .mobile-project-open,
+:root[data-theme="dark"] .mobile-project-footer button{
+  background:#304034!important;color:#e0ebe1!important;border-color:#526756!important;
+}
