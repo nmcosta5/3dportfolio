@@ -673,3 +673,144 @@
   .ask-form button,.suggestions button,.section-nav .nav-item{touch-action:manipulation!important;-webkit-tap-highlight-color:transparent!important}
   .ask-form button:active{transform:scale(.94)!important}
 }
+
+
+/* Universal viewport support: phones, compact wearables, tablets, laptops and ultrawide displays */
+.app-shell{width:100%;max-width:100%;min-width:0;min-height:100vh;min-height:100dvh}
+.app-shell,.main-stage,.hero,.conversation,.answer-card,.intro-answer,.interactive-skills,.profile-answer{min-width:0}
+img,canvas,svg{max-width:100%}
+.hero-caption,.answer-copy,.answer-copy p,.answer-list li,.user-question,.input-note{overflow-wrap:anywhere;word-break:normal}
+.ask-form input{min-width:0;width:100%}
+.fluid-canvas{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;max-width:none;z-index:0}
+.topbar,.main-stage,.section-nav,.bottom-footer{position:relative;z-index:1}
+@supports(height:100dvh){.app-shell{min-height:100dvh}}
+@supports(padding:max(0px)){.app-shell{padding-left:max(0px,env(safe-area-inset-left));padding-right:max(0px,env(safe-area-inset-right))}}
+
+/* Small phones and narrow foldable cover displays */
+@media(max-width:360px){
+  .app-shell>.topbar{width:calc(100% - 22px)!important}
+  .main-stage{padding-left:10px!important;padding-right:10px!important}
+  .hero-title{font-size:clamp(24px,8vw,30px)!important}
+  .hero-brand-mark{width:24px!important;height:24px!important}
+  .role-title{font-size:15px!important}
+  .portrait-wrap{height:clamp(145px,45vw,175px)!important}
+  .portrait-wrap .portrait,.portrait-wrap img.portrait{height:clamp(145px,45vw,175px)!important;width:min(250px,82vw)!important}
+  .conversation{width:calc(100vw - 20px)!important;margin-top:16px!important}
+  .intro-answer,.answer-card{padding:13px!important}
+  .intro-answer p,.answer-card p,.answer-copy p{font-size:12px!important}
+  .section-nav,.app-shell>.section-nav{width:calc(100% - 12px)!important;bottom:max(5px,env(safe-area-inset-bottom))!important;padding:4px!important;gap:1px!important}
+  .section-nav .nav-item,.section-nav .nav-item:last-child,.section-nav .nav-item[data-section="Contact"]{min-height:48px!important;height:48px!important;font-size:8px!important;gap:3px!important}
+  .section-nav .nav-item::before{font-size:14px!important}
+}
+
+/* Smartwatch-sized viewports: prioritize readable essentials and vertical scrolling */
+@media(max-width:300px){
+  .app-shell{min-height:100svh!important;padding-bottom:calc(62px + env(safe-area-inset-bottom))!important}
+  .app-shell>.topbar{height:38px!important;width:calc(100% - 16px)!important}
+  .topbar-actions{gap:7px!important}
+  .theme-toggle,.about-mark{width:28px!important;height:28px!important;min-width:28px!important}
+  .theme-toggle svg,.about-mark svg{width:14px!important;height:14px!important}
+  .main-stage{padding:8px 8px 10px!important}
+  .availability{display:none!important}
+  .hero-title{font-size:22px!important;line-height:1.08!important;gap:4px!important;letter-spacing:-.055em!important}
+  .hero-brand-mark{width:19px!important;height:19px!important}
+  .wave{font-size:.75em!important}
+  .role-title{font-size:12px!important;margin-top:3px!important}
+  .portrait-wrap,.portrait-halo{display:none!important}
+  .hero-caption{max-width:230px!important;margin-top:8px!important;font-size:9px!important;line-height:1.45!important}
+  .cv-download{min-height:30px!important;margin-top:7px!important;padding:6px 9px!important;font-size:9px!important}
+  .cv-download svg{width:11px!important;height:11px!important}
+  .profile-stats{margin-top:6px!important;font-size:6px!important;gap:5px!important}
+  .conversation{width:calc(100vw - 16px)!important;margin:12px auto 0!important}
+  .conversation-heading{font-size:7px!important;letter-spacing:.08em!important;margin-bottom:7px!important}
+  .conversation-heading .sparkle svg{width:11px!important;height:11px!important}
+  .intro-answer,.answer-card{padding:11px!important;border-radius:13px!important}
+  .intro-answer p,.answer-card p,.answer-copy p{font-size:10px!important;line-height:1.55!important}
+  .answer-meta{font-size:6px!important;gap:5px!important}
+  .answer-meta img{width:17px!important;height:17px!important}
+  .answer-heading{font-size:13px!important}
+  .answer-list{padding-left:14px!important;gap:5px!important}
+  .answer-list li{padding:6px 7px!important;font-size:9px!important}
+  .suggestions{gap:5px!important;margin:8px 0!important}
+  .suggestions button{min-height:29px!important;padding:6px 8px!important;font-size:8px!important}
+  .suggestions button svg{width:9px!important;height:9px!important}
+  .ask-form{height:43px!important;padding:4px 5px 4px 11px!important;margin-top:5px!important}
+  .ask-form input{font-size:10px!important}
+  .ask-form button{width:33px!important;height:33px!important}
+  .ask-form button svg{width:14px!important;height:14px!important}
+  .input-note{font-size:5px!important;letter-spacing:0!important;margin-top:6px!important}
+  .section-nav,.app-shell>.section-nav{width:calc(100% - 8px)!important;max-width:none!important;bottom:max(3px,env(safe-area-inset-bottom))!important;padding:3px!important;gap:1px!important;border-radius:12px!important}
+  .section-nav .nav-item,.section-nav .nav-item:last-child,.section-nav .nav-item[data-section="Contact"]{height:39px!important;min-height:39px!important;padding:3px 0!important;gap:2px!important;border-radius:8px!important;font-size:7px!important}
+  .section-nav .nav-item::before{font-size:12px!important}
+  .bottom-footer{display:none!important}
+  .contact-quick{gap:6px!important}
+  .contact-quick a,.contact-quick button{font-size:9px!important;padding:7px!important}
+  .contact-quick .contact-whatsapp small{font-size:7px!important}
+  .interactive-skills{padding:11px!important}
+  .skill-groups{gap:13px!important}
+  .skill-group h3{font-size:10px!important;margin-bottom:7px!important}
+  .skill-group button{font-size:8px!important;padding:6px 7px!important}
+  .profile-answer{display:flex!important;flex-direction:column!important}
+  .profile-photo-frame{height:130px!important;min-height:130px!important}
+  .profile-copy{padding:12px!important}
+  .profile-copy h2{font-size:22px!important}
+  .profile-meta{font-size:9px!important;margin:6px 0 10px!important}
+  .profile-tags{gap:4px!important;margin-top:9px!important}
+  .profile-tags span{font-size:7px!important;padding:5px 7px!important}
+}
+
+/* Short landscape screens: keep the main interaction in view without clipping */
+@media(max-height:500px) and (orientation:landscape){
+  .app-shell{min-height:100svh!important;height:auto!important;overflow-y:auto!important;padding-bottom:14px!important}
+  .app-shell>.topbar{height:38px!important;flex:none!important}
+  .main-stage{display:grid!important;grid-template-columns:minmax(190px,.72fr) minmax(280px,1.28fr)!important;align-items:start!important;gap:16px!important;padding:8px 18px 14px!important}
+  .hero{max-width:100%!important}
+  .hero-title{font-size:clamp(22px,4vw,32px)!important}
+  .portrait-wrap{height:clamp(100px,27vh,155px)!important;margin:0 auto!important}
+  .portrait-wrap .portrait,.portrait-wrap img.portrait{height:clamp(100px,27vh,155px)!important;width:min(240px,100%)!important}
+  .hero-caption{font-size:10px!important}
+  .cv-download{margin-top:6px!important}
+  .conversation{width:100%!important;margin:0!important}
+  .section-nav{position:relative!important;inset:auto!important;transform:none!important;width:calc(100% - 36px)!important;margin:0 auto 8px!important}
+  .bottom-footer{position:relative!important;inset:auto!important}
+}
+@media(max-width:640px) and (max-height:430px) and (orientation:landscape){
+  .main-stage{grid-template-columns:minmax(140px,.65fr) minmax(220px,1.35fr)!important;gap:10px!important;padding:5px 10px 10px!important}
+  .availability,.portrait-wrap,.hero-caption,.cv-download,.profile-stats{display:none!important}
+  .hero-title{font-size:19px!important}
+  .role-title{font-size:12px!important}
+  .conversation-heading{margin-bottom:5px!important}
+  .section-nav,.app-shell>.section-nav{position:relative!important;left:auto!important;bottom:auto!important;transform:none!important;width:calc(100% - 20px)!important;margin:0 auto 8px!important}
+}
+
+/* Tablets and compact laptops */
+@media(min-width:641px) and (max-width:1024px){
+  .main-stage{width:100%;padding-left:clamp(22px,5vw,54px)!important;padding-right:clamp(22px,5vw,54px)!important}
+  .hero{max-width:620px}
+  .conversation{width:min(760px,100%)!important}
+  .section-nav{max-width:min(680px,calc(100% - 40px))}
+}
+@media(min-width:641px) and (max-height:700px){
+  .main-stage{padding-top:16px!important;padding-bottom:18px!important}
+  .portrait-wrap{height:clamp(150px,28vh,230px)!important}
+  .portrait-wrap .portrait,.portrait-wrap img.portrait{height:clamp(150px,28vh,230px)!important}
+  .conversation{margin-top:18px!important}
+}
+
+/* Large monitors and ultrawide workspaces */
+@media(min-width:1440px){
+  .main-stage{max-width:1500px!important;margin-inline:auto!important;padding-inline:clamp(48px,7vw,120px)!important}
+  .hero{max-width:680px!important}
+  .conversation{width:min(920px,100%)!important}
+  .profile-answer{min-height:440px}
+  .portrait-wrap{height:clamp(250px,28vw,360px)!important}
+}
+@media(min-width:1920px){
+  .main-stage{max-width:1680px!important}
+  .conversation{width:min(1040px,100%)!important}
+}
+
+/* Accessibility and motion preferences across all device classes */
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
