@@ -5,13 +5,9 @@ type Section = "Me" | "Projects" | "Skills" | "Fun" | "Contact";
 type Message = { question: string; answer: string };
 
 function AnswerBody({ text }: { text: string }) {
-  const cleanText = text
-    .replace(/\*\*([^*]+)\*\*/g, "$1")
-    .replace(/(^|[^\w])\*([^*\n]+)\*(?=$|[^\w])/g, "$1$2")
-    .replace(/\*{1,3}/g, "")
-    .replace(/\\\*/g, "");
+  const cleanText = text.replace(/\\\*/g, "");
   const renderInline = (value: string, prefix: string) => {
-    const pattern = /(!\[([^\]]*)\]\((https?:\/\/[^)\s]+)\))|(\[([^\]]+)\]\((https?:\/\/[^)\s]+)\))|(https?:\/\/[^\s)]+)/g;
+    const pattern = /(!\[([^\]]*)\]\((https?:\/\/[^)\s]+)\))|(\[([^\]]+)\]\((https?:\/\/[^)\s]+)\))|(\*\*([^*]+)\*\*)|(\*([^*\n]+)\*)|(https?:\/\/[^\s)]+)/g;
     const nodes: React.ReactNode[] = [];
     let last = 0;
     let match: RegExpExecArray | null;
@@ -19,8 +15,12 @@ function AnswerBody({ text }: { text: string }) {
       if (match.index > last) nodes.push(value.slice(last, match.index));
       if (match[1]) {
         nodes.push(<figure className="answer-image" key={prefix + match.index}><a href={match[3]} target="_blank" rel="noreferrer"><img src={match[3]} alt={match[2] || "Project image"} loading="lazy" referrerPolicy="no-referrer"/></a>{match[2] && <figcaption>{match[2]}</figcaption>}</figure>);
+      } else if (match[7]) {
+        nodes.push(<strong className="answer-strong" key={prefix + match.index}>{match[8]}</strong>);
+      } else if (match[9]) {
+        nodes.push(<em className="answer-em" key={prefix + match.index}>{match[10]}</em>);
       } else {
-        const url = match[6] || match[7];
+        const url = match[6] || match[11];
         const label = match[5] || url.replace(/^https?:\/\//, "").replace(/\/$/, "");
         nodes.push(<a className="answer-link-button" key={prefix + match.index} href={url} target="_blank" rel="noreferrer"><span>{label}</span><ArrowUpRight size={14}/></a>);
       }
@@ -37,6 +37,39 @@ function AnswerBody({ text }: { text: string }) {
     return <p key={index}>{lines.map((line, i) => <span key={i}>{renderInline(line, index + "-" + i)}{i < lines.length - 1 && <br/>}</span>)}</p>;
   })}</div>;
 }
+
+function isPersonalQuestion(question: string) {
+  return /(?:about yourself|about you|about merci|about nzabana|who are you|who is merci|who is nzabana|introduce yourself|your (?:bio|biography|profile|background|story|education|interests)|tell me about (?:yourself|you|merci|nzabana)|where are you from|show (?:me )?(?:your )?(?:photo|picture)|your photo)/i.test(question);
+}
+
+function ProfileAnswer({ text }: { text: string }) {
+  const imageStart = text.indexOf("![");
+  const imageEnd = imageStart >= 0 ? text.indexOf(")", imageStart) : -1;
+  const cleanProfile = imageStart < 0
+    ? text.trim()
+    : imageEnd < 0
+      ? text.slice(0, imageStart).trim()
+      : (text.slice(0, imageStart) + text.slice(imageEnd + 1)).trim();
+  return <div className="profile-answer">
+    <div className="profile-photo-frame">
+      <img src="/IMG-20250726-WA0034.jpg" alt="Nzabana Merci" loading="eager" />
+      <span className="profile-photo-caption">THE PERSON BEHIND THE CODE</span>
+    </div>
+    <div className="profile-copy">
+      <div className="profile-eyebrow"><span/> ABOUT ME</div>
+      <h2>Nzabana Merci</h2>
+      <p className="profile-meta">Software Development Graduate <i/> Rwanda</p>
+      <div className="profile-description"><AnswerBody text={cleanProfile}/></div>
+      <div className="profile-tags">
+        <span>Full-stack development</span>
+        <span>React &amp; TypeScript</span>
+        <span>Curious learner</span>
+        <span>Gaming</span>
+      </div>
+    </div>
+  </div>;
+}
+
 const sections: Section[] = ["Me", "Projects", "Skills", "Fun", "Contact"];
 const profile = { name: "Nzabana Merci", github: "https://github.com/nmcosta5", website: "https://nzabana.vercel.app/" };
 const content: Record<Section, { prompt: string; intro: string; suggestions: string[] }> = {
@@ -155,6 +188,7 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [avatarReady, setAvatarReady] = useState(false);
   const [streamingAnswer, setStreamingAnswer] = useState("");
+  const [activeQuestion, setActiveQuestion] = useState("");
   const [modelStatus, setModelStatus] = useState("ONLINE AI · CONNECTING TO GROQ");
   const githubAvatar = "/Stylized%20Beanie-Wearing%20Memoji%20Portrait%20(1).png";
   const [githubStats, setGithubStats] = useState<{ repos: number; followers: number } | null>(null);
@@ -172,12 +206,14 @@ function App() {
   }, []);
   const current = content[active];
   const displayed = useMemo(() => messages.length ? messages[messages.length - 1] : null, [messages]);
+  const showPersonalProfile = isPersonalQuestion(loading ? activeQuestion : (displayed?.question || ""));
   const copyGithub = async () => { try { await navigator.clipboard.writeText(profile.github); setCopied(true); window.setTimeout(() => setCopied(false), 1800); } catch { window.open(profile.github, "_blank", "noopener,noreferrer"); } };
   const nextChallenge = () => { const prompts = ["Create a simple tool that makes studying more organized.", "Design a useful digital service for a small Rwandan business.", "Build a mini game using only HTML, CSS and JavaScript.", "Create a dashboard that turns confusing data into clear insights.", "Make a lightweight app that works well on slow internet."]; setChallenge(current => { const options = prompts.filter(item => item !== current); return options[Math.floor(Math.random() * options.length)]; }); };
   const ask = async (value = question, freshConversation = false) => {
     const clean = value.trim();
     if (!clean || loading) return;
     setQuestion("");
+    setActiveQuestion(clean);
     setLoading(true);
     setStreamingAnswer("");
     setModelStatus("CONNECTING TO ONLINE AI…");
@@ -260,19 +296,47 @@ function App() {
       </div>
       <div className="conversation" aria-live="polite">
         <div className="conversation-heading"><span className="sparkle"><Sparkles size={14}/></span><span>{active === "Me" ? "A LITTLE INTRODUCTION" : "LET'S TALK " + active.toUpperCase()}</span><i/></div>
-        {active === "Skills" && <div className="interactive-skills"><div className="skill-groups">{[{name:"Frontend development",items:["React","TypeScript","JavaScript","HTML","CSS","Tailwind CSS"]},{name:"Backend & APIs",items:["Node.js","REST APIs","Supabase"]},{name:"Databases",items:["MySQL","MongoDB","Supabase"]},{name:"Tools & workflow",items:["Git","GitHub","Vite"]}].map(group => <section className="skill-group" key={group.name}><h3>{group.name}</h3><div>{group.items.map(item => <button key={item} onClick={() => ask("How do I use " + item + "?")}>{item}</button>)}</div></section>)}</div></div>}
+        {active === "Skills" && <section className="interactive-skills">
+          <div className="skills-showcase-heading">
+            <span>MY TOOLKIT</span>
+            <h2>Skills &amp; Expertise</h2>
+            <p>The technologies and tools I use to turn ideas into working products.</p>
+          </div>
+          <div className="skill-groups">
+            {[
+              {name:"Frontend Development",items:["React","TypeScript","JavaScript","HTML","CSS","Tailwind CSS"]},
+              {name:"Backend & APIs",items:["Node.js","REST APIs","Supabase"]},
+              {name:"Databases",items:["MySQL","MongoDB","Supabase"]},
+              {name:"Tools & Workflow",items:["Git","GitHub","Vite"]}
+            ].map(group => <section className="skill-group" key={group.name}>
+              <h3>{group.name}</h3>
+              <div>{group.items.map(item => <button key={item} onClick={() => ask("How do I use " + item + " in my projects?")}>{item}</button>)}</div>
+            </section>)}
+          </div>
+          <p className="skills-footnote">I keep building on these skills through hands-on projects and continuous learning.</p>
+        </section>}
         {active === "Fun" && <div className="challenge-card"><span className="challenge-label">A SMALL DEVELOPER CHALLENGE</span><p>{challenge}</p><button onClick={nextChallenge}><RotateCcw size={13}/> Give me another</button></div>}
         {active === "Contact" && <div className="contact-quick"><button onClick={copyGithub}>{copied ? <Check size={14}/> : <Copy size={14}/>} {copied ? "GitHub link copied" : "Copy GitHub link"}</button><a href={profile.github} target="_blank" rel="noreferrer"><Github size={14}/> Open GitHub <ArrowUpRight size={12}/></a><a href={profile.website} target="_blank" rel="noreferrer"><Globe2 size={14}/> Visit website <ArrowUpRight size={12}/></a></div>}
 
-        {displayed ? <div className="answer-card"><div className="user-question">{displayed.question}</div>{active === "Me" && <div className="profile-response"><img src={githubAvatar} alt="Nzabana Merci beanie Memoji avatar"/><div><h2>Nzabana Merci</h2><p>Software Development graduate · Rwanda</p><div className="profile-tags"><span>Full-stack development</span><span>Curious learner</span><span>Problem solving</span></div></div></div>}<div className="answer-meta"><img src={githubAvatar} alt="" /><span>MERCI’S AI ASSISTANT</span><i>·</i><span>JUST NOW</span></div><AnswerBody text={displayed.answer}/>
-          
-          {active === "Skills" && <div className="skill-cloud">{["JavaScript","TypeScript","React","Node.js","HTML","CSS","Supabase","MySQL","MongoDB","Git"].map(s => <span key={s}>{s}</span>)}</div>}
-          {active === "Contact" && <div className="contact-links"><a href={profile.github} target="_blank" rel="noreferrer"><Github size={15}/> GitHub <ArrowUpRight size={13}/></a><a href={profile.website} target="_blank" rel="noreferrer"><Globe2 size={15}/> Portfolio <ArrowUpRight size={13}/></a></div>}
-        </div> : <div className="intro-answer"><span className="answer-dot"/><p>{current.intro}</p></div>}
+        {displayed ? (
+          showPersonalProfile ? (
+            <div className="answer-card answer-card-profile"><ProfileAnswer text={displayed.answer}/></div>
+          ) : (
+            <div className="answer-card">
+              <div className="user-question">{displayed.question}</div>
+              <div className="answer-meta"><img src={githubAvatar} alt="" /><span>MERCI’S AI ASSISTANT</span><i>·</i><span>JUST NOW</span></div>
+              <AnswerBody text={displayed.answer}/>
+              {active === "Contact" && <div className="contact-links"><a href={profile.github} target="_blank" rel="noreferrer"><Github size={15}/> GitHub <ArrowUpRight size={13}/></a><a href={profile.website} target="_blank" rel="noreferrer"><Globe2 size={15}/> Portfolio <ArrowUpRight size={13}/></a></div>}
+            </div>
+          )
+        ) : <div className="intro-answer"><span className="answer-dot"/><p>{current.intro}</p></div>}
         <div className="suggestions">{current.suggestions.map(s => <button key={s} onClick={() => ask(s)}>{s}<ChevronRight size={12}/></button>)}</div>
         <form className="ask-form" onSubmit={e => { e.preventDefault(); ask(); }}><input value={question} onChange={e => setQuestion(e.target.value)} placeholder={current.prompt} aria-label={current.prompt} maxLength={240}/><button type="submit" disabled={!question.trim() || loading} aria-label="Send question">{loading ? <span className="loader"/> : <ArrowUp size={17}/>}</button></form>
         {loading && !streamingAnswer && <div className="thinking-card" role="status"><span className="thinking-dots"><i/><i/><i/></span><span>Merci is thinking…</span></div>}
-        {loading && streamingAnswer && <div className="answer-card live-answer"><div className="answer-meta"><img src={githubAvatar} alt="" /><span>MERCI’S AI ASSISTANT</span><i>·</i><span>WRITING</span></div><AnswerBody text={streamingAnswer}/><span className="typing-caret">▍</span></div>}
+        {loading && streamingAnswer && <div className={showPersonalProfile ? "answer-card live-answer answer-card-profile" : "answer-card live-answer"}>
+          {showPersonalProfile ? <ProfileAnswer text={streamingAnswer}/> : <><div className="answer-meta"><img src={githubAvatar} alt="" /><span>MERCI’S AI ASSISTANT</span><i>·</i><span>WRITING</span></div><AnswerBody text={streamingAnswer}/></>}
+          <span className="typing-caret">▍</span>
+        </div>}
         <div className="chat-tools">{messages.length > 0 && <button onClick={() => { setMessages([]); setQuestion(""); }}><RotateCcw size={12}/> Clear conversation</button>}</div>
         <div className="input-note">{modelStatus} <span>·</span> ONLINE MODEL · CHAT HISTORY IS SESSION-ONLY</div>
       </div>

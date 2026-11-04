@@ -468,3 +468,72 @@
 .hero-title{display:flex!important;flex-direction:column!important;align-items:center!important;gap:7px!important}
 .hero-brand-mark{width:35px!important;height:35px!important;object-fit:contain!important;margin:0!important;filter:none!important;animation:none!important}
 
+
+
+/* Portfolio response layouts — profile presentation, expertise chips, and readable answer rhythm */
+.conversation:has(.answer-card-profile),
+.conversation:has(.interactive-skills){width:min(980px,calc(100vw - 52px))}
+.answer-card-profile{padding:0!important;overflow:hidden;background:rgba(255,255,255,.9)!important;border-radius:24px!important}
+.profile-answer{display:grid;grid-template-columns:minmax(250px,.92fr) minmax(0,1.08fr);min-height:390px}
+.profile-photo-frame{position:relative;min-height:390px;overflow:hidden;background:linear-gradient(145deg,#e8efe6,#dce7db)}
+.profile-photo-frame:after{content:"";position:absolute;inset:48% 0 0;background:linear-gradient(transparent,rgba(20,37,25,.42));pointer-events:none}
+.profile-photo-frame img{display:block;width:100%;height:100%;min-height:390px;position:absolute;inset:0;object-fit:cover;object-position:center 28%}
+.profile-photo-caption{position:absolute;z-index:1;left:22px;bottom:19px;color:#fff;font:8px var(--mono);letter-spacing:.14em}
+.profile-copy{display:flex;flex-direction:column;justify-content:center;align-items:flex-start;padding:clamp(24px,4vw,48px);min-width:0}
+.profile-eyebrow{display:flex;align-items:center;gap:9px;margin-bottom:17px;color:#819083;font:9px var(--mono);letter-spacing:.16em}
+.profile-eyebrow>span{width:7px;height:7px;border-radius:50%;background:#8fa98d;box-shadow:0 0 0 4px #8fa98d20}
+.profile-copy h2{margin:0;color:#202a23;font:700 clamp(31px,4vw,43px)/1.08 "Plus Jakarta Sans",sans-serif;letter-spacing:-.065em}
+.profile-meta{display:flex;align-items:center;gap:9px;margin:11px 0 24px!important;color:#7d897f!important;font-size:12px!important;line-height:1.4!important}
+.profile-meta i{width:4px;height:4px;border-radius:50%;background:#b8c4b8}
+.profile-description .answer-copy{gap:12px}
+.profile-description .answer-copy p{font-size:13px;line-height:1.85;color:#536056}
+.profile-description .answer-heading{font-size:14px;margin-top:5px}
+.profile-description .answer-list{gap:6px;padding-left:18px}
+.profile-description .answer-list li{font-size:12px;line-height:1.7}
+.profile-tags{display:flex;flex-wrap:wrap;gap:7px;margin-top:20px}
+.profile-tags span{padding:8px 11px;border:1px solid #e4ebe2;border-radius:999px;background:#f4f7f2;color:#526b56;font-size:10px;font-weight:600}
+.skills-showcase-heading{margin:2px 0 25px}
+.skills-showcase-heading>span{font:9px var(--mono);letter-spacing:.16em;color:#8a9a8a}
+.skills-showcase-heading h2{margin:8px 0 5px;color:#222c24;font:700 clamp(26px,3.5vw,36px)/1.12 "Plus Jakarta Sans",sans-serif;letter-spacing:-.06em}
+.skills-showcase-heading p{margin:0;color:#89948b;font-size:12px;line-height:1.65}
+.interactive-skills{padding:clamp(19px,3vw,29px);margin:0 0 16px;border:1px solid #e5ebe3;border-radius:22px;background:linear-gradient(145deg,rgba(255,255,255,.93),rgba(246,249,244,.88));box-shadow:0 18px 45px rgba(48,71,49,.055)}
+.skill-groups{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:25px 32px;margin:0}
+.skill-group h3{display:flex;align-items:center;gap:9px;margin:0 0 12px;color:#344237;font:650 14px "Plus Jakarta Sans",sans-serif}
+.skill-group h3:before{content:"";width:5px;height:17px;border-radius:5px;background:#78977b}
+.skill-group>div{display:flex;gap:8px;flex-wrap:wrap}
+.skill-group button{border:1px solid #2d3930;border-radius:9px;background:#2d3930;padding:9px 12px;color:#f7faf6;font-size:10px;font-weight:600;letter-spacing:.005em;transition:transform .18s,border-color .18s,background .18s,box-shadow .18s}
+.skill-group button:hover{transform:translateY(-2px);border-color:#617c64;background:#506a53;box-shadow:0 7px 16px rgba(41,64,44,.14)}
+.skills-footnote{margin:21px 0 0;padding-top:15px;border-top:1px solid #e8eee6;color:#89948b;font-size:10px;line-height:1.65}
+.answer-copy{gap:16px}
+.answer-copy p{font-size:14px;line-height:1.85;overflow-wrap:anywhere}
+.answer-heading{font-size:18px;margin:7px 0 0;padding-bottom:7px;border-bottom:1px solid #edf1eb}
+.answer-list{gap:8px;padding-left:20px}
+.answer-list li{padding:9px 11px;border:1px solid #edf1eb;border-radius:10px;background:rgba(248,250,247,.72);line-height:1.7}
+.answer-list li::marker{font-weight:800}
+.answer-strong{color:#344c38;font-weight:750}
+.answer-em{color:#68796b}
+.answer-copy a{font-weight:650}
+.live-answer .answer-copy{display:grid}
+:root[data-theme="dark"] .answer-card-profile{background:#1d2820!important;border-color:#344338!important}
+:root[data-theme="dark"] .profile-copy h2,:root[data-theme="dark"] .skills-showcase-heading h2{color:#e7eee7}
+:root[data-theme="dark"] .profile-meta,:root[data-theme="dark"] .profile-description .answer-copy p,:root[data-theme="dark"] .skills-showcase-heading p,:root[data-theme="dark"] .skills-footnote{color:#b2c0b3!important}
+:root[data-theme="dark"] .profile-tags span{background:#29392c;border-color:#3a4c3c;color:#c6d8c7}
+:root[data-theme="dark"] .interactive-skills{background:linear-gradient(145deg,#1d2820,#202c22);border-color:#344338}
+:root[data-theme="dark"] .skill-group h3,:root[data-theme="dark"] .answer-strong{color:#d8e6d9}
+:root[data-theme="dark"] .skill-group button{background:#344338;border-color:#526c55;color:#eaf2e9}
+:root[data-theme="dark"] .answer-list li{background:#202c23;border-color:#354438;color:#c1cec2}
+@media(max-width:760px){
+  .conversation:has(.answer-card-profile),.conversation:has(.interactive-skills){width:calc(100vw - 26px)}
+  .profile-answer{grid-template-columns:1fr}
+  .profile-photo-frame{min-height:0;height:clamp(220px,58vw,330px)}
+  .profile-photo-frame img{min-height:0}
+  .profile-copy{padding:23px 21px 25px}
+  .profile-eyebrow{margin-bottom:12px}
+  .profile-meta{margin-bottom:17px!important}
+  .profile-tags{margin-top:16px}
+  .skill-groups{grid-template-columns:1fr;gap:21px}
+  .interactive-skills{padding:19px;border-radius:18px}
+  .skill-group button{padding:8px 10px;font-size:10px}
+  .answer-copy p{font-size:13px;line-height:1.8}
+  .answer-list li{font-size:12px}
+}
