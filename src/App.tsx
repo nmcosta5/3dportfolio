@@ -207,6 +207,22 @@ function App() {
   const current = content[active];
   const displayed = useMemo(() => messages.length ? messages[messages.length - 1] : null, [messages]);
   const showPersonalProfile = isPersonalQuestion(loading ? activeQuestion : (displayed?.question || ""));
+  const responseStartRef = useRef<HTMLDivElement>(null);
+  const lastAutoScrollRef = useRef("");
+  useEffect(() => {
+    const responseReady = (loading && streamingAnswer.length > 0) || (!loading && Boolean(displayed));
+    if (!responseReady) return;
+    const responseKey = activeQuestion || displayed?.question || "";
+    if (!responseKey || lastAutoScrollRef.current === responseKey) return;
+    lastAutoScrollRef.current = responseKey;
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    requestAnimationFrame(() => {
+      responseStartRef.current?.scrollIntoView({
+        behavior: reducedMotion ? "auto" : "smooth",
+        block: "start"
+      });
+    });
+  }, [loading, streamingAnswer, displayed?.question, activeQuestion]);
   const copyGithub = async () => { try { await navigator.clipboard.writeText(profile.github); setCopied(true); window.setTimeout(() => setCopied(false), 1800); } catch { window.open(profile.github, "_blank", "noopener,noreferrer"); } };
   const nextChallenge = () => { const prompts = ["Create a simple tool that makes studying more organized.", "Design a useful digital service for a small Rwandan business.", "Build a mini game using only HTML, CSS and JavaScript.", "Create a dashboard that turns confusing data into clear insights.", "Make a lightweight app that works well on slow internet."]; setChallenge(current => { const options = prompts.filter(item => item !== current); return options[Math.floor(Math.random() * options.length)]; }); };
   const ask = async (value = question, freshConversation = false) => {
@@ -318,6 +334,7 @@ function App() {
         {active === "Fun" && <div className="challenge-card"><span className="challenge-label">A SMALL DEVELOPER CHALLENGE</span><p>{challenge}</p><button onClick={nextChallenge}><RotateCcw size={13}/> Give me another</button></div>}
         {active === "Contact" && <div className="contact-quick"><button onClick={copyGithub}>{copied ? <Check size={14}/> : <Copy size={14}/>} {copied ? "GitHub link copied" : "Copy GitHub link"}</button><a href={profile.github} target="_blank" rel="noreferrer"><Github size={14}/> Open GitHub <ArrowUpRight size={12}/></a><a href={profile.website} target="_blank" rel="noreferrer"><Globe2 size={14}/> Visit website <ArrowUpRight size={12}/></a></div>}
 
+        <div ref={responseStartRef} className="response-start-anchor" aria-hidden="true"/>
         {displayed ? (
           showPersonalProfile ? (
             <div className="answer-card answer-card-profile"><ProfileAnswer text={displayed.answer}/></div>

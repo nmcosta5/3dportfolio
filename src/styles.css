@@ -537,3 +537,14 @@
   .answer-copy p{font-size:13px;line-height:1.8}
   .answer-list li{font-size:12px}
 }
+
+
+/* Smart response arrival: guide the reader to the start of each new AI answer */
+.response-start-anchor{height:1px;scroll-margin-top:26px;}
+.answer-card,.answer-card-profile{transform-origin:top center;animation:answerArrival .42s cubic-bezier(.2,.75,.25,1) both;}
+@keyframes answerArrival{from{opacity:0;transform:translateY(13px) scale(.992)}to{opacity:1;transform:translateY(0) scale(1)}}
+.live-answer{animation:answerArrival .32s ease-out both;}
+.typing-caret{display:inline-block;margin-top:12px;color:#78977b;animation:caretPulse .9s steps(2,end) infinite;}
+@keyframes caretPulse{50%{opacity:.25}}
+:root[data-theme="dark"] .response-start-anchor{scroll-margin-top:26px}
+@media(prefers-reduced-motion:reduce){.answer-card,.answer-card-profile,.live-answer{animation:none!important}.typing-caret{animation:none!important}}
