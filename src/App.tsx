@@ -221,7 +221,7 @@ function App() {
       </div>
       <div className="conversation" aria-live="polite">
         <div className="conversation-heading"><span className="sparkle"><Sparkles size={14}/></span><span>{active === "Me" ? "A LITTLE INTRODUCTION" : "LET'S TALK " + active.toUpperCase()}</span><i/></div>
-        {active === "Skills" && <div className="interactive-skills"><div className="skill-groups">{[{name:"Frontend development",items:["React","TypeScript","JavaScript","HTML","CSS","Tailwind CSS"]},{name:"Backend & APIs",items:["Node.js","REST APIs","Supabase"]},{name:"Databases",items:["MySQL","MongoDB","Supabase"]},{name:"Tools & workflow",items:["Git","GitHub","Vite"]}].map(group => <section className="skill-group" key={group.name}><h3>{group.name}</h3><div>{group.items.map(item => <button key={item} onClick={() => ask("Explain how I use " + item + " in my software projects, based only on my known experience.")}>{item}</button>)}</div></section>)}</div></div>}
+        {active === "Skills" && <div className="interactive-skills"><div className="skill-groups">{[{name:"Frontend development",items:["React","TypeScript","JavaScript","HTML","CSS","Tailwind CSS"]},{name:"Backend & APIs",items:["Node.js","REST APIs","Supabase"]},{name:"Databases",items:["MySQL","MongoDB","Supabase"]},{name:"Tools & workflow",items:["Git","GitHub","Vite"]}].map(group => <section className="skill-group" key={group.name}><h3>{group.name}</h3><div>{group.items.map(item => <button key={item} onClick={() => ask("How do I use " + item + "?")}>{item}</button>)}</div></section>)}</div></div>}
         {active === "Fun" && <div className="challenge-card"><span className="challenge-label">A SMALL DEVELOPER CHALLENGE</span><p>{challenge}</p><button onClick={nextChallenge}><RotateCcw size={13}/> Give me another</button></div>}
         {active === "Contact" && <div className="contact-quick"><button onClick={copyGithub}>{copied ? <Check size={14}/> : <Copy size={14}/>} {copied ? "GitHub link copied" : "Copy GitHub link"}</button><a href={profile.github} target="_blank" rel="noreferrer"><Github size={14}/> Open GitHub <ArrowUpRight size={12}/></a><a href={profile.website} target="_blank" rel="noreferrer"><Globe2 size={14}/> Visit website <ArrowUpRight size={12}/></a></div>}
 
@@ -240,13 +240,13 @@ function App() {
     </section>
     <nav className="section-nav" aria-label="Portfolio sections">
       {sections.map((section, i) => {
-        const prompts: Record<Section, string> = {
-          Me: "Introduce me in a warm, natural first-person mini profile. Mention I am Nzabana Merci from Rwanda, a Software Development graduate of Giheke TSS (2026), hardworking, curious and disciplined, interested in full-stack development and gaming. Keep it personal and polished, not a list of instructions or links. Include exactly one personal photo using this Markdown image embed and no other image: ![Nzabana Merci](https://raw.githubusercontent.com/nmcosta5/3dportfolio/main/public/IMG-20250726-WA0034.jpg). Do not output prompt instructions, GitHub profile-image URLs, or raw asset paths.",
-          Projects: "Introduce my software projects using accurate details only. Highlight Agasobanuye Free, Sonora Lemon, Spend Wise, and other known projects. Explain their purpose and verified technologies; do not invent features, metrics, or links.",
-          Skills: "Give visitors a clear overview of my real software-development skills. Group frontend, backend, databases, and workflow tools; explain what I use them for, distinguish experience from expertise, and mention I am still learning. Do not invent proficiency levels.",
-          Fun: "Show my human side: gaming, curiosity, exploring technology, experimenting with ideas, and what motivates me to build. Make it playful and personable, but only use known facts.",
-          Contact: "Help visitors connect or collaborate with me. Include clickable GitHub https://github.com/nmcosta5 and portfolio https://nzabana.vercel.app links. Do not invent email or phone details."
-        };
+        const questions: Record<Section, string> = {
+          Me: "Tell me about yourself.",
+          Projects: "Tell me about your projects.",
+          Skills: "What are your software development skills?",
+          Fun: "What do you enjoy outside software development?",
+          Contact: "How can people contact you or collaborate with you?"
+        };;
         return (
           <button
             key={section}
@@ -254,7 +254,7 @@ function App() {
               setActive(section);
               setMessages([]);
               setQuestion("");
-              ask(prompts[section]);
+              ask(questions[section]);
             }}
             className={active === section ? "nav-item active" : "nav-item"}
             aria-current={active === section ? "page" : undefined}
