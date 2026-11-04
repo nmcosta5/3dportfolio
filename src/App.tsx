@@ -119,7 +119,7 @@ function FluidCanvas() {
       pointer.active = true;
       const distance = pointer.lastX < 0 ? 0 : Math.hypot(pointer.x - pointer.lastX, pointer.y - pointer.lastY);
       const step = isTouch ? 20 : 13;
-      const count = pointer.lastX < 0 ? 1 : Math.min(isTouch ? 4 : 5, Math.max(1, Math.floor(distance / step)));
+      const count = pointer.lastX < 0 ? (isTouch ? 5 : 2) : Math.min(isTouch ? 7 : 5, Math.max(1, Math.floor(distance / step)));
       for (let i = 0; i < count; i++) {
         const t = (i + 1) / count;
         const x = pointer.lastX < 0 ? pointer.x : pointer.lastX + (pointer.x - pointer.lastX) * t;
@@ -129,7 +129,7 @@ function FluidCanvas() {
           y: y + (Math.random() - .5) * (isTouch ? 18 : 10),
           vx: (Math.random() - .5) * (isTouch ? .48 : .65),
           vy: (Math.random() - .5) * (isTouch ? .48 : .65),
-          radius: (isTouch ? 58 : 48) + Math.random() * (isTouch ? 76 : 62),
+          radius: (isTouch ? 66 : 48) + Math.random() * (isTouch ? 88 : 62),
           life: 1,
           maxLife: isTouch ? 1.6 + Math.random() * .9 : 1.35 + Math.random() * .8,
           hue: palette[Math.floor(Math.random() * palette.length)]
@@ -160,7 +160,7 @@ function FluidCanvas() {
         p.vx *= .986;
         p.vy *= .986;
         if (p.life <= 0) { particles.splice(i, 1); continue; }
-        const alpha = Math.max(0, p.life) * .48;
+        const alpha = Math.max(0, p.life) * (window.matchMedia("(pointer: coarse)").matches ? .62 : .5);
         const radius = p.radius * (1 + (1 - p.life) * .65);
         const gradient = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, radius);
         gradient.addColorStop(0, `hsla(${p.hue}, 30%, 34%, ${alpha})`);
