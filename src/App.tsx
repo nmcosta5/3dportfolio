@@ -109,35 +109,44 @@ function FluidCanvas() {
     };
 
     const move = (event: PointerEvent) => {
-      if (event.pointerType === "touch") return;
+      // Pointer Events cover mouse, pen, and touch. Touch now paints the same
+      // fluid layer instead of being ignored on phones and tablets.
+      const isTouch = event.pointerType === "touch";
       pointer.lastX = pointer.x;
       pointer.lastY = pointer.y;
       pointer.x = event.clientX;
       pointer.y = event.clientY;
       pointer.active = true;
       const distance = pointer.lastX < 0 ? 0 : Math.hypot(pointer.x - pointer.lastX, pointer.y - pointer.lastY);
-      const count = pointer.lastX < 0 ? 1 : Math.min(5, Math.max(1, Math.floor(distance / 13)));
+      const step = isTouch ? 20 : 13;
+      const count = pointer.lastX < 0 ? 1 : Math.min(isTouch ? 4 : 5, Math.max(1, Math.floor(distance / step)));
       for (let i = 0; i < count; i++) {
         const t = (i + 1) / count;
         const x = pointer.lastX < 0 ? pointer.x : pointer.lastX + (pointer.x - pointer.lastX) * t;
         const y = pointer.lastY < 0 ? pointer.y : pointer.lastY + (pointer.y - pointer.lastY) * t;
         particles.push({
-          x: x + (Math.random() - .5) * 10,
-          y: y + (Math.random() - .5) * 10,
-          vx: (Math.random() - .5) * 0.65,
-          vy: (Math.random() - .5) * 0.65,
-          radius: 48 + Math.random() * 62,
+          x: x + (Math.random() - .5) * (isTouch ? 18 : 10),
+          y: y + (Math.random() - .5) * (isTouch ? 18 : 10),
+          vx: (Math.random() - .5) * (isTouch ? .48 : .65),
+          vy: (Math.random() - .5) * (isTouch ? .48 : .65),
+          radius: (isTouch ? 58 : 48) + Math.random() * (isTouch ? 76 : 62),
           life: 1,
-          maxLife: 1.35 + Math.random() * .8,
+          maxLife: isTouch ? 1.6 + Math.random() * .9 : 1.35 + Math.random() * .8,
           hue: palette[Math.floor(Math.random() * palette.length)]
         });
       }
-      if (particles.length > 110) particles.splice(0, particles.length - 110);
+      if (particles.length > (isTouch ? 72 : 110)) {
+        particles.splice(0, particles.length - (isTouch ? 72 : 110));
+      }
       // Restart the render loop after pointer input when reduced-motion mode
       // allowed the idle loop to pause.
       if (reducedMotion && !frame) frame = requestAnimationFrame(draw);
     };
-    const leave = () => { pointer.active = false; pointer.lastX = -1000; pointer.lastY = -1000; };
+    const leave = () => {
+      pointer.active = false;
+      pointer.lastX = -1000;
+      pointer.lastY = -1000;
+    };
     const draw = (time: number) => {
       const delta = Math.min((time - (lastTime || time)) / 16.67, 2);
       lastTime = time;
@@ -170,12 +179,18 @@ function FluidCanvas() {
     resize();
     frame = requestAnimationFrame(draw);
     window.addEventListener("resize", resize, { passive: true });
+    window.addEventListener("pointerdown", move, { passive: true });
     window.addEventListener("pointermove", move, { passive: true });
+    window.addEventListener("pointerup", leave, { passive: true });
+    window.addEventListener("pointercancel", leave, { passive: true });
     window.addEventListener("pointerleave", leave);
     return () => {
       cancelAnimationFrame(frame);
       window.removeEventListener("resize", resize);
+      window.removeEventListener("pointerdown", move);
       window.removeEventListener("pointermove", move);
+      window.removeEventListener("pointerup", leave);
+      window.removeEventListener("pointercancel", leave);
       window.removeEventListener("pointerleave", leave);
     };
   }, []);
