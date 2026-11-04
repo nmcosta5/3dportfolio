@@ -1,10 +1,14 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
-<rect width="256" height="256" rx="42" fill="#050606"/>
-<g fill="none" stroke="#d8ded9" stroke-width="1.15" stroke-linejoin="round" stroke-linecap="round">
-<path d="M127.5 37 75 67.5 127.5 98V37Z"/>
-<path d="M128.5 37 181 67.5 128.5 98V37Z"/>
-<path d="M55 79 105 108.5Q119 116 119 131V158L83 137V196L55 180Q49 176 49 166V94Q49 83 55 79Z"/>
-<path d="M201 80 151 109Q137 117 137 131V158L173 137V196L201 180Q207 176 207 166V95Q207 84 201 80Z"/>
-<path d="M94 145 128 165V220L82 193V148Z"/>
-<path d="M162 145 128 165V220L174 193V148Z"/>
-</g></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-labelledby="title">
+  <title id="title">Nzabana Merci — NM</title>
+  <defs>
+    <linearGradient id="bg" x1="20" y1="16" x2="236" y2="244" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#285A3B"/>
+      <stop offset="1" stop-color="#123323"/>
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="56" fill="url(#bg)"/>
+  <rect x="5" y="5" width="246" height="246" rx="51" fill="none" stroke="#DDF1E1" stroke-opacity=".18" stroke-width="5"/>
+  <path d="M43 194V62L113 140V62" fill="none" stroke="#F7FBF8" stroke-width="24" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M143 194V62L184 116L225 62V194" fill="none" stroke="#F7FBF8" stroke-width="24" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M128 34V18" stroke="#A9D58E" stroke-width="9" stroke-linecap="round"/>
+</svg>
