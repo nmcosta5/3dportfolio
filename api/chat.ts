@@ -24,6 +24,16 @@ YOUR PERSONALITY AND VOICE
 - Use clean, readable paragraphs. Use a short list only when it genuinely improves clarity. Format answers for a polished portfolio chat: concise opening answer, descriptive short headings when useful, short paragraphs, and compact bullet lists. Never output raw asterisk characters for emphasis; use plain text headings and bullets. Keep links meaningful and concise. When sharing multiple links, put each on its own line with a descriptive label. When asked about me personally, provide a warm, structured mini-profile with education (graduated 2026), focus, practical experience, and interests without repeating facts unnecessarily. Include the single approved personal photo only when the visitor is asking about my identity or personal profile; do not add it to unrelated answers
 - Avoid generic sales language, vague claims, and repetitive closing lines such as "Feel free to explore and let me know what you think."
 
+RESPONSE QUALITY STANDARD
+- Give each visitor a thoughtful, complete answer that directly addresses what they asked.
+- Lead with the most useful answer in the first sentence. Make the opening specific, not a generic greeting.
+- Add practical detail, a short example, or clear next steps when they genuinely help.
+- Explain technical topics in a clear order and match the visitor's apparent experience level. Include working code only when it is requested or clearly useful.
+- Use concise paragraphs, descriptive headings, or short lists where they improve readability. Avoid repetitive summaries and filler.
+- Be conversational and natural, not robotic or overly promotional. Vary the wording instead of reusing the same template.
+- Separate verified facts from suggestions or assumptions. Never invent details to make an answer sound more impressive.
+- For broad requests, provide a useful first answer and ask at most one focused follow-up question only when essential.
+
 ABOUT ME — VERIFIED INFORMATION
 - My name is Nzabana Merci.
 - I am from Rwanda.
@@ -198,6 +208,7 @@ export default async function handler(req: any, res: any) {
     return res.status(400).json({ error: "Please enter a message." });
   }
 
+  let streamStarted = false;
   try {
     const githubContext = await getLiveGithubContext();
     const upstream = await fetch("https://api.groq.com/openai/v1/chat/completions", {
@@ -209,31 +220,103 @@ export default async function handler(req: any, res: any) {
       body: JSON.stringify({
         model: "openai/gpt-oss-120b",
         messages: [{ role: "system", content: SYSTEM_PROMPT + "\n\n" + githubContext }, ...messages],
-        temperature: 0.65,
-        max_tokens: 550
+        temperature: 0.72,
+        max_tokens: 750,
+        stream: true
       })
     });
-
-    const result = await upstream.json();
-
     if (!upstream.ok) {
+      const failure = await upstream.json().catch(() => ({}));
       return res.status(upstream.status === 429 ? 429 : 502).json({
         error: upstream.status === 429
           ? "I've reached the AI service's temporary usage limit. Please try again in a little while."
-          : "The online AI service couldn't process that message. Please try again."
+          : (failure?.error?.message || "The online AI service couldn't process that message. Please try again.")
       });
     }
+    if (!upstream.body) return res.status(502).json({ error: "The online AI service did not provide a response stream." });
 
-    const answer = result?.choices?.[0]?.message?.content;
-    if (typeof answer !== "string" || !answer.trim()) {
-      return res.status(502).json({ error: "The AI returned an empty response. Please try again." });
+    res.statusCode = 200;
+    res.setHeader("Content-Type", "text/event-stream; charset=utf-8");
+    res.setHeader("Cache-Control", "no-cache, no-transform");
+    res.setHeader("Connection", "keep-alive");
+    res.setHeader("X-Accel-Buffering", "no");
+    if (typeof res.flushHeaders === "function") res.flushHeaders();
+    streamStarted = true;
+
+    const sendEvent = (event: string, payload: unknown) => {
+      if (!res.writableEnded) res.write(`event: ${event}\ndata: ${JSON.stringify(payload)}\n\n`);
+    };
+    const reader = upstream.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = "";
+    let fullAnswer = "";
+    let pendingPrefix = "";
+    let prefixReleased = false;
+    let blocked = false;
+    const safeFallback = "I'm Merci, a software developer from Rwanda. I graduated from Giheke TSS in 2026 in Software Development. I enjoy building web applications, learning new technologies, and gaming. I'm growing my skills in full-stack development.";
+    const handleUpstreamEvent = (block: string) => {
+      const data = block.split(/\r?\n/)
+        .filter(line => line.startsWith("data:"))
+        .map(line => line.slice(5).trim())
+        .join("\n");
+      if (!data || data === "[DONE]" || blocked) return;
+      try {
+        const payload = JSON.parse(data);
+        const delta = payload?.choices?.[0]?.delta?.content;
+        if (typeof delta !== "string" || !delta) return;
+        fullAnswer += delta;
+        if (!prefixReleased) {
+          pendingPrefix += delta;
+          const sentenceReady = /[.!?][)"']?\s/.test(pendingPrefix);
+          if (sentenceReady || pendingPrefix.length >= 180) {
+            if (looksLikeInstructionLeak(pendingPrefix.slice(0, 600))) {
+              fullAnswer = safeFallback;
+              pendingPrefix = "";
+              blocked = true;
+              sendEvent("replace", { text: safeFallback });
+            } else {
+              sendEvent("delta", { text: pendingPrefix });
+              pendingPrefix = "";
+              prefixReleased = true;
+            }
+          }
+        } else {
+          sendEvent("delta", { text: delta });
+        }
+      } catch {
+        // Ignore malformed upstream event frames and continue reading.
+      }
+    };
+
+    let finished = false;
+    while (!finished && !blocked) {
+      const chunk = await reader.read();
+      finished = chunk.done;
+      if (chunk.value) buffer += decoder.decode(chunk.value, { stream: !finished });
+      const blocks = buffer.split(/\r?\n\r?\n/);
+      buffer = blocks.pop() || "";
+      for (const block of blocks) handleUpstreamEvent(block);
+      if (finished && buffer.trim()) handleUpstreamEvent(buffer);
     }
-
-    const finalAnswer = looksLikeInstructionLeak(answer)
-      ? "I'm Merci, a software developer from Rwanda. I graduated from Giheke TSS in 2026 in Software Development. I enjoy building web applications, learning new technologies, and gaming. I'm growing my skills in full-stack development."
-      : answer.trim();
-    return res.status(200).json({ answer: finalAnswer });
-  } catch {
+    if (blocked) await reader.cancel().catch(() => {});
+    if (!blocked && !prefixReleased && pendingPrefix) {
+      if (looksLikeInstructionLeak(pendingPrefix)) {
+        fullAnswer = safeFallback;
+        sendEvent("replace", { text: safeFallback });
+      } else {
+        sendEvent("delta", { text: pendingPrefix });
+      }
+    }
+    const finalAnswer = looksLikeInstructionLeak(fullAnswer) ? safeFallback : fullAnswer.trim();
+    if (finalAnswer !== fullAnswer.trim()) sendEvent("replace", { text: finalAnswer });
+    sendEvent("done", { answer: finalAnswer });
+    return res.end();
+  } catch (error) {
+    if (streamStarted) {
+      const message = error instanceof Error ? error.message : "The online AI stream was interrupted.";
+      res.write(`event: error\ndata: ${JSON.stringify({ message })}\n\n`);
+      return res.end();
+    }
     return res.status(502).json({
       error: "I couldn't connect to the online AI service. Please try again."
     });

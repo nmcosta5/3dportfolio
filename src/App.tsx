@@ -174,30 +174,69 @@ function App() {
   const displayed = useMemo(() => messages.length ? messages[messages.length - 1] : null, [messages]);
   const copyGithub = async () => { try { await navigator.clipboard.writeText(profile.github); setCopied(true); window.setTimeout(() => setCopied(false), 1800); } catch { window.open(profile.github, "_blank", "noopener,noreferrer"); } };
   const nextChallenge = () => { const prompts = ["Create a simple tool that makes studying more organized.", "Design a useful digital service for a small Rwandan business.", "Build a mini game using only HTML, CSS and JavaScript.", "Create a dashboard that turns confusing data into clear insights.", "Make a lightweight app that works well on slow internet."]; setChallenge(current => { const options = prompts.filter(item => item !== current); return options[Math.floor(Math.random() * options.length)]; }); };
-  const ask = async (value = question) => {
-    const clean = value.trim(); if (!clean || loading) return;
-    setQuestion(""); setLoading(true); setStreamingAnswer(""); setModelStatus("CONNECTING TO ONLINE AI…");
+  const ask = async (value = question, freshConversation = false) => {
+    const clean = value.trim();
+    if (!clean || loading) return;
+    setQuestion("");
+    setLoading(true);
+    setStreamingAnswer("");
+    setModelStatus("CONNECTING TO ONLINE AI…");
+    let answerSoFar = "";
     try {
-      const history = messages.slice(-6).flatMap(item => [
+      const history = freshConversation ? [] : messages.slice(-6).flatMap(item => [
         { role: "user", content: item.question },
         { role: "assistant", content: item.answer }
       ]);
       const response = await fetch("/api/chat", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", Accept: "text/event-stream" },
         body: JSON.stringify({ messages: [...history, { role: "user", content: clean }] })
       });
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.error || "The online AI service is temporarily unavailable.");
-      const answer = typeof data.answer === "string" ? data.answer.trim() : "";
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
+        throw new Error(data.error || "The online AI service is temporarily unavailable.");
+      }
+      if (!response.body) throw new Error("Your browser could not open the live response stream.");
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
+      const consumeEvent = (block: string) => {
+        let eventName = "message";
+        const dataLines: string[] = [];
+        for (const line of block.split(/\r?\n/)) {
+          if (line.startsWith("event:")) eventName = line.slice(6).trim();
+          if (line.startsWith("data:")) dataLines.push(line.slice(5).trim());
+        }
+        if (!dataLines.length) return;
+        const payload = JSON.parse(dataLines.join("\n"));
+        if (eventName === "delta" && typeof payload.text === "string") {
+          answerSoFar += payload.text;
+          setStreamingAnswer(answerSoFar);
+        } else if (eventName === "replace" && typeof payload.text === "string") {
+          answerSoFar = payload.text;
+          setStreamingAnswer(answerSoFar);
+        } else if (eventName === "error") {
+          throw new Error(payload.message || "The online AI stream was interrupted.");
+        }
+      };
+      let finished = false;
+      while (!finished) {
+        const chunk = await reader.read();
+        finished = chunk.done;
+        if (chunk.value) buffer += decoder.decode(chunk.value, { stream: !finished });
+        const blocks = buffer.split(/\r?\n\r?\n/);
+        buffer = blocks.pop() || "";
+        for (const block of blocks) consumeEvent(block);
+        if (finished && buffer.trim()) consumeEvent(buffer);
+      }
+      const answer = answerSoFar.trim();
       if (!answer) throw new Error("The AI returned an empty response. Please try again.");
-      setStreamingAnswer(answer);
-      setMessages(prev => [...prev, { question: clean, answer }]);
+      setMessages(prev => [...(freshConversation ? [] : prev), { question: clean, answer }]);
       setStreamingAnswer("");
       setModelStatus("ONLINE AI READY · POWERED BY GROQ");
     } catch (error) {
       const message = error instanceof Error ? error.message : "The online AI could not respond.";
-      setMessages(prev => [...prev, { question: clean, answer: "I couldn't get a response from the online AI. " + message }]);
+      setMessages(prev => [...(freshConversation ? [] : prev), { question: clean, answer: "I couldn't get a response from the online AI. " + message }]);
       setStreamingAnswer("");
       setModelStatus("ONLINE AI UNAVAILABLE · PLEASE TRY AGAIN");
     } finally {
@@ -254,7 +293,7 @@ function App() {
               setActive(section);
               setMessages([]);
               setQuestion("");
-              ask(questions[section]);
+              ask(questions[section], true);
             }}
             className={active === section ? "nav-item active" : "nav-item"}
             aria-current={active === section ? "page" : undefined}
