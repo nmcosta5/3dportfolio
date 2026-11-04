@@ -172,40 +172,6 @@ function App() {
   }, []);
   const current = content[active];
   const displayed = useMemo(() => messages.length ? messages[messages.length - 1] : null, [messages]);
-  const downloadCV = () => {
-    const cv = `NZABANA MERCI
-Full Stack Software Developer
-Rwanda
-
-PROFILE
-Hardworking, curious and disciplined Software Development graduate from Giheke TSS (2026), interested in building useful web applications and growing as a full-stack developer. Graduated in 2026.
-
-TECHNICAL SKILLS
-JavaScript, TypeScript, React, HTML, CSS, Node.js, REST APIs, Supabase, MySQL, MongoDB, Git and GitHub.
-
-SELECTED PROJECTS
-Agasobanuye Free — entertainment platform for discovering movies and series.
-Sonora Lemon — music experience built for sound and discovery.
-VocalPiano — interactive voice and piano web experience.
-AskVolt — AI-powered assistant experience.
-MerciHub — personal hub for digital tools and experiences.
-
-EDUCATION
-Advanced Level, Software Development (SOD)
-Giheke TSS, Rwanda | Expected 2027
-
-LINKS
-GitHub: https://github.com/nmcosta5
-Portfolio: https://nzabana.vercel.app/
-`;
-    const blob = new Blob([cv], { type: "text/plain;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = "Nzabana-Merci-CV.txt";
-    link.click();
-    URL.revokeObjectURL(url);
-  };
   const copyGithub = async () => { try { await navigator.clipboard.writeText(profile.github); setCopied(true); window.setTimeout(() => setCopied(false), 1800); } catch { window.open(profile.github, "_blank", "noopener,noreferrer"); } };
   const nextChallenge = () => { const prompts = ["Create a simple tool that makes studying more organized.", "Design a useful digital service for a small Rwandan business.", "Build a mini game using only HTML, CSS and JavaScript.", "Create a dashboard that turns confusing data into clear insights.", "Make a lightweight app that works well on slow internet."]; setChallenge(current => { const options = prompts.filter(item => item !== current); return options[Math.floor(Math.random() * options.length)]; }); };
   const ask = async (value = question) => {
@@ -250,14 +216,24 @@ Portfolio: https://nzabana.vercel.app/
         <p className="role-title">Full Stack Developer</p>
         <div className="portrait-wrap"><div className="portrait-halo"/><img className="portrait" src={githubAvatar} alt="Nzabana Merci wearing his beanie Memoji avatar" loading="eager" fetchPriority="high" decoding="async" onLoad={() => setAvatarReady(true)} onError={() => setAvatarReady(true)}/></div>
         <p className="hero-caption">A curious developer from Rwanda, building thoughtful things for the web.</p>
-        <button className="cv-download" onClick={downloadCV}><Download size={14}/> Download CV <span>TXT</span></button>
+        <section className="cv-panel" aria-label="Curriculum vitae">
+          <div className="cv-panel-copy">
+            <span className="cv-eyebrow">CURRICULUM VITAE · 2026</span>
+            <strong>My professional CV</strong>
+            <small>Education, technical skills and selected projects.</small>
+          </div>
+          <div className="cv-panel-actions">
+            <a className="cv-preview" href="/Nzabana-Merci-CV.pdf" target="_blank" rel="noreferrer">Preview <ArrowUpRight size={14}/></a>
+            <a className="cv-download" href="/Nzabana-Merci-CV.pdf" download="Nzabana-Merci-CV.pdf"><Download size={14}/> Download PDF</a>
+          </div>
+        </section>
         {githubStats && <div className="profile-stats"><span><b>{githubStats.repos}</b> PUBLIC REPOSITORIES</span><i/> <span><b>{githubStats.followers}</b> FOLLOWERS</span></div>}
       </div>
       <div className="conversation" aria-live="polite">
         <div className="conversation-heading"><span className="sparkle"><Sparkles size={14}/></span><span>{active === "Me" ? "A LITTLE INTRODUCTION" : "LET'S TALK " + active.toUpperCase()}</span><i/></div>
         {active === "Skills" && <div className="interactive-skills"><div className="skill-groups">{[{name:"Frontend development",items:["React","TypeScript","JavaScript","HTML","CSS","Tailwind CSS"]},{name:"Backend & APIs",items:["Node.js","REST APIs","Supabase"]},{name:"Databases",items:["MySQL","MongoDB","Supabase"]},{name:"Tools & workflow",items:["Git","GitHub","Vite"]}].map(group => <section className="skill-group" key={group.name}><h3>{group.name}</h3><div>{group.items.map(item => <button key={item} onClick={() => ask("Explain how I use " + item + " in my software projects, based only on my known experience.")}>{item}</button>)}</div></section>)}</div></div>}
         {active === "Fun" && <div className="challenge-card"><span className="challenge-label">A SMALL DEVELOPER CHALLENGE</span><p>{challenge}</p><button onClick={nextChallenge}><RotateCcw size={13}/> Give me another</button></div>}
-        {active === "Contact" && <div className="contact-quick"><button onClick={copyGithub}>{copied ? <Check size={14}/> : <Copy size={14}/>} {copied ? "GitHub link copied" : "Copy GitHub link"}</button><a href={profile.github} target="_blank" rel="noreferrer"><Github size={14}/> Open GitHub <ArrowUpRight size={12}/></a><a href={profile.website} target="_blank" rel="noreferrer"><Globe2 size={14}/> Visit website <ArrowUpRight size={12}/></a></div>}
+        {active === "Contact" && <div className="contact-quick"><button onClick={copyGithub}>{copied ? <Check size={14}/> : <Copy size={14}/>} {copied ? "GitHub link copied" : "Copy GitHub link"}</button><a href={profile.github} target="_blank" rel="noreferrer"><Github size={14}/> Open GitHub <ArrowUpRight size={12}/></a><a href={profile.website} target="_blank" rel="noreferrer"><Globe2 size={14}/> Visit website <ArrowUpRight size={12}/></a><a href="/Nzabana-Merci-CV.pdf" target="_blank" rel="noreferrer"><Download size={14}/> View CV <ArrowUpRight size={12}/></a></div>}
 
         {displayed ? <div className="answer-card"><div className="user-question">{displayed.question}</div>{active === "Me" && <div className="profile-response"><img src={githubAvatar} alt="Nzabana Merci beanie Memoji avatar"/><div><h2>Nzabana Merci</h2><p>Software Development graduate · Rwanda</p><div className="profile-tags"><span>Full-stack development</span><span>Curious learner</span><span>Problem solving</span></div></div></div>}<div className="answer-meta"><img src={githubAvatar} alt="" /><span>MERCI’S AI ASSISTANT</span><i>·</i><span>JUST NOW</span></div><AnswerBody text={displayed.answer}/>
           

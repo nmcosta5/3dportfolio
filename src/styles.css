@@ -467,3 +467,36 @@
 
 .hero-title{display:flex!important;flex-direction:column!important;align-items:center!important;gap:7px!important}
 .hero-brand-mark{width:35px!important;height:35px!important;object-fit:contain!important;margin:0!important;filter:none!important;animation:none!important}
+
+
+/* Premium CV card and direct PDF actions */
+.cv-panel{
+  width:min(560px,calc(100vw - 38px));display:flex;align-items:center;justify-content:space-between;
+  gap:18px;margin:18px auto 0;padding:14px 16px;border:1px solid rgba(201,216,201,.78);
+  border-radius:18px;background:linear-gradient(125deg,rgba(255,255,255,.86),rgba(240,246,239,.72));
+  box-shadow:0 12px 34px rgba(47,76,51,.055);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  text-align:left;box-sizing:border-box
+}
+.cv-panel-copy{display:flex;flex-direction:column;gap:4px;min-width:0}
+.cv-eyebrow{font:700 8px var(--mono);letter-spacing:.13em;color:#829486}
+.cv-panel-copy strong{font:700 14px "Plus Jakarta Sans",Inter,sans-serif;color:#2e4132;letter-spacing:-.025em}
+.cv-panel-copy small{font:10px/1.5 Inter,sans-serif;color:#7a887d}
+.cv-panel-actions{display:flex;align-items:center;gap:7px;flex:none}
+.cv-preview,.cv-download{
+ display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:38px;padding:0 12px;
+ border:1px solid #d9e4d8;border-radius:12px;background:rgba(255,255,255,.83);color:#425e47;
+ text-decoration:none;font:650 10px "Plus Jakarta Sans",Inter,sans-serif;transition:transform .2s,border-color .2s,background .2s,box-shadow .2s;
+ box-sizing:border-box
+}
+.cv-download{margin:0!important;background:linear-gradient(135deg,#eaf3e8,#f7faf5)!important;border-color:#cbddc9!important;color:#31583a!important;box-shadow:0 5px 14px rgba(49,75,52,.07)}
+.cv-preview:hover,.cv-download:hover{transform:translateY(-2px);border-color:#a9c3a8;box-shadow:0 8px 18px rgba(49,75,52,.09)}
+:root[data-theme="dark"] .cv-panel{background:linear-gradient(125deg,rgba(35,48,38,.94),rgba(29,40,32,.88));border-color:#405542}
+:root[data-theme="dark"] .cv-panel-copy strong{color:#e0ebe0}
+:root[data-theme="dark"] .cv-panel-copy small,:root[data-theme="dark"] .cv-eyebrow{color:#a8b9aa}
+:root[data-theme="dark"] .cv-preview{background:#29372c;color:#d5e5d4;border-color:#435b45}
+:root[data-theme="dark"] .cv-download{background:linear-gradient(135deg,#314633,#28372c)!important;color:#dcebdc!important;border-color:#536e55!important}
+@media(max-width:560px){
+ .cv-panel{width:calc(100vw - 30px);padding:13px;gap:10px;flex-direction:column;align-items:stretch}
+ .cv-panel-actions{display:grid;grid-template-columns:1fr 1fr}
+ .cv-preview,.cv-download{width:100%;min-height:40px;font-size:10px}
+}
