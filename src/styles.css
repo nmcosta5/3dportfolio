@@ -548,3 +548,14 @@
 @keyframes caretPulse{50%{opacity:.25}}
 :root[data-theme="dark"] .response-start-anchor{scroll-margin-top:26px}
 @media(prefers-reduced-motion:reduce){.answer-card,.answer-card-profile,.live-answer{animation:none!important}.typing-caret{animation:none!important}}
+
+
+/* Direct WhatsApp contact — clear primary action with responsive contact details */
+.contact-quick .contact-whatsapp,.contact-links .contact-whatsapp{display:inline-flex!important;align-items:center!important;gap:11px!important;background:linear-gradient(145deg,#eaf4e9,#f8fbf7)!important;border-color:#bfd5bd!important;color:#285333!important;box-shadow:0 8px 22px rgba(49,91,54,.11)!important;text-decoration:none!important}
+.contact-quick .contact-whatsapp>span{display:flex;flex-direction:column;align-items:flex-start;gap:3px}
+.contact-quick .contact-whatsapp strong{font-size:12px;font-weight:750}
+.contact-quick .contact-whatsapp small{font-size:10px;font-weight:550;letter-spacing:.025em;color:#718675}
+.contact-quick .contact-whatsapp:hover,.contact-links .contact-whatsapp:hover{background:#e2f0e0!important;border-color:#a9c9a8!important;transform:translateY(-2px)!important}
+:root[data-theme="dark"] .contact-quick .contact-whatsapp,:root[data-theme="dark"] .contact-links .contact-whatsapp{background:linear-gradient(145deg,#293b2d,#202d23)!important;border-color:#49644c!important;color:#d6ead6!important}
+:root[data-theme="dark"] .contact-quick .contact-whatsapp small{color:#a9bba9!important}
+@media(max-width:640px){.contact-quick .contact-whatsapp{min-height:50px!important}.contact-quick .contact-whatsapp strong{font-size:11px}.contact-quick .contact-whatsapp small{font-size:9px}}

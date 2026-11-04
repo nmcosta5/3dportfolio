@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { ArrowUpRight, ArrowUp, Sparkles, Github, Globe2, ChevronRight, Sun, Moon, Download, RotateCcw, Copy, Check } from "lucide-react";
+import { ArrowUpRight, ArrowUp, Sparkles, Github, Globe2, MessageCircle, ChevronRight, Sun, Moon, Download, RotateCcw, Copy, Check } from "lucide-react";
 
 type Section = "Me" | "Projects" | "Skills" | "Fun" | "Contact";
 type Message = { question: string; answer: string };
@@ -71,13 +71,13 @@ function ProfileAnswer({ text }: { text: string }) {
 }
 
 const sections: Section[] = ["Me", "Projects", "Skills", "Fun", "Contact"];
-const profile = { name: "Nzabana Merci", github: "https://github.com/nmcosta5", website: "https://nzabana.vercel.app/" };
+const profile = { name: "Nzabana Merci", github: "https://github.com/nmcosta5", website: "https://nzabana.vercel.app/", whatsapp: "250794041759", whatsappLink: "https://wa.me/250794041759?text=Hello%20Merci%2C%20I%20visited%20your%20portfolio%20and%20would%20like%20to%20connect." };
 const content: Record<Section, { prompt: string; intro: string; suggestions: string[] }> = {
   Me: { prompt: "Ask me anything about Merci…", intro: "I'm Merci — a software developer from Rwanda and a 2026 Giheke TSS graduate. I enjoy turning ideas into useful digital experiences, learning how things work, and improving with every project. I'm hardworking, curious and disciplined, with a growing focus on full-stack web development.", suggestions: ["Tell me about yourself", "Where are you from?", "What are you studying?"] },
   Projects: { prompt: "Ask about my projects…", intro: "I build practical web experiences while learning full-stack development. Ask me about Agasobanuye Free, Sonora Lemon, Spend Wise, and other projects to explore the goals, technologies, and decisions behind them.", suggestions: ["Show me your best projects", "What did you build with React?", "Tell me about Agasobanuye Free"] },
   Skills: { prompt: "Ask about my technical skills…", intro: "My current toolkit includes JavaScript, TypeScript, React, HTML, CSS, Node.js, REST APIs, Supabase, MySQL, MongoDB, Git and GitHub. I keep strengthening these skills through coursework and hands-on projects.", suggestions: ["What are your strongest skills?", "Do you know React?", "What are you learning now?"] },
   Fun: { prompt: "Ask me something fun…", intro: "Outside the code, I'm a curious learner who enjoys gaming, exploring technology, experimenting with ideas and finding better ways to build things.", suggestions: ["What do you do for fun?", "Are you a gamer?", "What inspires you?"] },
-  Contact: { prompt: "Ask how to get in touch…", intro: "Want to connect, collaborate or talk about a project? The best way to reach me online is through GitHub. You can also explore my personal website.", suggestions: ["How can I contact you?", "Can we collaborate?", "Show me your GitHub"] }
+  Contact: { prompt: "Ask how to get in touch…", intro: "Have a project in mind, want to collaborate, or just want to say hello? Send me a message on WhatsApp for a direct conversation, or connect through GitHub.", suggestions: ["Message me on WhatsApp", "Can we collaborate?", "Show me your GitHub"] }
 };
 
 
@@ -332,7 +332,7 @@ function App() {
           <p className="skills-footnote">I keep building on these skills through hands-on projects and continuous learning.</p>
         </section>}
         {active === "Fun" && <div className="challenge-card"><span className="challenge-label">A SMALL DEVELOPER CHALLENGE</span><p>{challenge}</p><button onClick={nextChallenge}><RotateCcw size={13}/> Give me another</button></div>}
-        {active === "Contact" && <div className="contact-quick"><button onClick={copyGithub}>{copied ? <Check size={14}/> : <Copy size={14}/>} {copied ? "GitHub link copied" : "Copy GitHub link"}</button><a href={profile.github} target="_blank" rel="noreferrer"><Github size={14}/> Open GitHub <ArrowUpRight size={12}/></a><a href={profile.website} target="_blank" rel="noreferrer"><Globe2 size={14}/> Visit website <ArrowUpRight size={12}/></a></div>}
+        {active === "Contact" && <div className="contact-quick"><a className="contact-whatsapp" href={profile.whatsappLink} target="_blank" rel="noreferrer" aria-label="Chat with Merci on WhatsApp"><MessageCircle size={17}/> <span><strong>Chat on WhatsApp</strong><small>+250 794 041 759</small></span><ArrowUpRight size={14}/></a><button onClick={copyGithub}>{copied ? <Check size={14}/> : <Copy size={14}/>} {copied ? "GitHub link copied" : "Copy GitHub link"}</button><a href={profile.github} target="_blank" rel="noreferrer"><Github size={14}/> Open GitHub <ArrowUpRight size={12}/></a><a href={profile.website} target="_blank" rel="noreferrer"><Globe2 size={14}/> Visit website <ArrowUpRight size={12}/></a></div>}
 
         <div ref={responseStartRef} className="response-start-anchor" aria-hidden="true"/>
         {displayed ? (
@@ -343,7 +343,7 @@ function App() {
               <div className="user-question">{displayed.question}</div>
               <div className="answer-meta"><img src={githubAvatar} alt="" /><span>MERCI’S AI ASSISTANT</span><i>·</i><span>JUST NOW</span></div>
               <AnswerBody text={displayed.answer}/>
-              {active === "Contact" && <div className="contact-links"><a href={profile.github} target="_blank" rel="noreferrer"><Github size={15}/> GitHub <ArrowUpRight size={13}/></a><a href={profile.website} target="_blank" rel="noreferrer"><Globe2 size={15}/> Portfolio <ArrowUpRight size={13}/></a></div>}
+              {active === "Contact" && <div className="contact-links"><a className="contact-whatsapp" href={profile.whatsappLink} target="_blank" rel="noreferrer"><MessageCircle size={16}/> WhatsApp <ArrowUpRight size={13}/></a><a href={profile.github} target="_blank" rel="noreferrer"><Github size={15}/> GitHub <ArrowUpRight size={13}/></a><a href={profile.website} target="_blank" rel="noreferrer"><Globe2 size={15}/> Portfolio <ArrowUpRight size={13}/></a></div>}
             </div>
           )
         ) : <div className="intro-answer"><span className="answer-dot"/><p>{current.intro}</p></div>}
