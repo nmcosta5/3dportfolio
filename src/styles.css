@@ -931,3 +931,23 @@ img,canvas,svg{max-width:100%}
   .answer-card .answer-list li{padding:7px 8px}
   .answer-card .answer-link-button{font-size:11px!important;min-height:36px!important}
 }
+
+
+/* Compact vertical spacing so the chat composer stays in view */
+@media(max-width:640px){
+  .main-stage{padding-top:7px!important;padding-bottom:8px!important}
+  .availability{margin-bottom:6px!important}
+  .portrait-wrap{height:clamp(145px,39vw,190px)!important;margin-top:0!important}
+  .portrait-wrap .portrait,.portrait-wrap img.portrait{height:clamp(145px,39vw,190px)!important}
+  .conversation{margin-top:10px!important}
+  .conversation-heading{margin-bottom:7px!important}
+  .suggestions{margin-top:8px!important;margin-bottom:8px!important}
+  .ask-form{margin-top:5px!important}
+  .input-note{margin-top:6px!important}
+}
+@media(min-width:641px) and (max-height:850px){
+  .main-stage{padding-top:9px!important;padding-bottom:10px!important}
+  .portrait-wrap{height:clamp(140px,25vh,205px)!important}
+  .portrait-wrap .portrait,.portrait-wrap img.portrait{height:clamp(140px,25vh,205px)!important}
+  .conversation{margin-top:10px!important}
+}
