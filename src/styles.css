@@ -887,3 +887,18 @@ img,canvas,svg{max-width:100%}
 :root[data-theme="dark"] .mobile-project-footer button{
   background:#304034!important;color:#e0ebe1!important;border-color:#526756!important;
 }
+
+
+/* Me navigation button — match Projects and Contact in dark mode */
+:root[data-theme="dark"] .section-nav .nav-item:first-child{
+  background:rgba(35,48,38,.94)!important;color:#d4e2d5!important;border-color:#465a49!important;
+  box-shadow:inset 0 1px rgba(255,255,255,.035),0 5px 16px rgba(0,0,0,.16)!important;
+}
+:root[data-theme="dark"] .section-nav .nav-item:first-child.active{
+  background:linear-gradient(145deg,#354c39,#26362b)!important;border-color:#6c8a70!important;
+  color:#f0f7f0!important;box-shadow:inset 0 1px rgba(255,255,255,.08),0 7px 20px rgba(0,0,0,.22)!important;
+}
+:root[data-theme="dark"] .section-nav .nav-item:first-child:hover{
+  background:#304234!important;border-color:#617b64!important;color:#f0f7f0!important;
+}
+:root[data-theme="dark"] .section-nav .nav-item:first-child::before{filter:brightness(1.3) saturate(.85)}
