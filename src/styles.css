@@ -18,3 +18,5 @@
   .portrait-wrap .portrait,.portrait-wrap img.portrait{height:clamp(125px,21vh,175px)!important}
   .conversation{margin-top:5px!important}
 }
+
+/* Reapply requested 567734e portfolio layout as a fresh production deployment. */
