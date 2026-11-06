@@ -330,7 +330,7 @@ function App() {
   }, []);
   const current = content[active];
   const displayed = useMemo(() => messages.length ? messages[messages.length - 1] : null, [messages]);
-  const showPersonalProfile = isPersonalQuestion(loading ? activeQuestion : (displayed?.question || ""));
+  const showPersonalProfile = active === "Me" && isPersonalQuestion(loading ? activeQuestion : (displayed?.question || ""));
   const responseStartRef = useRef<HTMLDivElement>(null);
   const lastAutoScrollRef = useRef("");
   useEffect(() => {
@@ -425,12 +425,12 @@ function App() {
     <header className="topbar">
       <div className="topbar-actions"><button className="theme-toggle" onClick={() => setTheme(theme === "light" ? "dark" : "light")} aria-label={theme === "light" ? "Switch to dark mode" : "Switch to light mode"}>{theme === "light" ? <Moon size={16}/> : <Sun size={16}/>}</button><a className="about-mark" href={profile.github} target="_blank" rel="noreferrer" aria-label="Open GitHub profile"><Github size={19} strokeWidth={1.8}/></a></div>
     </header>
-    <section className="main-stage">
-      <div className="hero">
+    <section className={"main-stage main-stage-" + active.toLowerCase()}>
+      <div className={"hero hero-" + active.toLowerCase()}>
         <div className="availability"><span className="availability-dot"/> AVAILABLE FOR COLLABORATION</div>
         <h1 className="hero-title"><img className="hero-brand-mark" src="/Monochrome%20Geometric%20NM%20Crest%20(1).png" alt="" loading="eager"/>Hey, I'm Merci <span className="wave">👋</span></h1>
         <p className="role-title">Full Stack Developer</p>
-        <div className="portrait-wrap"><div className="portrait-halo"/><img className="portrait" src={githubAvatar} alt="Nzabana Merci wearing his beanie Memoji avatar" loading="eager" fetchPriority="high" decoding="async" onLoad={() => setAvatarReady(true)} onError={() => setAvatarReady(true)}/></div>
+        {active === "Me" && <div className="portrait-wrap"><div className="portrait-halo"/><img className="portrait" src={githubAvatar} alt="Nzabana Merci wearing his beanie Memoji avatar" loading="eager" fetchPriority="high" decoding="async" onLoad={() => setAvatarReady(true)} onError={() => setAvatarReady(true)}/></div>}
         <p className="hero-caption">A curious developer from Rwanda, building thoughtful things for the web.</p>
         <a className="cv-download" href="/Nzabana-Merci-CV.pdf" download="Nzabana-Merci-CV.pdf"><Download size={14}/> Download CV <span>PDF</span></a>
         {githubStats && <div className="profile-stats"><span><b>{githubStats.repos}</b> PUBLIC REPOSITORIES</span><i/> <span><b>{githubStats.followers}</b> FOLLOWERS</span></div>}
@@ -463,7 +463,7 @@ function App() {
         {!loading && displayed ? (
           <div className="response-thread">
             <div className="user-message"><span className="user-message-label">YOUR QUESTION</span><p>{displayed.question}</p></div>
-            <AssistantResponse avatar={githubAvatar} copied={answerCopied} onCopy={() => copyAnswer(displayed.answer)}>
+            <AssistantResponse avatar="/Monochrome%20Geometric%20NM%20Crest%20(1).png" copied={answerCopied} onCopy={() => copyAnswer(displayed.answer)}>
               {showPersonalProfile ? <ProfileAnswer text={displayed.answer}/> : <>
                 <AnswerBody text={displayed.answer}/>
                 {active === "Contact" && <div className="contact-links"><a className="contact-whatsapp" href={profile.whatsappLink} target="_blank" rel="noreferrer"><MessageCircle size={16}/> WhatsApp <ArrowUpRight size={13}/></a><a href={profile.github} target="_blank" rel="noreferrer"><Github size={15}/> GitHub <ArrowUpRight size={13}/></a><a href={profile.website} target="_blank" rel="noreferrer"><Globe2 size={15}/> Portfolio <ArrowUpRight size={13}/></a></div>}
@@ -477,7 +477,7 @@ function App() {
         </div>}
         {loading && streamingAnswer && <div className="response-thread">
           <div className="user-message"><span className="user-message-label">YOUR QUESTION</span><p>{activeQuestion}</p></div>
-          <AssistantResponse avatar={githubAvatar} streaming>
+          <AssistantResponse avatar="/Monochrome%20Geometric%20NM%20Crest%20(1).png" streaming>
             {showPersonalProfile ? <ProfileAnswer text={streamingAnswer}/> : <AnswerBody text={streamingAnswer}/>}
             <span className="typing-caret">▍</span>
           </AssistantResponse>
