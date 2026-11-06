@@ -150,29 +150,32 @@ function isPersonalQuestion(question: string) {
   return /(?:about yourself|about you|about merci|about nzabana|who are you|who is merci|who is nzabana|introduce yourself|your (?:bio|biography|profile|background|story|education|interests)|tell me about (?:yourself|you|merci|nzabana)|where are you from|show (?:me )?(?:your )?(?:photo|picture)|your photo)/i.test(question);
 }
 
-function ProfileAnswer({ text }: { text: string }) {
-  const imageStart = text.indexOf("![");
-  const imageEnd = imageStart >= 0 ? text.indexOf(")", imageStart) : -1;
-  const cleanProfile = imageStart < 0
-    ? text.trim()
-    : imageEnd < 0
-      ? text.slice(0, imageStart).trim()
-      : (text.slice(0, imageStart) + text.slice(imageEnd + 1)).trim();
+function ProfileAnswer() {
   return <div className="profile-answer">
     <div className="profile-photo-frame">
-      <img src="/IMG-20250726-WA0034.jpg" alt="Nzabana Merci" loading="eager" />
-      <span className="profile-photo-caption">THE PERSON BEHIND THE CODE</span>
+      <img src="/IMG-20250726-WA0034.jpg" alt="Portrait of Nzabana Merci" loading="eager" />
+      <span className="profile-photo-caption"><i/> THE PERSON BEHIND THE CODE</span>
     </div>
     <div className="profile-copy">
-      <div className="profile-eyebrow"><span/> ABOUT ME</div>
+      <div className="profile-eyebrow"><span/> A LITTLE ABOUT ME</div>
+      <div className="profile-greeting">Hey <span>👋</span></div>
       <h2>Nzabana Merci</h2>
-      <p className="profile-meta">Software Development Graduate <i/> Rwanda</p>
-      <div className="profile-description"><AnswerBody text={cleanProfile}/></div>
+      <p className="profile-meta">Student Developer <i/> Rwanda</p>
+      <div className="profile-bio">
+        <p>I am a software development student at <strong>Giheke TSS</strong>, building my skills by turning ideas into practical digital experiences. I enjoy learning how technology works, solving problems, and creating things people can actually use.</p>
+        <p>My main focus is <strong>full-stack web development</strong>, especially React, TypeScript, JavaScript, and Node.js. I also explore APIs, databases, and modern tools while sharpening my craft through hands-on projects.</p>
+      </div>
+      <div className="profile-facts">
+        <div><span>STUDYING</span><strong>Software Development</strong><small>Giheke TSS</small></div>
+        <div><span>GRADUATION</span><strong>2027</strong><small>Expected completion</small></div>
+        <div><span>FOCUS</span><strong>Full-stack web</strong><small>Building useful products</small></div>
+        <div><span>PERSONALITY</span><strong>Curious &amp; disciplined</strong><small>Always learning</small></div>
+      </div>
       <div className="profile-tags">
-        <span>Full-stack development</span>
         <span>React &amp; TypeScript</span>
-        <span>Curious learner</span>
-        <span>Gaming</span>
+        <span>Node.js</span>
+        <span>APIs &amp; Databases</span>
+        <span>Gaming &amp; Technology</span>
       </div>
     </div>
   </div>;
@@ -181,7 +184,7 @@ function ProfileAnswer({ text }: { text: string }) {
 const sections: Section[] = ["Me", "Projects", "Skills", "Fun", "Contact"];
 const profile = { name: "Nzabana Merci", github: "https://github.com/nmcosta5", website: "https://nzabana.vercel.app/", whatsapp: "250794041759", whatsappLink: "https://wa.me/250794041759?text=Hello%20Merci%2C%20I%20visited%20your%20portfolio%20and%20would%20like%20to%20connect." };
 const content: Record<Section, { prompt: string; intro: string; suggestions: string[] }> = {
-  Me: { prompt: "Ask me anything about Merci…", intro: "I'm Merci — a software developer from Rwanda and a 2026 Giheke TSS graduate. I enjoy turning ideas into useful digital experiences, learning how things work, and improving with every project. I'm hardworking, curious and disciplined, with a growing focus on full-stack web development.", suggestions: ["Tell me about yourself", "Where are you from?", "What are you studying?"] },
+  Me: { prompt: "Ask me anything about Merci…", intro: "I am Merci — a software development student at Giheke TSS in Rwanda, graduating in 2027. I learn by building practical web projects, exploring new technology, and steadily strengthening my full-stack development skills.", suggestions: ["Tell me about yourself", "Where are you from?", "What are you studying?"] },
   Projects: { prompt: "Ask about my projects…", intro: "I build practical web experiences while learning full-stack development. Ask me about Agasobanuye Free, Sonora Lemon, Spend Wise, and other projects to explore the goals, technologies, and decisions behind them.", suggestions: ["Show me your best projects", "What did you build with React?", "Tell me about Agasobanuye Free"] },
   Skills: { prompt: "Ask about my technical skills…", intro: "My current toolkit includes JavaScript, TypeScript, React, HTML, CSS, Node.js, REST APIs, Supabase, MySQL, MongoDB, Git and GitHub. I keep strengthening these skills through coursework and hands-on projects.", suggestions: ["What are your strongest skills?", "Do you know React?", "What are you learning now?"] },
   Fun: { prompt: "Ask me something fun…", intro: "Outside the code, I'm a curious learner who enjoys gaming, exploring technology, experimenting with ideas and finding better ways to build things.", suggestions: ["What do you do for fun?", "Are you a gamer?", "What inspires you?"] },
@@ -576,7 +579,7 @@ function App() {
           <div className="response-thread">
             <div className="user-message"><span className="user-message-label">YOUR QUESTION</span><p>{displayed.question}</p></div>
             <AssistantResponse avatar="/Monochrome%20Geometric%20NM%20Crest%20(1).png" copied={answerCopied} onCopy={() => copyAnswer(displayed.answer)}>
-              {showPersonalProfile ? <ProfileAnswer text={displayed.answer}/> : <>
+              {showPersonalProfile ? <ProfileAnswer/> : <>
                 <AnswerBody text={displayed.answer}/>
                 {active === "Contact" && <div className="contact-links"><a className="contact-whatsapp" href={profile.whatsappLink} target="_blank" rel="noreferrer"><MessageCircle size={16}/> WhatsApp <ArrowUpRight size={13}/></a><a href={profile.github} target="_blank" rel="noreferrer"><Github size={15}/> GitHub <ArrowUpRight size={13}/></a><a href={profile.website} target="_blank" rel="noreferrer"><Globe2 size={15}/> Portfolio <ArrowUpRight size={13}/></a></div>}
               </>}
@@ -590,7 +593,7 @@ function App() {
         {loading && streamingAnswer && <div className="response-thread">
           <div className="user-message"><span className="user-message-label">YOUR QUESTION</span><p>{activeQuestion}</p></div>
           <AssistantResponse avatar="/Monochrome%20Geometric%20NM%20Crest%20(1).png" streaming>
-            {showPersonalProfile ? <ProfileAnswer text={streamingAnswer}/> : <AnswerBody text={streamingAnswer}/>}
+            {showPersonalProfile ? <ProfileAnswer/> : <AnswerBody text={streamingAnswer}/>}
             <span className="typing-caret">▍</span>
           </AssistantResponse>
         </div>}
