@@ -4,38 +4,146 @@ import { ArrowUpRight, ArrowUp, Sparkles, Github, Globe2, MessageCircle, Chevron
 type Section = "Me" | "Projects" | "Skills" | "Fun" | "Contact";
 type Message = { question: string; answer: string };
 
-function AnswerBody({ text }: { text: string }) {
-  const cleanText = text.replace(/\\\*/g, "");
-  const renderInline = (value: string, prefix: string) => {
-    const pattern = /(!\[([^\]]*)\]\((https?:\/\/[^)\s]+)\))|(\[([^\]]+)\]\((https?:\/\/[^)\s]+)\))|(\*\*([^*]+)\*\*)|(\*([^*\n]+)\*)|(https?:\/\/[^\s)]+)/g;
-    const nodes: React.ReactNode[] = [];
-    let last = 0;
-    let match: RegExpExecArray | null;
-    while ((match = pattern.exec(value))) {
-      if (match.index > last) nodes.push(value.slice(last, match.index));
-      if (match[1]) {
-        nodes.push(<figure className="answer-image" key={prefix + match.index}><a href={match[3]} target="_blank" rel="noreferrer"><img src={match[3]} alt={match[2] || "Project image"} loading="lazy" referrerPolicy="no-referrer"/></a>{match[2] && <figcaption>{match[2]}</figcaption>}</figure>);
-      } else if (match[7]) {
-        nodes.push(<strong className="answer-strong" key={prefix + match.index}>{match[8]}</strong>);
-      } else if (match[9]) {
-        nodes.push(<em className="answer-em" key={prefix + match.index}>{match[10]}</em>);
-      } else {
-        const url = match[6] || match[11];
-        const label = match[5] || url.replace(/^https?:\/\//, "").replace(/\/$/, "");
-        nodes.push(<a className="answer-link-button" key={prefix + match.index} href={url} target="_blank" rel="noreferrer"><span>{label}</span><ArrowUpRight size={14}/></a>);
-      }
-      last = pattern.lastIndex;
+function renderInlineMarkdown(value: string, prefix: string): React.ReactNode[] {
+  const pattern = /(!\[([^\]]*)\]\((https?:\/\/[^)\s]+)\))|(\[([^\]]+)\]\((https?:\/\/[^)\s]+)\))|(\x60[^\x60\n]+\x60)|(\*\*[^*\n]+\*\*)|(\*(?!\*)[^*\n]+\*(?!\*))|(~~[^~\n]+~~)|(https?:\/\/[^\s<]+)/g;
+  const nodes: React.ReactNode[] = [];
+  let last = 0;
+  let match: RegExpExecArray | null;
+  while ((match = pattern.exec(value))) {
+    if (match.index > last) nodes.push(value.slice(last, match.index));
+    const token = match[0];
+    if (match[1]) {
+      nodes.push(<span className="answer-inline-image" key={prefix + match.index}><a href={match[3]} target="_blank" rel="noreferrer"><img src={match[3]} alt={match[2] || "Shared image"} loading="lazy" referrerPolicy="no-referrer"/></a></span>);
+    } else if (match[4]) {
+      nodes.push(<a className="answer-link-button" key={prefix + match.index} href={match[6]} target="_blank" rel="noreferrer"><span>{match[5]}</span><ArrowUpRight size={14}/></a>);
+    } else if (token.startsWith(String.fromCharCode(96))) {
+      nodes.push(<code className="answer-inline-code" key={prefix + match.index}>{token.slice(1, -1)}</code>);
+    } else if (token.startsWith("**")) {
+      nodes.push(<strong className="answer-strong" key={prefix + match.index}>{token.slice(2, -2)}</strong>);
+    } else if (token.startsWith("*")) {
+      nodes.push(<em className="answer-em" key={prefix + match.index}>{token.slice(1, -1)}</em>);
+    } else if (token.startsWith("~~")) {
+      nodes.push(<del key={prefix + match.index}>{token.slice(2, -2)}</del>);
+    } else {
+      const cleanUrl = token.replace(/[),.!?]+$/, "");
+      const trailing = token.slice(cleanUrl.length);
+      nodes.push(<a className="answer-plain-link" key={prefix + match.index} href={cleanUrl} target="_blank" rel="noreferrer">{cleanUrl.replace(/^https?:\/\//, "").replace(/\/$/, "")}</a>);
+      if (trailing) nodes.push(trailing);
     }
-    if (last < value.length) nodes.push(value.slice(last));
-    return nodes;
-  };
-  const blocks = cleanText.trim().split(/\n{2,}/).filter(Boolean);
-  return <div className="answer-copy">{blocks.map((block, index) => {
-    const lines = block.split("\n").filter(Boolean);
-    if (lines.every(line => /^\s*[-•]\s+/.test(line))) return <ul className="answer-list" key={index}>{lines.map((line, i) => <li key={i}>{renderInline(line.replace(/^\s*[-•]\s+/, ""), index + "-" + i)}</li>)}</ul>;
-    if (lines.length === 1 && /^#{1,3}\s/.test(lines[0])) return <h3 className="answer-heading" key={index}>{lines[0].replace(/^#{1,3}\s/, "")}</h3>;
-    return <p key={index}>{lines.map((line, i) => <span key={i}>{renderInline(line, index + "-" + i)}{i < lines.length - 1 && <br/>}</span>)}</p>;
-  })}</div>;
+    last = pattern.lastIndex;
+  }
+  if (last < value.length) nodes.push(value.slice(last));
+  return nodes;
+}
+
+function AnswerBody({ text }: { text: string }) {
+  const lines = text.replace(/\\\*/g, "*").replace(/\r\n?/g, "\n").trim().split("\n");
+  const blocks: React.ReactNode[] = [];
+  const fence = String.fromCharCode(96).repeat(3);
+  let index = 0;
+
+  while (index < lines.length) {
+    const line = lines[index];
+    if (!line.trim()) { index++; continue; }
+
+    if (line.startsWith(fence)) {
+      const language = line.slice(3).trim() || "CODE";
+      index++;
+      const codeLines: string[] = [];
+      while (index < lines.length && !lines[index].startsWith(fence)) { codeLines.push(lines[index]); index++; }
+      if (index < lines.length) index++;
+      blocks.push(<div className="answer-code-block" key={"code-" + index}><div className="answer-code-label"><span/>{language.toUpperCase()}</div><pre><code>{codeLines.join("\n")}</code></pre></div>);
+      continue;
+    }
+
+    const heading = line.match(/^(#{1,4})\s+(.+)$/);
+    if (heading) {
+      const content = renderInlineMarkdown(heading[2], "heading-" + index);
+      const level = heading[1].length;
+      if (level <= 2) blocks.push(<h2 className="answer-heading" key={"heading-" + index}>{content}</h2>);
+      else blocks.push(<h3 className="answer-subheading" key={"heading-" + index}>{content}</h3>);
+      index++;
+      continue;
+    }
+
+    if (/^(?:---+|\*\*\*+|___+)\s*$/.test(line)) {
+      blocks.push(<hr className="answer-divider" key={"rule-" + index}/>);
+      index++;
+      continue;
+    }
+
+    if (/^\s*>/.test(line)) {
+      const quote: string[] = [];
+      while (index < lines.length && /^\s*>/.test(lines[index])) { quote.push(lines[index].replace(/^\s*>\s?/, "")); index++; }
+      blocks.push(<blockquote className="answer-blockquote" key={"quote-" + index}><p>{renderInlineMarkdown(quote.join(" "), "quote-" + index)}</p></blockquote>);
+      continue;
+    }
+
+    const listStart = line.match(/^\s*([-*+]|\d+[.)])\s+(.+)$/);
+    if (listStart) {
+      const ordered = /^\d/.test(listStart[1]);
+      const items: string[] = [];
+      while (index < lines.length) {
+        const item = lines[index].match(/^\s*([-*+]|\d+[.)])\s+(.+)$/);
+        if (!item || /^\d/.test(item[1]) !== ordered) break;
+        items.push(item[2]);
+        index++;
+      }
+      const ListTag = ordered ? "ol" : "ul";
+      blocks.push(<ListTag className="answer-list" key={"list-" + index}>{items.map((item, itemIndex) => <li key={itemIndex}>{renderInlineMarkdown(item, "list-" + index + "-" + itemIndex)}</li>)}</ListTag>);
+      continue;
+    }
+
+    if (index + 1 < lines.length && line.includes("|") && /^\s*\|?\s*:?-{3,}:?\s*(\|\s*:?-{3,}:?\s*)+\|?\s*$/.test(lines[index + 1])) {
+      const cells = (row: string) => row.trim().replace(/^\|/, "").replace(/\|$/, "").split("|").map(cell => cell.trim());
+      const headers = cells(line);
+      index += 2;
+      const rows: string[][] = [];
+      while (index < lines.length && lines[index].includes("|") && lines[index].trim()) { rows.push(cells(lines[index])); index++; }
+      blocks.push(<div className="answer-table-wrap" key={"table-" + index}><table className="answer-table"><thead><tr>{headers.map((cell, i) => <th key={i}>{renderInlineMarkdown(cell, "th-" + i)}</th>)}</tr></thead><tbody>{rows.map((row, r) => <tr key={r}>{headers.map((_, c) => <td key={c}>{renderInlineMarkdown(row[c] || "—", "td-" + r + "-" + c)}</td>)}</tr>)}</tbody></table></div>);
+      continue;
+    }
+
+    const paragraph: string[] = [line];
+    index++;
+    while (index < lines.length && lines[index].trim() &&
+      !lines[index].startsWith(fence) &&
+      !/^#{1,4}\s+/.test(lines[index]) &&
+      !/^(?:---+|\*\*\*+|___+)\s*$/.test(lines[index]) &&
+      !/^\s*>/.test(lines[index]) &&
+      !/^\s*(?:[-*+]|\d+[.)])\s+/.test(lines[index])) {
+      paragraph.push(lines[index]);
+      index++;
+    }
+    const imageOnly = paragraph.length === 1 && paragraph[0].match(/^!\[([^\]]*)\]\((https?:\/\/[^)\s]+)\)$/);
+    if (imageOnly) blocks.push(<figure className="answer-image" key={"image-" + index}><a href={imageOnly[2]} target="_blank" rel="noreferrer"><img src={imageOnly[2]} alt={imageOnly[1] || "Shared image"} loading="lazy" referrerPolicy="no-referrer"/></a>{imageOnly[1] && <figcaption>{imageOnly[1]}</figcaption>}</figure>);
+    else blocks.push(<p key={"paragraph-" + index}>{renderInlineMarkdown(paragraph.join(" "), "paragraph-" + index)}</p>);
+  }
+
+  return <div className="answer-copy">{blocks}</div>;
+}
+
+type AssistantResponseProps = {
+  avatar: string;
+  children: React.ReactNode;
+  streaming?: boolean;
+  copied?: boolean;
+  onCopy?: () => void;
+};
+
+function AssistantResponse({ avatar, children, streaming = false, copied = false, onCopy }: AssistantResponseProps) {
+  return <article className={streaming ? "assistant-response is-streaming" : "assistant-response"} aria-live={streaming ? "polite" : undefined}>
+    <header className="assistant-response-header">
+      <div className="assistant-response-avatar"><img src={avatar} alt=""/></div>
+      <div className="assistant-response-identity"><strong>Merci’s AI assistant</strong><span>PERSONAL PORTFOLIO ASSISTANT</span></div>
+      <div className="assistant-response-tools">
+        <span className={streaming ? "response-status is-streaming" : "response-status"}><i/>{streaming ? "WRITING" : "ANSWER"}</span>
+        {!streaming && onCopy && <button type="button" className="response-copy-button" onClick={onCopy} aria-label={copied ? "Response copied" : "Copy response"} title={copied ? "Copied" : "Copy response"}>{copied ? <Check size={14}/> : <Copy size={14}/>}<span>{copied ? "Copied" : "Copy"}</span></button>}
+      </div>
+    </header>
+    <div className="assistant-response-content">{children}</div>
+    {streaming && <div className="assistant-response-footer"><span className="response-writing-dots"><i/><i/><i/></span>Generating a response</div>}
+  </article>;
 }
 
 function isPersonalQuestion(question: string) {
@@ -200,6 +308,7 @@ function App() {
   const [active, setActive] = useState<Section>("Me");
   const [question, setQuestion] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
+  const [answerCopied, setAnswerCopied] = useState(false);
   const [loading, setLoading] = useState(false);
   const [avatarReady, setAvatarReady] = useState(false);
   const [streamingAnswer, setStreamingAnswer] = useState("");
@@ -239,6 +348,7 @@ function App() {
     });
   }, [loading, streamingAnswer, displayed?.question, activeQuestion]);
   const copyGithub = async () => { try { await navigator.clipboard.writeText(profile.github); setCopied(true); window.setTimeout(() => setCopied(false), 1800); } catch { window.open(profile.github, "_blank", "noopener,noreferrer"); } };
+  const copyAnswer = async (value: string) => { try { await navigator.clipboard.writeText(value); setAnswerCopied(true); window.setTimeout(() => setAnswerCopied(false), 1800); } catch { setAnswerCopied(false); } };
   const nextChallenge = () => { const prompts = ["Create a simple tool that makes studying more organized.", "Design a useful digital service for a small Rwandan business.", "Build a mini game using only HTML, CSS and JavaScript.", "Create a dashboard that turns confusing data into clear insights.", "Make a lightweight app that works well on slow internet."]; setChallenge(current => { const options = prompts.filter(item => item !== current); return options[Math.floor(Math.random() * options.length)]; }); };
   const ask = async (value = question, freshConversation = false) => {
     const clean = value.trim();
@@ -350,18 +460,28 @@ function App() {
         {active === "Contact" && <div className="contact-quick"><a className="contact-whatsapp" href={profile.whatsappLink} target="_blank" rel="noreferrer" aria-label="Chat with Merci on WhatsApp"><MessageCircle size={17}/> <span><strong>Chat on WhatsApp</strong><small>+250 794 041 759</small></span><ArrowUpRight size={14}/></a><button onClick={copyGithub}>{copied ? <Check size={14}/> : <Copy size={14}/>} {copied ? "GitHub link copied" : "Copy GitHub link"}</button><a href={profile.github} target="_blank" rel="noreferrer"><Github size={14}/> Open GitHub <ArrowUpRight size={12}/></a><a href={profile.website} target="_blank" rel="noreferrer"><Globe2 size={14}/> Visit website <ArrowUpRight size={12}/></a></div>}
 
         <div ref={responseStartRef} className="response-start-anchor" aria-hidden="true"/>
-        {displayed ? (
-          showPersonalProfile ? (
-            <div className="answer-card answer-card-profile"><ProfileAnswer text={displayed.answer}/></div>
-          ) : (
-            <div className="answer-card">
-              <div className="user-question">{displayed.question}</div>
-              <div className="answer-meta"><img src={githubAvatar} alt="" /><span>MERCI’S AI ASSISTANT</span><i>·</i><span>JUST NOW</span></div>
-              <AnswerBody text={displayed.answer}/>
-              {active === "Contact" && <div className="contact-links"><a className="contact-whatsapp" href={profile.whatsappLink} target="_blank" rel="noreferrer"><MessageCircle size={16}/> WhatsApp <ArrowUpRight size={13}/></a><a href={profile.github} target="_blank" rel="noreferrer"><Github size={15}/> GitHub <ArrowUpRight size={13}/></a><a href={profile.website} target="_blank" rel="noreferrer"><Globe2 size={15}/> Portfolio <ArrowUpRight size={13}/></a></div>}
-            </div>
-          )
-        ) : <div className="intro-answer"><span className="answer-dot"/><p>{current.intro}</p></div>}
+        {!loading && displayed ? (
+          <div className="response-thread">
+            <div className="user-message"><span className="user-message-label">YOUR QUESTION</span><p>{displayed.question}</p></div>
+            <AssistantResponse avatar={githubAvatar} copied={answerCopied} onCopy={() => copyAnswer(displayed.answer)}>
+              {showPersonalProfile ? <ProfileAnswer text={displayed.answer}/> : <>
+                <AnswerBody text={displayed.answer}/>
+                {active === "Contact" && <div className="contact-links"><a className="contact-whatsapp" href={profile.whatsappLink} target="_blank" rel="noreferrer"><MessageCircle size={16}/> WhatsApp <ArrowUpRight size={13}/></a><a href={profile.github} target="_blank" rel="noreferrer"><Github size={15}/> GitHub <ArrowUpRight size={13}/></a><a href={profile.website} target="_blank" rel="noreferrer"><Globe2 size={15}/> Portfolio <ArrowUpRight size={13}/></a></div>}
+              </>}
+            </AssistantResponse>
+          </div>
+        ) : !loading ? <div className="intro-answer"><span className="answer-dot"/><p>{current.intro}</p></div> : null}
+        {loading && !streamingAnswer && <div className="response-thread">
+          <div className="user-message"><span className="user-message-label">YOUR QUESTION</span><p>{activeQuestion}</p></div>
+          <div className="thinking-card" role="status"><span className="thinking-dots"><i/><i/><i/></span><span>Thinking through your question…</span></div>
+        </div>}
+        {loading && streamingAnswer && <div className="response-thread">
+          <div className="user-message"><span className="user-message-label">YOUR QUESTION</span><p>{activeQuestion}</p></div>
+          <AssistantResponse avatar={githubAvatar} streaming>
+            {showPersonalProfile ? <ProfileAnswer text={streamingAnswer}/> : <AnswerBody text={streamingAnswer}/>}
+            <span className="typing-caret">▍</span>
+          </AssistantResponse>
+        </div>}
         <div className="suggestions">{current.suggestions.map(s => <button key={s} onClick={() => ask(s)}>{s}<ChevronRight size={12}/></button>)}</div>
         <form className="ask-form" onSubmit={e => { e.preventDefault(); ask(); }}><input value={question} onChange={e => setQuestion(e.target.value)} placeholder={current.prompt} aria-label={current.prompt} maxLength={240}/><button type="submit" disabled={!question.trim() || loading} aria-label="Send question">{loading ? <span className="loader"/> : <ArrowUp size={17}/>}</button></form>
         {loading && !streamingAnswer && <div className="thinking-card" role="status"><span className="thinking-dots"><i/><i/><i/></span><span>Merci is thinking…</span></div>}
