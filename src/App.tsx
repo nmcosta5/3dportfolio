@@ -160,14 +160,14 @@ function ProfileAnswer() {
       <div className="profile-eyebrow"><span/> A LITTLE ABOUT ME</div>
       <div className="profile-greeting">Hey <span>👋</span></div>
       <h2>Nzabana Merci</h2>
-      <p className="profile-meta">Student Developer <i/> Rwanda</p>
+      <p className="profile-meta">Software Developer <i/> Rwanda</p>
       <div className="profile-bio">
-        <p>I am a software development student at <strong>Giheke TSS</strong>, building my skills by turning ideas into practical digital experiences. I enjoy learning how technology works, solving problems, and creating things people can actually use.</p>
+        <p>I am a software developer from <strong>Rwanda</strong>. I graduated from <strong>Giheke TSS in 2026</strong> and enjoy turning ideas into practical digital experiences. I like understanding how technology works, solving problems, and creating things people can actually use.</p>
         <p>My main focus is <strong>full-stack web development</strong>, especially React, TypeScript, JavaScript, and Node.js. I also explore APIs, databases, and modern tools while sharpening my craft through hands-on projects.</p>
       </div>
       <div className="profile-facts">
-        <div><span>STUDYING</span><strong>Software Development</strong><small>Giheke TSS</small></div>
-        <div><span>GRADUATION</span><strong>2027</strong><small>Expected completion</small></div>
+        <div><span>EDUCATION</span><strong>Software Development</strong><small>Giheke TSS · 2026 graduate</small></div>
+        <div><span>GRADUATED</span><strong>2026</strong><small>Giheke TSS</small></div>
         <div><span>FOCUS</span><strong>Full-stack web</strong><small>Building useful products</small></div>
         <div><span>PERSONALITY</span><strong>Curious &amp; disciplined</strong><small>Always learning</small></div>
       </div>
@@ -184,7 +184,7 @@ function ProfileAnswer() {
 const sections: Section[] = ["Me", "Projects", "Skills", "Fun", "Contact"];
 const profile = { name: "Nzabana Merci", github: "https://github.com/nmcosta5", website: "https://nzabana.vercel.app/", whatsapp: "250794041759", whatsappLink: "https://wa.me/250794041759?text=Hello%20Merci%2C%20I%20visited%20your%20portfolio%20and%20would%20like%20to%20connect." };
 const content: Record<Section, { prompt: string; intro: string; suggestions: string[] }> = {
-  Me: { prompt: "Ask me anything about Merci…", intro: "I am Merci — a software development student at Giheke TSS in Rwanda, graduating in 2027. I learn by building practical web projects, exploring new technology, and steadily strengthening my full-stack development skills.", suggestions: ["Tell me about yourself", "Where are you from?", "What are you studying?"] },
+  Me: { prompt: "Ask me anything about Merci…", intro: "I am Merci — a software developer from Rwanda. I graduated from Giheke TSS in 2026 and focus on building practical full-stack web experiences. I learn by shipping projects, exploring new technology, and solving real problems.", suggestions: ["Tell me about yourself", "Where are you from?", "What do you build?"] },
   Projects: { prompt: "Ask about my projects…", intro: "I build practical web experiences while learning full-stack development. Ask me about Agasobanuye Free, Sonora Lemon, Spend Wise, and other projects to explore the goals, technologies, and decisions behind them.", suggestions: ["Show me your best projects", "What did you build with React?", "Tell me about Agasobanuye Free"] },
   Skills: { prompt: "Ask about my technical skills…", intro: "My current toolkit includes JavaScript, TypeScript, React, HTML, CSS, Node.js, REST APIs, Supabase, MySQL, MongoDB, Git and GitHub. I keep strengthening these skills through coursework and hands-on projects.", suggestions: ["What are your strongest skills?", "Do you know React?", "What are you learning now?"] },
   Fun: { prompt: "Ask me something fun…", intro: "Outside the code, I'm a curious learner who enjoys gaming, exploring technology, experimenting with ideas and finding better ways to build things.", suggestions: ["What do you do for fun?", "Are you a gamer?", "What inspires you?"] },
