@@ -304,6 +304,117 @@ function FluidCanvas() {
   }, []);
   return <canvas ref={canvasRef} className="fluid-canvas" aria-hidden="true" />;
 }
+
+const liveProjects = [
+  {
+    name: "Agasobanuye Free",
+    category: "Entertainment",
+    description: "A Rwandan entertainment destination for discovering movies and local TV content.",
+    url: "https://agasobanuyefree.vercel.app/",
+    domain: "agasobanuyefree.vercel.app"
+  },
+  {
+    name: "3D Portfolio",
+    category: "Portfolio",
+    description: "My personal portfolio, bringing together my work, skills and AI-powered assistant.",
+    url: "https://nzabana.vercel.app/",
+    domain: "nzabana.vercel.app"
+  },
+  {
+    name: "Volt AI",
+    category: "Artificial intelligence",
+    description: "Explore the live Volt AI web application.",
+    url: "https://askvolt.vercel.app/",
+    domain: "askvolt.vercel.app"
+  },
+  {
+    name: "Sonora Lemon",
+    category: "Music",
+    description: "A music-focused web experience with an immersive, modern player interface.",
+    url: "https://sonoralemon.vercel.app/",
+    domain: "sonoralemon.vercel.app"
+  },
+  {
+    name: "MerciHub",
+    category: "Workspace",
+    description: "A connected workspace experience with dashboard and health-monitoring features.",
+    url: "https://merichub.vercel.app/",
+    domain: "merichub.vercel.app"
+  },
+  {
+    name: "Vocal Piano",
+    category: "Audio",
+    description: "Explore the live Vocal Piano application and its audio-focused experience.",
+    url: "https://vocalpiano.vercel.app/",
+    domain: "vocalpiano.vercel.app"
+  },
+  {
+    name: "Sobanukirwa AI",
+    category: "Artificial intelligence",
+    description: "Explore the live Sobanukirwa AI application.",
+    url: "https://sobanukirwa.vercel.app/",
+    domain: "sobanukirwa.vercel.app"
+  },
+  {
+    name: "Sobanukirwa AI Project",
+    category: "Artificial intelligence",
+    description: "A separate Sobanukirwa AI build with prompt-led interaction.",
+    url: "https://sobanukirwa-ai-project.vercel.app/",
+    domain: "sobanukirwa-ai-project.vercel.app"
+  },
+  {
+    name: "DukaConnect",
+    category: "E-commerce",
+    description: "An online storefront experience for exploring the DukaConnect project.",
+    url: "https://merciecommerce.vercel.app/",
+    domain: "merciecommerce.vercel.app"
+  }
+];
+
+function ProjectShowcase() {
+  return <section className="projects-page" aria-labelledby="projects-title">
+    <div className="projects-intro">
+      <div>
+        <span className="projects-eyebrow"><i/> LIVE PROJECTS <b>·</b> SELECTED WORK</span>
+        <h2 id="projects-title">Built to be <em>explored.</em></h2>
+        <p>Real projects, running websites. Open any preview and experience it for yourself.</p>
+      </div>
+      <div className="projects-total"><strong>{String(liveProjects.length).padStart(2, "0")}</strong><span>LIVE<br/>DEPLOYMENTS</span></div>
+    </div>
+    <div className="projects-grid">
+      {liveProjects.map((project, index) => <article className="live-project-card" key={project.url}>
+        <div className="project-preview">
+          <div className="project-browserbar">
+            <span className="project-browser-dots"><i/><i/><i/></span>
+            <span className="project-domain">{project.domain}</span>
+            <span className="project-live-pill"><i/> LIVE</span>
+          </div>
+          <div className="project-iframe-window">
+            <iframe
+              src={project.url}
+              title={project.name + " live website preview"}
+              loading="lazy"
+              referrerPolicy="strict-origin-when-cross-origin"
+              sandbox="allow-scripts allow-forms allow-same-origin allow-popups"
+            />
+          </div>
+          <a className="project-preview-link" href={project.url} target="_blank" rel="noopener noreferrer" aria-label={"Open " + project.name + " live website"}>
+            <span>OPEN PREVIEW</span><ArrowUpRight size={14}/>
+          </a>
+          <span className="project-index">{String(index + 1).padStart(2, "0")}</span>
+        </div>
+        <div className="live-project-info">
+          <div className="live-project-meta"><span>{project.category}</span><span className="live-project-status"><i/> LIVE WEBSITE</span></div>
+          <h3>{project.name}</h3>
+          <p>{project.description}</p>
+          <a className="live-project-cta" href={project.url} target="_blank" rel="noopener noreferrer">Explore website <ArrowUpRight size={15}/></a>
+        </div>
+      </article>)}
+    </div>
+    <div className="projects-endnote"><span>MADE WITH CURIOSITY IN RWANDA</span><span>{liveProjects.length} LIVE EXPERIENCES <i/></span></div>
+  </section>;
+}
+
 function App() {
   const [active, setActive] = useState<Section>("Me");
   const [question, setQuestion] = useState("");
@@ -426,7 +537,7 @@ function App() {
       <div className="topbar-actions"><button className="theme-toggle" onClick={() => setTheme(theme === "light" ? "dark" : "light")} aria-label={theme === "light" ? "Switch to dark mode" : "Switch to light mode"}>{theme === "light" ? <Moon size={16}/> : <Sun size={16}/>}</button><a className="about-mark" href={profile.github} target="_blank" rel="noreferrer" aria-label="Open GitHub profile"><Github size={19} strokeWidth={1.8}/></a></div>
     </header>
     <section className={"main-stage main-stage-" + active.toLowerCase()}>
-      <div className={"hero hero-" + active.toLowerCase()}>
+      {active !== "Projects" && <div className={"hero hero-" + active.toLowerCase()}>
         <div className="availability"><span className="availability-dot"/> AVAILABLE FOR COLLABORATION</div>
         <h1 className="hero-title"><img className="hero-brand-mark" src="/Monochrome%20Geometric%20NM%20Crest%20(1).png" alt="" loading="eager"/>Hey, I'm Merci <span className="wave">👋</span></h1>
         <p className="role-title">Full Stack Developer</p>
@@ -434,8 +545,9 @@ function App() {
         <p className="hero-caption">A curious developer from Rwanda, building thoughtful things for the web.</p>
         <a className="cv-download" href="/Nzabana-Merci-CV.pdf" download="Nzabana-Merci-CV.pdf"><Download size={14}/> Download CV <span>PDF</span></a>
         {githubStats && <div className="profile-stats"><span><b>{githubStats.repos}</b> PUBLIC REPOSITORIES</span><i/> <span><b>{githubStats.followers}</b> FOLLOWERS</span></div>}
-      </div>
-      <div className="conversation" aria-live="polite">
+      </div>}
+      {active === "Projects" && <ProjectShowcase />}
+      {active !== "Projects" && <div className="conversation" aria-live="polite">
         <div className="conversation-heading"><span className="sparkle"><Sparkles size={14}/></span><span>{active === "Me" ? "A LITTLE INTRODUCTION" : "LET'S TALK " + active.toUpperCase()}</span><i/></div>
         {active === "Skills" && <section className="interactive-skills">
           <div className="skills-showcase-heading">
@@ -486,7 +598,7 @@ function App() {
         <form className="ask-form" onSubmit={e => { e.preventDefault(); ask(); }}><input value={question} onChange={e => setQuestion(e.target.value)} placeholder={current.prompt} aria-label={current.prompt} maxLength={240}/><button type="submit" disabled={!question.trim() || loading} aria-label="Send question">{loading ? <span className="loader"/> : <ArrowUp size={17}/>}</button></form>
         <div className="chat-tools">{messages.length > 0 && <button onClick={() => { setMessages([]); setQuestion(""); }}><RotateCcw size={12}/> Clear conversation</button>}</div>
         <div className="input-note">{modelStatus} <span>·</span> ONLINE MODEL · CHAT HISTORY IS SESSION-ONLY</div>
-      </div>
+      </div>}
     </section>
     <nav className="section-nav" aria-label="Portfolio sections">
       {sections.map((section, i) => {
