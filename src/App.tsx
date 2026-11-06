@@ -616,7 +616,7 @@ function App() {
               setActive(section);
               setMessages([]);
               setQuestion("");
-              ask(questions[section], true);
+              if (section !== "Projects") ask(questions[section], true);
             }}
             className={active === section ? "nav-item active" : "nav-item"}
             aria-current={active === section ? "page" : undefined}
