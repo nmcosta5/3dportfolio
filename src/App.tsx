@@ -341,8 +341,8 @@ const liveProjects = [
     name: "MerciHub",
     category: "Workspace",
     description: "A connected workspace experience with dashboard and health-monitoring features.",
-    url: "https://merichub.vercel.app/",
-    domain: "merichub.vercel.app"
+    url: "https://mercihub.vercel.app/",
+    domain: "mercihub.vercel.app"
   },
   {
     name: "Vocal Piano",
