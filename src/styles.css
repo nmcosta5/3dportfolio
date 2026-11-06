@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap');
 :root{font-family:"DM Sans",sans-serif;color:#242729;background:#fbfbfa;font-synthesis:none;text-rendering:optimizeLegibility;-webkit-font-smoothing:antialiased;--line:#e9eae8;--mono:"DM Mono",monospace}
 *{box-sizing:border-box}html,body,#root{margin:0;min-width:320px;min-height:100%;width:100%}body{background:#fbfbfa;overflow-x:hidden}button,input{font:inherit}button{cursor:pointer}a{color:inherit;text-decoration:none}
@@ -275,7 +276,6 @@
 
 
 /* 2026 chat refresh — editorial typography, structured responses, and fluid grass atmosphere */
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap');
 :root{font-family:"Plus Jakarta Sans",Inter,sans-serif}
 .app-shell{background:radial-gradient(ellipse at 18% 24%,rgba(208,226,205,.48),transparent 36%),radial-gradient(ellipse at 82% 18%,rgba(218,232,218,.48),transparent 34%),radial-gradient(ellipse at 50% 82%,rgba(231,238,226,.42),transparent 42%),#fbfcfa!important}
 .app-shell:before,.app-shell:after{content:"";position:fixed;z-index:0;pointer-events:none;filter:blur(38px);border-radius:48% 52% 62% 38%/42% 44% 56% 58%;opacity:.45;mix-blend-mode:multiply}
